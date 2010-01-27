@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
+<title></title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 5951 2009-05-18 18:03:10Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left{
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: left }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document">
+
+
+<p>Producing the individual formal project proposal is your first task. This is not supposed to be a timewasting bureaucratic effort but primarily an aid to you, possibly only a page or two in length. It allows you to think about what you can really achieve in the limited time available. The proposal should describe the objectives and specific tasks of the project, bearing in mind the course description &quot;Project in electrical engineering or computer engineering involving design, experimental and/or computer simulation work&quot;. If you are part of a project team, ensure that your project description makes this point clear and that you describe your group's organisation and the specific tasks of all your group members. Include a Gantt chart that shows how you intend to schedule your time to complete the project.
+The purpose and format of the Project Proposal is as follows: The 496 projects already have stated tasks and goals. In your Project Proposal, you must demonstrate that you have both a clear understanding of these objectives and how you will achieve them. In particular, you must explain thoroughly your responsibilities throughout the project and acknowledge the level of commitment needed to see the project through to a successful conclusion. You should consider the Project Proposal to be a contract between you and your Technical Supervisor in which you specify:
+- What you are to do
+- How you are to do it
+- Who else might be involved
+- What you will need to do it</p>
+<div class="section" id="memorandum">
+<h1>MEMORANDUM</h1>
+<div class="line-block">
+<div class="line">To: Ms. J. Pavelich, Prof. S. Gopalakrishnan</div>
+<div class="line">From: Jason Poon</div>
+<div class="line">Date: January 26, 2010</div>
+<div class="line">Re: EECE 496 - Project Proposal</div>
+</div>
+<hr class="docutils" />
+<p><strong>Introduction</strong></p>
+<p>The project I would like to propose for EECE 496 is the implementation of a fall detection system. The purpose and significance of such a system are outlined below; in addition, details regarding the requirements and timeline are included.</p>
+<p><strong>Project Objectives</strong></p>
+<p>The purpose of this project will be to implement a fall detection system.</p>
+<p>Identify the project’s objectives and explain the tasks you will need to accomplish to realize these goals.</p>
+<p><strong>Project Significance</strong></p>
+<p>A fall detection system can prove very useful for senior citizens where a fall may be very dangerous.
+With the usage of a fall detection system, it is then possible to monitor one's activities and, in the case of a fall, automatically notify the authorities (e.g. caregiver) such that they can immediately respond to the situation.
+Such a system can also be applied any individual monitor their exercise routine and provide an analysis of the data.</p>
+<p>Describe the significance of the project and any relevant history.
+If it is a continuation or extension of a previous project, explain how your current work is a part of it. If it is a group project, identify the other students involved.</p>
+<p><strong>Project Requirements</strong></p>
+<p>In order for this project to succeed, the following items will be required:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Sensor Module</dt>
+<dd><ul class="first last simple">
+<li>An accelerometer will be used to detect the motion of the user and to determine the current state in which the user is in (e.g. standing, sitting, falling, walking)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Wireless Sensor Network</dt>
+<dd><ul class="first last simple">
+<li>In order to coordinate data retrieved from the various sensors placed around the body, a wireless sensor network will be required.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Identify what you will need to accomplish the project. This may range from specific items such as tools or equipment to broader facilities such as lab time.</p>
+<p><strong>Project Timeline</strong></p>
+<p>Create a Gantt chart in which you itemize task over time. Remember to give your chart a Figure name and number.</p>
+<p><strong>Conclusion</strong></p>
+<p>As detailed in the included Gantt Chart, this schedule will be strictly followed and should result in the successful completion of a system able to detect an individual's current state.
+If you have any questions regarding this proposal, feel free to contact me via email at <a class="reference external" href="mailto:eece496&#64;jasonpoon.ca">eece496&#64;jasonpoon.ca</a>.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+<div class="line"><br /></div>
+<div class="line">Jason Poon</div>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,479 @@
+%PDF-1.3
+%“Œ‹ž ReportLab Generated PDF document http://www.reportlab.com
+% 'BasicFonts': class PDFDictionary 
+1 0 obj
+% The standard fonts dictionary
+<< /F1 2 0 R
+ /F2 3 0 R
+ /F3 5 0 R >>
+endobj
+% 'F1': class PDFType1Font 
+2 0 obj
+% Font Helvetica
+<< /BaseFont /Helvetica
+ /Encoding /WinAnsiEncoding
+ /Name /F1
+ /Subtype /Type1
+ /Type /Font >>
+endobj
+% 'F2': class PDFType1Font 
+3 0 obj
+% Font Helvetica-Bold
+<< /BaseFont /Helvetica-Bold
+ /Encoding /WinAnsiEncoding
+ /Name /F2
+ /Subtype /Type1
+ /Type /Font >>
+endobj
+% 'Page1': class PDFPage 
+4 0 obj
+% Page dictionary
+<< /Contents 14 0 R
+ /MediaBox [ 0
+ 0
+ 595.2756
+ 841.8898 ]
+ /Parent 13 0 R
+ /Resources << /Font 1 0 R
+ /ProcSet [ /PDF
+ /Text
+ /ImageB
+ /ImageC
+ /ImageI ] >>
+ /Rotate 0
+ /Trans <<  >>
+ /Type /Page >>
+endobj
+% 'F3': class PDFType1Font 
+5 0 obj
+% Font Times-Roman
+<< /BaseFont /Times-Roman
+ /Encoding /WinAnsiEncoding
+ /Name /F3
+ /Subtype /Type1
+ /Type /Font >>
+endobj
+% 'Annot.NUMBER1': class PDFDictionary 
+6 0 obj
+<< /A << /S /URI
+ /Type /Action
+ /URI (mailto:eece496@jasonpoon.ca) >>
+ /Border [ 0
+ 0
+ 0 ]
+ /Rect [ 325.0329
+ 100.5936
+ 433.0229
+ 122.5936 ]
+ /Subtype /Link
+ /Type /Annot >>
+endobj
+% 'Page2': class PDFPage 
+7 0 obj
+% Page dictionary
+<< /Annots [ 6 0 R ]
+ /Contents 15 0 R
+ /MediaBox [ 0
+ 0
+ 595.2756
+ 841.8898 ]
+ /Parent 13 0 R
+ /Resources << /Font 1 0 R
+ /ProcSet [ /PDF
+ /Text
+ /ImageB
+ /ImageC
+ /ImageI ] >>
+ /Rotate 0
+ /Trans <<  >>
+ /Type /Page >>
+endobj
+% 'Page3': class PDFPage 
+8 0 obj
+% Page dictionary
+<< /Contents 16 0 R
+ /MediaBox [ 0
+ 0
+ 595.2756
+ 841.8898 ]
+ /Parent 13 0 R
+ /Resources << /Font 1 0 R
+ /ProcSet [ /PDF
+ /Text
+ /ImageB
+ /ImageC
+ /ImageI ] >>
+ /Rotate 0
+ /Trans <<  >>
+ /Type /Page >>
+endobj
+% 'R9': class PDFCatalog 
+9 0 obj
+% Document Root
+<< /Outlines 11 0 R
+ /PageMode /UseNone
+ /Pages 13 0 R
+ /Type /Catalog >>
+endobj
+% 'R10': class PDFInfo 
+10 0 obj
+<< /Author ()
+ /CreationDate (D:20100126173020+08'00')
+ /Keywords ()
+ /Producer (ReportLab http://www.reportlab.com)
+ /Subject (\(unspecified\))
+ /Title () >>
+endobj
+% 'R11': class PDFOutlines 
+11 0 obj
+<< /Count 1
+ /First 12 0 R
+ /Last 12 0 R
+ /Type /Outlines >>
+endobj
+% 'Outline.0': class OutlineEntryObject 
+12 0 obj
+<< /Dest [ 4 0 R
+ /XYZ
+ 62.69291
+ 423.0236
+ 0 ]
+ /Parent 11 0 R
+ /Title (MEMORANDUM) >>
+endobj
+% 'R13': class PDFPages 
+13 0 obj
+% page tree
+<< /Count 3
+ /Kids [ 4 0 R
+ 7 0 R
+ 8 0 R ]
+ /Type /Pages >>
+endobj
+% 'R14': class PDFStream 
+14 0 obj
+% page stream
+<< /Length 3491 >>
+stream
+1 0 0 1 0 0 cm BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 62.69291 435.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 322.82 Tm /F1 10 Tf 22 TL .047633 Tw (Producing the individual formal project proposal is your first task. This is not supposed to be a timewasting) Tj T* 0 Tw .483988 Tw (bureaucratic effort but primarily an aid to you, possibly only a page or two in length. It allows you to think) Tj T* 0 Tw 2.868651 Tw (about what you can really achieve in the limited time available. The proposal should describe the) Tj T* 0 Tw 1.225318 Tw (objectives and specific tasks of the project, bearing in mind the course description "Project in electrical) Tj T* 0 Tw .710888 Tw (engineering or computer engineering involving design, experimental and/or computer simulation work". If) Tj T* 0 Tw 1.123876 Tw (you are part of a project team, ensure that your project description makes this point clear and that you) Tj T* 0 Tw .103735 Tw (describe your group's organisation and the specific tasks of all your group members. Include a Gantt chart) Tj T* 0 Tw .567209 Tw (that shows how you intend to schedule your time to complete the project. The purpose and format of the) Tj T* 0 Tw 1.71686 Tw (Project Proposal is as follows: The 496 projects already have stated tasks and goals. In your Project) Tj T* 0 Tw 1.050651 Tw (Proposal, you must demonstrate that you have both a clear understanding of these objectives and how) Tj T* 0 Tw 2.24229 Tw (you will achieve them. In particular, you must explain thoroughly your responsibilities throughout the) Tj T* 0 Tw 1.977984 Tw (project and acknowledge the level of commitment needed to see the project through to a successful) Tj T* 0 Tw 1.014651 Tw (conclusion. You should consider the Project Proposal to be a contract between you and your Technical) Tj T* 0 Tw .228685 Tw (Supervisor in which you specify: - What you are to do - How you are to do it - Who else might be involved) Tj T* 0 Tw (- What you will need to do it) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 402.0236 cm
+q
+BT 1 0 0 1 0 8.435 Tm 21 TL /F2 17.5 Tf 0 0 0 rg (MEMORANDUM) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 368.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F1 10 Tf 22 TL (To: Ms. J. Pavelich, Prof. S. Gopalakrishnan) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 340.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F1 10 Tf 22 TL (From: Jason Poon) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 312.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F1 10 Tf 22 TL (Date: January 26, 2010) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 284.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F1 10 Tf 22 TL (Re: EECE 496 - Project Proposal) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 255.6772 cm
+n 0 14.17323 m 469.8898 14.17323 l S
+Q
+q
+1 0 0 1 62.69291 227.6772 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F2 10 Tf 22 TL (Introduction) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 155.6772 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 58.82 Tm /F1 10 Tf 22 TL 1.155542 Tw (The project I would like to propose for EECE 496 is the implementation of a fall detection system. The) Tj T* 0 Tw 3.588555 Tw (purpose and significance of such a system are outlined below; in addition, details regarding the) Tj T* 0 Tw (requirements and timeline are included.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 127.6772 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F2 10 Tf 22 TL (Project Objectives) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 99.67717 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F1 10 Tf 22 TL (The purpose of this project will be to implement a fall detection system.) Tj T* ET
+Q
+Q
+ 
+endstream
+
+endobj
+% 'R15': class PDFStream 
+15 0 obj
+% page stream
+<< /Length 4560 >>
+stream
+1 0 0 1 0 0 cm BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 62.69291 743.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F1 10 Tf 22 TL (Identify the project\222s objectives and explain the tasks you will need to accomplish to realize these goals.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 715.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F2 10 Tf 22 TL (Project Significance) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 599.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 102.82 Tm /F1 10 Tf 22 TL .261654 Tw (A fall detection system can prove very useful for senior citizens where a fall may be very dangerous. With) Tj T* 0 Tw .236655 Tw (the usage of a fall detection system, it is then possible to monitor one's activities and, in the case of a fall,) Tj T* 0 Tw 3.267674 Tw (automatically notify the authorities \(e.g. caregiver\) such that they can immediately respond to the) Tj T* 0 Tw .53561 Tw (situation. Such a system can also be applied any individual monitor their exercise routine and provide an) Tj T* 0 Tw (analysis of the data.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 527.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 58.82 Tm /F1 10 Tf 22 TL 1.031098 Tw (Describe the significance of the project and any relevant history. If it is a continuation or extension of a) Tj T* 0 Tw 1.290488 Tw (previous project, explain how your current work is a part of it. If it is a group project, identify the other) Tj T* 0 Tw (students involved.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 499.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F2 10 Tf 22 TL (Project Requirements) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 471.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F1 10 Tf 22 TL (In order for this project to succeed, the following items will be required:) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 393.0236 cm
+0 0 0 rg
+BT /F3 10 Tf 12 TL ET
+q
+1 0 0 1 6 53 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F1 10 Tf 22 TL 10.5 0 Td (\177) Tj T* -10.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 53 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F2 10 Tf 22 TL (Sensor Module) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 53 cm
+Q
+q
+1 0 0 1 23 3 cm
+0 0 0 rg
+BT /F3 10 Tf 12 TL ET
+q
+1 0 0 1 6 25 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F1 10 Tf 22 TL 10.5 0 Td (\177) Tj T* -10.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 36.82 Tm /F1 10 Tf 22 TL .96686 Tw (An accelerometer will be used to detect the motion of the user and to determine the current) Tj T* 0 Tw (state in which the user is in \(e.g. standing, sitting, falling, walking\)) Tj T* ET
+Q
+Q
+q
+Q
+Q
+q
+1 0 0 1 23 3 cm
+Q
+q
+Q
+Q
+q
+1 0 0 1 62.69291 315.0236 cm
+0 0 0 rg
+BT /F3 10 Tf 12 TL ET
+q
+1 0 0 1 6 53 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F1 10 Tf 22 TL 10.5 0 Td (\177) Tj T* -10.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 53 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F2 10 Tf 22 TL (Wireless Sensor Network) Tj T* ET
+Q
+Q
+q
+1 0 0 1 23 53 cm
+Q
+q
+1 0 0 1 23 3 cm
+0 0 0 rg
+BT /F3 10 Tf 12 TL ET
+q
+1 0 0 1 6 25 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F1 10 Tf 22 TL 10.5 0 Td (\177) Tj T* -10.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 36.82 Tm /F1 10 Tf 22 TL 2.01784 Tw (In order to coordinate data retrieved from the various sensors placed around the body, a) Tj T* 0 Tw (wireless sensor network will be required.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+q
+1 0 0 1 23 3 cm
+Q
+q
+Q
+Q
+q
+1 0 0 1 62.69291 265.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 36.82 Tm /F1 10 Tf 22 TL .385542 Tw (Identify what you will need to accomplish the project. This may range from specific items such as tools or) Tj T* 0 Tw (equipment to broader facilities such as lab time.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 237.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F2 10 Tf 22 TL (Project Timeline) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 187.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 36.82 Tm /F1 10 Tf 22 TL .043145 Tw (Create a Gantt chart in which you itemize task over time. Remember to give your chart a Figure name and) Tj T* 0 Tw (number.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 159.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F2 10 Tf 22 TL (Conclusion) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 87.02362 cm
+q
+BT 1 0 0 1 0 58.82 Tm 1.615868 Tw 22 TL /F1 10 Tf 0 0 0 rg (As detailed in the included Gantt Chart, this schedule will be strictly followed and should result in the) Tj T* 0 Tw .797485 Tw (successful completion of a system able to detect an individual's current state. If you have any questions) Tj T* 0 Tw (regarding this proposal, feel free to contact me via email at ) Tj 0 0 .501961 rg (eece496@jasonpoon.ca) Tj 0 0 0 rg (.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 62.69291 81.02362 cm
+Q
+ 
+endstream
+
+endobj
+% 'R16': class PDFStream 
+16 0 obj
+% page stream
+<< /Length 300 >>
+stream
+1 0 0 1 0 0 cm BT /F1 12 Tf 14.4 TL ET
+q
+1 0 0 1 62.69291 765.0236 cm
+Q
+q
+1 0 0 1 62.69291 765.0236 cm
+Q
+q
+1 0 0 1 62.69291 765.0236 cm
+Q
+q
+1 0 0 1 62.69291 765.0236 cm
+Q
+q
+1 0 0 1 62.69291 743.0236 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 14.82 Tm /F1 10 Tf 22 TL (Jason Poon) Tj T* ET
+Q
+Q
+ 
+endstream
+
+endobj
+xref
+0 17
+0000000000 65535 f
+0000000113 00000 n
+0000000233 00000 n
+0000000398 00000 n
+0000000571 00000 n
+0000000852 00000 n
+0000001033 00000 n
+0000001264 00000 n
+0000001563 00000 n
+0000001842 00000 n
+0000001979 00000 n
+0000002191 00000 n
+0000002316 00000 n
+0000002455 00000 n
+0000002578 00000 n
+0000006170 00000 n
+0000010831 00000 n
+trailer
+<< /ID 
+ % ReportLab generated PDF document -- digest (http://www.reportlab.com) 
+ [(\307"w\202\247\247\216T\354Z\2138\006\\\324\311) (\307"w\202\247\247\216T\354Z\2138\006\\\324\311)] 
+
+ /Info 10 0 R
+ /Root 9 0 R
+ /Size 17 >>
+startxref
+11204
+%%EOF

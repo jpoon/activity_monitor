@@ -1,4 +1,6 @@
-DOCDIR = docs
+DOCDIR = build
+
+RST2PDF_OPTS = -s style.json
 
 all: setup html pdf
 
@@ -12,7 +14,7 @@ html:
 
 .PHONY: setup pdf
 pdf:
-	/usr/bin/rst2pdf proposal.rst -o ${DOCDIR}/proposal.pdf
+	/usr/bin/rst2pdf ${RST2PDF_OPTS} proposal.rst -o ${DOCDIR}/proposal.pdf
 
 .PHONY: clean
 clean:

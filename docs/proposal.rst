@@ -34,7 +34,7 @@ In order for this project to succeed, the following items will be required:
 
 **Project Timeline**
 
-.. figure:: gantt_chart.jpg
+.. figure:: imgs/gantt_chart.jpg
     :alt: Gantt Chart
     :align: center
     :width: 100% 
@@ -51,8 +51,7 @@ If you have any questions regarding this proposal, feel free to contact me via e
 |
 |
 |
-|
 
-Jason Poon
+*Jason Poon*
 
 .. |date| date:: %B %d, %Y

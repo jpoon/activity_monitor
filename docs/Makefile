@@ -1,6 +1,8 @@
 DOCDIR = build
+STYLEDIR = style
 
-RST2PDF_OPTS = -s style.json
+RST2PDF_OPTS = -s ${STYLEDIR}/style.json
+RST2HTML_OPTS = --stylesheet=${STYLEDIR}/style.css
 
 all: setup html pdf
 
@@ -10,7 +12,7 @@ setup:
 
 .PHONY: setup html
 html: 
-	/usr/bin/rst2html proposal.rst ${DOCDIR}/proposal.html
+	/usr/bin/rst2html ${RST2HTML_OPTS} proposal.rst ${DOCDIR}/proposal.html
 
 .PHONY: setup pdf
 pdf:

@@ -1,4 +1,4 @@
-DOCDIR = build
+BUILDDIR = build
 STYLEDIR = style
 
 RST2PDF_OPTS = -s ${STYLEDIR}/style.json
@@ -8,17 +8,18 @@ all: setup html pdf
 
 .PHONY: setup
 setup:
-	mkdir -p ${DOCDIR}
+	mkdir -p ${BUILDDIR}
 
 .PHONY: setup html
 html: 
-	/usr/bin/rst2html ${RST2HTML_OPTS} proposal.rst ${DOCDIR}/proposal.html
+	/usr/bin/rst2html ${RST2HTML_OPTS} proposal.rst ${BUILDDIR}/proposal.html
+	cp -r imgs ${BUILDDIR}
 
 .PHONY: setup pdf
 pdf:
-	/usr/bin/rst2pdf ${RST2PDF_OPTS} proposal.rst -o ${DOCDIR}/proposal.pdf
+	/usr/bin/rst2pdf ${RST2PDF_OPTS} proposal.rst -o ${BUILDDIR}/proposal.pdf
 
 .PHONY: clean
 clean:
-	rm -rf ${DOCDIR}
+	rm -rf ${BUILDDIR}
 

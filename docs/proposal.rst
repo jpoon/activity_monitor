@@ -34,11 +34,17 @@ In order for this project to succeed, the following items will be required:
 
 **Project Timeline**
 
-Create a Gantt chart in which you itemize task over time. Remember to give your chart a Figure name and number. 
+.. figure:: gantt_chart.jpg
+    :alt: Gantt Chart
+    :align: center
+    :width: 100% 
+
+    Figure 1 - Gantt chart outlining schedule for project
 
 **Conclusion**
 
-As detailed in the included Gantt Chart, this schedule will be strictly followed and should result in the successful completion of a system able to detect an individual's current state.
+The included gantt chart will be used as a guideline for the scheduling of tasks.
+In following the gantt chart, the successful completion of a system able to detect an individual's current state should result.
 If you have any questions regarding this proposal, feel free to contact me via email at eece496@jasonpoon.ca.
 
 |

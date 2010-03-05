@@ -11,7 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   proposal.rst
+   assignments/proposal.rst
+   assignments/progressreport.rst
    os.rst
 
 Indices and tables

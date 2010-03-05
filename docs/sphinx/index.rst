@@ -1,10 +1,10 @@
-.. eece496 documentation master file, created by
+.. documentation master file, created by
    sphinx-quickstart on Wed Jan 27 22:28:18 2010.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to eece496's documentation!
-===================================
+Welcome to Activity Monitor
+===========================
 
 Contents:
 

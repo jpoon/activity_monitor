@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# eece496 documentation build configuration file, created by
+# documentation build configuration file, created by
 # sphinx-quickstart on Wed Jan 27 22:28:18 2010.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -37,7 +37,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'eece496'
+project = u'Activity Monitor'
 copyright = u'2010, Jason Poon'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -158,7 +158,7 @@ html_static_path = ['_static']
 #html_file_suffix = ''
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'eece496doc'
+htmlhelp_basename = 'activitymonitor_doc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -172,7 +172,7 @@ latex_paper_size = 'letter'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'eece496.tex', u'eece496 Documentation',
+  ('index', 'activitymonitor.tex', u'Activity Monitor Documentation',
    u'Jason Poon', 'manual'),
 ]
 

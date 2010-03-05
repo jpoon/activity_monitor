@@ -52,8 +52,6 @@ If you have any questions regarding this proposal, feel free to contact me via e
 
 |
 |
-|
-|
 
 *Jason Poon*
 

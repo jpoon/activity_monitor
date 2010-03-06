@@ -10,10 +10,10 @@ Formal Status Report
 MEMORANDUM
 ----------
 
-| To: Ms. J. Pavelich, Prof. S. Gopalakrishnan
+| To: Ms. J. Pavelich
 | From: Jason Poon
 | Date: |date|
-| Re: EECE 496 - Project Proposal
+| Re: EECE 496 - Project Status
 
 ----
 

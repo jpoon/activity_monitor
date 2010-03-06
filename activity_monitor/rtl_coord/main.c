@@ -7,7 +7,7 @@
 #include <rt_link.h>
 #include <nrk_error.h>
 
-#define MY_TX_SLOT  0
+#define MY_TX_SLOT  6
 #define MY_RX_SLOT  8
 
 NRK_STK Stack1[NRK_APP_STACKSIZE];
@@ -58,7 +58,7 @@ void Task1()
     nrk_kprintf( PSTR("RT-Link: RTL_COORDINATOR\r\n") );
 
     rtl_set_channel(15);
-//    ret |= rtl_set_schedule( RTL_TX, MY_TX_SLOT, 1 );
+    ret |= rtl_set_schedule( RTL_TX, MY_TX_SLOT, 1 );
     ret |= rtl_set_schedule( RTL_RX, MY_RX_SLOT, 1 );
     if ( ret != NRK_OK ) {
         nrk_kprintf( PSTR("RT-Link: Error setting schedule") );

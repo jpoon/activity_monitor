@@ -26,8 +26,8 @@
     }] ,
     ["bodytext" , {
       "parent": "normal",
-      "spaceBefore":6,
-      "spaceAfter":6,
+      "spaceBefore":5,
+      "spaceAfter":5,
       "alignment": "TA_JUSTIFY",
       "hyphenation": true
     }] ,

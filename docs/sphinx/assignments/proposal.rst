@@ -3,7 +3,7 @@ Project Proposal
 
 MEMORANDUM
 ----------
-
+|
 | To: Ms. J. Pavelich, Prof. S. Gopalakrishnan
 | From: Jason Poon
 | Date: |date|

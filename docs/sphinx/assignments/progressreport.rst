@@ -1,6 +1,6 @@
-Formal Status Report
---------------------
-
+Status Report
+=============
+|
 | *Project:* Activity Monitor
 | *Name:* Jason Poon
 | *Student ID:* 21736053
@@ -9,7 +9,7 @@ Formal Status Report
 
 MEMORANDUM
 ----------
-
+|
 | To: Ms. J. Pavelich
 | From: Jason Poon
 | Date: |date|
@@ -17,11 +17,9 @@ MEMORANDUM
 
 ----
 
-In complete sentences and coherent paragraphs, create the following sections. Do not rely excessively on point or list form. Double space your work and use a size 12 font. Ensure your status report is no longer than 4 sheets of paper (including the cover page). This means 3 pages of text. If status reports are longer, we will throw out the extra pages -- these will not be graded.
-
 **Introduction**
 
-Under the guidance of Professor Gopalakrishnan, I have been developing a system capable of monitoring various activities via several sensor nodes attached to the body.
+Under the guidance of Prof. Gopalakrishnan, I have been developing a system capable of monitoring various activities via several sensor nodes attached to the body.
 The goal of the system will be the ability to monitor an individual's activities and motions.
 With such a system, it can be used to detect harming motions such as falls where the system can notify the authorities (e.g. caregiver) where they can immediately respond to the situation.
 
@@ -32,25 +30,24 @@ The overall project progress is outlined below in three sections: work completed
 * Order/Receive Necessary Hardware Components
     Hardware components required for this project include: wireless nodes, accelerometer sensors, and a USB debugger or flasher circuit.
 
-    Prof. Gopalakrishnan ordered several Firefly nodes, Firefly sensor boards (3-axis accelerometer, temperature sensor, light sensor, and microphone), and a USB debugger [#]_.
+    Several Firefly nodes, Firefly sensor boards (3-axis accelerometer, temperature sensor, light sensor, and microphone), and a USB debugger.
     While waiting for the parts to arrive, Prof. Gopalakrishnan was able to lend me a micaZ mote and USB flasher.
     The Firefly components took longer than expected to arrive which pushed the schedule back approximately two weeks.
 
 * Real-Time Operating System (RTOS)
-    Following an initial investigation of which RTOS to use, I was left with two serious contenders: Nano-RK [#]_ and LiteOS [#]_. 
+    Following an initial investigation of which RTOS to use, two serious contenders remained: Nano-RK and LiteOS.
     In the end, Nano-RK was chosen over LiteOS.
 
     The LiteOS installation process was considerably buggy and development on LiteOS was unfortunately heavily geared towards Windows.
     Nano-RK, on the otherhand, is very well documented.
     Although Nano-RK does not have a forum or mailing list to post questions, the project owners were very helpful.
-    For instance, Anthony Rowe, one of the primary contributors to the Nano-RK project, quickly responded and helped in solving a flashing issue I was experiencing with the Firefly nodes.
+    For instance, Anthony Rowe, one of the primary contributors to the Nano-RK project, quickly responded and assisted in solving a flashing issue I was experiencing with the Firefly nodes.
     He also provided me with write access to the Wiki and the SVN repository where I have since committed several patches to the Nano-RK project.
 
 * Development Environment Setup
     No major difficulties arose while setting up my development environment.
-    The combination of developing on a Linux machine and the quick-start guide from Nano-RK [#]_ made the process very straight forward.
-
-    For source control, all files related to this project are hosted at GitHub and can be found at http://github.com/jpoon/eece496.
+    The combination of developing on a Linux machine and the quick-start guide from Nano-RK made the process very straight forward.
+    The project source files are available publicly through Git at http://github.com/jpoon/eece496.
 
 **Work in Progress**
 
@@ -63,16 +60,14 @@ The overall project progress is outlined below in three sections: work completed
     However, it will require considerably more time to fully understand the protocol and optimize it for use with the activity monitor. 
 
 * Accelerometer Drivers
-    In order to obtain information from the sensor boards (e.g. accelerometers) attached to the Firefly node, software drivers will need to be built.
-    I have developed basic drivers to read information from the sensor boards but am currently facing an issue where I am unsure of the meaning behind the values returned from the sensor boards.
+    Software drivers are required to process the input received from the sensor boards (e.g. accelerometers).
+    Although I currently have written basic software to read information from the sensor boards, I am currently facing an issue where I am unsure of the meaning behind the values returned from the sensors.
     One would assume that if the node was stationary, the (x,y,z) values for the accelerometer would be (0,0,0); however, the accelerometer returns seemingly random values of (133, 82, 200).
-    
     This problem can be solved via a reference document for the Firefly sensor boards or hopefully through individuals who have previously worked with the sensor boards (e.g. the Nano-RK contributors). 
 
 **Work Remaining**
 
 * Base Logic
-    Once the sensor board drivers and the node communication software has been completed, I will then be able to proceed with implementing the base logic.
     The base logic will process the information obtained from the various sensors and notify the user interface (UI) of the changes in a person's motion.
     The main difficulty I foresee with this stage of development is the profiling of users; different users will have different thresholds for the various activities.
     The activity monitor system should be intelligent enough to work on all individuals.
@@ -86,18 +81,9 @@ The overall project progress is outlined below in three sections: work completed
 
 **Conclusion**
 
-Through this project, I have made my first contribution to a public project (Nano-RK).
-It is my hope that the development of the remainder of the project will continue to be a great learning experience.
-
 Although I am roughly two weeks behind schedule, since receiving the hardware components, I have made significant head-way in developing the system and am confident in the punctual completion of the activity monitor system.
 
 |
-|
+| *Jason Poon*
 
-*Jason Poon*
-
-.. [#] http://www.ece.cmu.edu/firefly
-.. [#] http://www.nanork.org
-.. [#] http://www.liteos.net
-.. [#] http://www.nano-rk.org/wiki/linux-install
 .. |date| date:: %B %d, %Y

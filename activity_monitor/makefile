@@ -5,7 +5,7 @@ PLATFORM = firefly2_3
 TARGET = main
 
 # Set the Port that you programmer is connected to 
-PROGRAMMING_PORT = /dev/ttyUSB3
+PROGRAMMING_PORT = /dev/ttyUSB1
 
 # Set this such that the nano-RK directory is the base path
 ROOT_DIR = ../nano-RK
@@ -17,26 +17,17 @@ ROOT_DIR = ../nano-RK
 # RADIO (e.g. cc2420)
 include $(ROOT_DIR)/include/platform.mk
 
-
 SRC = $(TARGET).c
 SRC += sensors.c
-
-# Add extra source files. 
-# For example:
-# SRC += $(ROOT_DIR)/src/platform/$(PLATFORM_TYPE)/source/my_src1.c 
+SRC += rtlink.c
 SRC += $(ROOT_DIR)/src/net/rt_link/rt_link.c 
 SRC += $(ROOT_DIR)/src/net/rt_link/rtl_scheduler.c 
 SRC += $(ROOT_DIR)/src/net/rt_link/rtl_debug.c 
 SRC += $(ROOT_DIR)/src/drivers/platform/$(PLATFORM_TYPE)/source/ff_basic_sensor.c 
 
-# Add extra includes files. 
-# For example:
-# EXTRAINCDIRS += $(ROOT_DIR)/src/platform/include
 EXTRAINCDIRS = 
 EXTRAINCDIRS += $(ROOT_DIR)/src/net/rt_link/
 EXTRAINCDIRS += $(ROOT_DIR)/src/net/rt_link/platform/$(PLATFORM_TYPE)/
-
-
 
 #  This is where the final compile and download happens
 include $(ROOT_DIR)/include/platform/$(PLATFORM)/common.mk

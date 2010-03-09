@@ -1,20 +1,13 @@
-#include "sensors.h"
 #include <ff_basic_sensor.h>
 #include <nrk_driver_list.h>
 #include <nrk_driver.h>
 #include <nrk_error.h>
+#include "sensors.h"
 
 void ff_register_drivers(void)
 {
     int8_t val;
 
-// Register the Basic FireFly Sensor device driver
-// Make sure to add: 
-//     #define NRK_MAX_DRIVER_CNT  
-//     in nrk_cfg.h
-// Make sure to add: 
-//     SRC += $(ROOT_DIR)/src/drivers/platform/$(PLATFORM_TYPE)/source/ff_basic_sensor.c
-//     in makefile
     val = nrk_register_driver( &dev_manager_ff_sensors,FIREFLY_SENSOR_BASIC);
     if( val == NRK_ERROR ) {
         nrk_kprintf( PSTR("Sensors: Failed to load ADC driver\r\n") );
@@ -51,6 +44,3 @@ void ff_read_sensors(ff_sensor_packet *pkt)
     nrk_close(fd);
 }
 
-void ff_create_packet(ff_sensor_packet *pkt)
-{
-}

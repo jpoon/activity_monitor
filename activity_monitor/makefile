@@ -8,7 +8,7 @@ TARGET = main
 PROGRAMMING_PORT = /dev/ttyUSB3
 
 # Set this such that the nano-RK directory is the base path
-ROOT_DIR = ../../nano-RK
+ROOT_DIR = ../nano-RK
 
 # Set platform specific defines 
 # The following will be defined based on the PLATFORM variable:

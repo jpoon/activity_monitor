@@ -1,7 +1,7 @@
 #ifndef _RTLINK_H_
 #define _RTLINK_H_ 
 
-#define NODE_ID	    1
+#define NODE_ID	    2
 
 #if NODE_ID == 1
 	#define RTL_TX_SLOT  6
@@ -14,7 +14,7 @@
     #error Invalid Node ID
 #endif
 
-void rtlink_setup(void);
+void rtlink_init(void);
 void rtlink_task(void);
 
 #endif // _RTLINK_H_

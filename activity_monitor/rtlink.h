@@ -1,7 +1,7 @@
 #ifndef _RTLINK_H_
 #define _RTLINK_H_ 
 
-#define NODE_ID	    1
+#define NODE_ID	    2
 
 #if NODE_ID == 1
 	#define RTL_TX_SLOT  6
@@ -24,6 +24,7 @@ typedef struct rtlink_packet_t {
 void rtlink_init(void);
 void rtlink_setup(void);
 void rtlink_rx(rtlink_packet_t *);
+void rtlink_tx(uint8_t *, uint8_t);
 void rtlink_rx_cleanup(rtlink_packet_t *);
 void rtlink_print_packet(const rtlink_packet_t *);
 

@@ -19,7 +19,7 @@ nrk_task_type TaskTwo;
 
 sensors_packet_t sensor_buf;
 rtlink_packet_t rtlink_rx_buf;
-extern uint8_t rtlink_tx_buf[];
+rtlink_packet_t rtlink_tx_buf;
 
 int main(void)
 {
@@ -59,7 +59,7 @@ void rtlink_task(void)
     uint8_t length;
 
     rtlink_setup();
-
+    uint8_t i = 1;
     while(1) {
         nrk_gpio_toggle(NRK_DEBUG_1);
 #ifdef COORDINATOR
@@ -69,10 +69,10 @@ void rtlink_task(void)
         }
         rtlink_rx_cleanup(&rtlink_rx_buf);
 #else
-        uint8_t i = 1;
-        sprintf( &rtlink_tx_buf[0], "hello world %d", i);
-        length = strlen(&rtlink_tx_buf[0]);
-        rtlink_tx( rtlink_tx_buf, length );
+        rtlink_rx(&rtlink_rx_buf);
+        sprintf( &rtlink_tx_buf.payload[0], "hello %d world", i++);
+        rtlink_tx_buf.len = strlen(&rtlink_tx_buf.payload[0]);
+        rtlink_tx( &rtlink_tx_buf );
 #endif
         nrk_wait_until_next_period();
     }

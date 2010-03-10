@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <avr/sleep.h>
 #include <hal.h>
-#include <nrk_error.h>
-#include <nrk_timer.h>
 #include "sensors.h"
 #include "rtlink.h"
 
@@ -15,7 +13,7 @@ nrk_task_type TaskOne;
 NRK_STK Stack2[NRK_APP_STACKSIZE];
 nrk_task_type TaskTwo;
 
-void nrk_create_taskset();
+void _create_taskset();
 
 int main(void)
 {
@@ -33,30 +31,18 @@ int main(void)
 
     nrk_time_set(0,0);
     rtlink_init();
-    nrk_create_taskset();
+    _create_taskset();
     nrk_start();
   
     return 0;
 }
-/*
-void sensor_task()
-{
-    ff_register_drivers();
-    while(1) {
-      printf( "sensor task\r\n");
-      nrk_wait_until_next_period();
-    }
-//    ff_read_sensors();
-}
-*/
-void nrk_create_taskset()
-{
-    nrk_kprintf ( PSTR("Creating Taskset: ") );
 
+void _create_taskset()
+{
+    nrk_kprintf ( PSTR("taskset: creating rtlink\r\n") );
     TaskOne.task = rtlink_task;
-    TaskOne.Ptos = (void *) &Stack1[NRK_APP_STACKSIZE-1];
-    TaskOne.Pbos = (void *) &Stack1[0];
-    TaskOne.prio = 2;
+    nrk_task_set_stk( &TaskOne, Stack1, NRK_APP_STACKSIZE);
+    TaskOne.prio = 1;
     TaskOne.FirstActivation = TRUE;
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
@@ -67,21 +53,22 @@ void nrk_create_taskset()
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;
     nrk_activate_task (&TaskOne);
-/*
-    TaskTwo.task = sensor_task;
+
+#if NODE_ID != 1
+    nrk_kprintf ( PSTR("taskset: creating sensors\r\n") );
+    TaskTwo.task = sensors_task;
     nrk_task_set_stk( &TaskTwo, Stack2, NRK_APP_STACKSIZE);
-    TaskTwo.prio = 3;
+    TaskTwo.prio = 2;
     TaskTwo.FirstActivation = TRUE;
     TaskTwo.Type = BASIC_TASK;
     TaskTwo.SchType = PREEMPTIVE;
-    TaskTwo.period.secs = 5;
-    TaskTwo.period.nano_secs = 0;
-    TaskTwo.cpu_reserve.secs = 0;
-    TaskTwo.cpu_reserve.nano_secs = 0;
+    TaskTwo.period.secs = 1;
+    TaskTwo.period.nano_secs = 100*NANOS_PER_MS;
+    TaskTwo.cpu_reserve.secs = 1;
+    TaskTwo.cpu_reserve.nano_secs = 50*NANOS_PER_MS;
     TaskTwo.offset.secs = 0;
     TaskTwo.offset.nano_secs= 0;
     nrk_activate_task (&TaskTwo);
-*/
-    nrk_kprintf ( PSTR("Done\r\n") );
+#endif
 }
 

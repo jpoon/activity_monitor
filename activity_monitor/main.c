@@ -7,13 +7,18 @@
 #include "sensors.h"
 #include "rtlink.h"
 
+void _create_taskset();
+void sensors_task(void);
+void rtlink_task(void);
+
 NRK_STK Stack1[NRK_APP_STACKSIZE];
 nrk_task_type TaskOne;
 
 NRK_STK Stack2[NRK_APP_STACKSIZE];
 nrk_task_type TaskTwo;
 
-void _create_taskset();
+sensors_packet_t sensor_buf;
+rtlink_packet_t rtlink_buf;
 
 int main(void)
 {
@@ -36,6 +41,57 @@ int main(void)
   
     return 0;
 }
+
+
+void sensors_task(void)
+{
+    sensors_register_drivers();
+    while(1) {
+        nrk_gpio_toggle(NRK_DEBUG_0);
+        sensors_read(&sensor_buf);
+        nrk_wait_until_next_period();
+    }
+}
+
+void rtlink_task(void)
+{
+    int8_t rssi;
+    uint8_t length, slot;
+    uint8_t *local_rx_buf;
+
+    rtlink_setup();
+
+    while(1) {
+        nrk_gpio_toggle(NRK_DEBUG_1);
+#ifdef COORDINATOR
+        rtlink_rx(&rtlink_buf);
+        if (rtlink_buf.len != 0) {
+            rtlink_print_packet(&rtlink_buf);
+        }
+        rtlink_rx_cleanup(&rtlink_buf);
+#else
+
+#include <rt_link.h>
+
+uint8_t tx_buf[MAX_RTL_PKT_SIZE];
+        if( rtl_tx_pkt_check( RTL_TX_SLOT ) != 0 ) {
+            printf( "rtl: pending packet on slot %d\r\n", RTL_TX_SLOT );
+        } else {
+            nrk_led_set(GREEN_LED);
+
+            uint8_t i = 1;
+            sprintf( &tx_buf[PKT_DATA_START], "test %d", i);
+            length = strlen(&tx_buf[PKT_DATA_START])+PKT_DATA_START;
+            rtl_tx_pkt( tx_buf, length, RTL_TX_SLOT );
+            printf( "rtl: tx packet on slot %d\r\n",RTL_TX_SLOT );
+
+            nrk_led_clr(GREEN_LED);
+        }
+#endif
+        nrk_wait_until_next_period();
+    }
+}
+
 
 void _create_taskset()
 {

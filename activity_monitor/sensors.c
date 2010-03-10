@@ -7,17 +7,7 @@
 
 sensors_packet_t sensor_buf;
 
-void _sensors_register_drivers(void);
-
-void sensors_task(void)
-{
-    _sensors_register_drivers();
-    while(1) {
-        nrk_gpio_toggle(NRK_DEBUG_0);
-        sensors_read(&sensor_buf);
-        nrk_wait_until_next_period();
-    }
-}
+void _sensors_print(const sensors_packet_t *);
 
 void sensors_read(sensors_packet_t *pkt)
 {
@@ -36,18 +26,18 @@ void sensors_read(sensors_packet_t *pkt)
         val = nrk_set_status(fd, SENSOR_SELECT, AUDIO);
         val = nrk_read(fd, &(pkt->mic), 1);
         val = nrk_set_status(fd, SENSOR_SELECT, ACC_X);
-        val = nrk_read(fd, &(pkt->adxl_x), 1);
+        val = nrk_read(fd, &(pkt->adxl_x), 2);
         val = nrk_set_status(fd, SENSOR_SELECT, ACC_Y);
         val = nrk_read(fd, &(pkt->adxl_y), 1);
         val = nrk_set_status(fd,SENSOR_SELECT, ACC_Z);
         val = nrk_read(fd, &pkt->adxl_z, 1);
 
-        sensor_print(pkt);
+        _sensor_print(pkt);
     }
     nrk_close(fd);
 }
 
-void _sensors_register_drivers(void)
+void sensors_register_drivers(void)
 {
     int8_t val;
 
@@ -59,6 +49,6 @@ void _sensors_register_drivers(void)
     }
 }
 
-void sensor_print(const sensors_packet_t *pPkt) {
+void _sensor_print(const sensors_packet_t *pPkt) {
     printf("Sensor Packet: bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d\r\n", pPkt->bat, pPkt->temp, pPkt->light, pPkt->mic, pPkt->adxl_x, pPkt->adxl_y, pPkt->adxl_z);
 }

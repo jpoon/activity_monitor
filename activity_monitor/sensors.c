@@ -32,7 +32,7 @@ void sensors_read(sensors_packet_t *pkt)
         val = nrk_set_status(fd,SENSOR_SELECT, ACC_Z);
         val = nrk_read(fd, &pkt->adxl_z, 1);
 
-        _sensor_print(pkt);
+        _sensors_print(pkt);
     }
     nrk_close(fd);
 }
@@ -49,6 +49,6 @@ void sensors_register_drivers(void)
     }
 }
 
-void _sensor_print(const sensors_packet_t *pPkt) {
+void _sensors_print(const sensors_packet_t *pPkt) {
     printf("Sensor Packet: bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d\r\n", pPkt->bat, pPkt->temp, pPkt->light, pPkt->mic, pPkt->adxl_x, pPkt->adxl_y, pPkt->adxl_z);
 }

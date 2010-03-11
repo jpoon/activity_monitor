@@ -18,7 +18,6 @@ NRK_STK Stack2[NRK_APP_STACKSIZE];
 nrk_task_type TaskTwo;
 
 sensors_packet_t sensor_buf;
-rtlink_packet_t rtlink_rx_buf;
 rtlink_packet_t rtlink_tx_buf;
 
 int main(void)
@@ -58,18 +57,16 @@ void rtlink_task(void)
 {
     rtlink_setup();
     uint8_t i = 1;
+    rtlink_packet_t *pRxBuf;
     while(1) {
         nrk_gpio_toggle(NRK_DEBUG_1);
 #ifdef COORDINATOR
-        rtlink_rx(&rtlink_rx_buf);
-        if (rtlink_rx_buf.len != 0) {
-            rtlink_print_packet(&rtlink_rx_buf);
+        pRxBuf = rtlink_rx();
+        if (pRxBuf != NULL) {
+            rtlink_print_packet(pRxBuf);
+            rtlink_rx_cleanup(pRxBuf);
         }
-        rtlink_rx_cleanup(&rtlink_rx_buf);
 #else
-        rtlink_rx(&rtlink_rx_buf);
-        rtlink_rx_cleanup(&rtlink_rx_buf);
-
         sprintf( &rtlink_tx_buf.payload[0], "hello %d world", i++);
         rtlink_tx_buf.len = strlen(&rtlink_tx_buf.payload[0]);
         rtlink_tx( &rtlink_tx_buf );

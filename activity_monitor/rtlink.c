@@ -2,6 +2,7 @@
 #include <nrk_error.h>
 #include "rtlink.h"
 
+rtlink_packet_t rtlink_rx_buf;
 void _print_packet(const rtlink_packet_t *);
 
 void rtlink_init(void)
@@ -26,28 +27,29 @@ void rtlink_setup(void)
     rtl_set_schedule( RTL_TX, RTL_TX_SLOT, 1 ); 
     rtl_set_schedule( RTL_RX, RTL_RX_SLOT, 1 ); 
 
+    rtl_rx_pkt_set_buffer(rtlink_rx_buf.payload, RF_MAX_PAYLOAD_SIZE);
+
     rtl_start();
 
     while(!rtl_ready()) {
         nrk_kprintf( PSTR("rtl: waiting for rtl to be ready\r\n") );
         nrk_wait_until_next_period();
     }
-    /*
     while(!rtl_sync_status()) {
         nrk_kprintf( PSTR("rtl: out of sync\r\n") );
         nrk_wait_until_next_period();
     }
-    */
 
     nrk_kprintf( PSTR("rtl: ready\r\n") );
 }
 
-void rtlink_rx(rtlink_packet_t *pkt) {
-    rtl_rx_pkt_set_buffer(pkt->payload, RF_MAX_PAYLOAD_SIZE);
+rtlink_packet_t* rtlink_rx(void) {
     if( rtl_rx_pkt_check()!=0 ) {
         nrk_led_set(GREEN_LED);
-        rtl_rx_pkt_get(&pkt->len, &pkt->rssi, &pkt->slot);
-   }
+        rtl_rx_pkt_get(&rtlink_rx_buf.len, &rtlink_rx_buf.rssi, &rtlink_rx_buf.slot);
+        return &rtlink_rx_buf;
+    }
+    return NULL; 
 }
 
 void rtlink_rx_cleanup(rtlink_packet_t *pkt) {

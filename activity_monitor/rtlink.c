@@ -61,7 +61,7 @@ void rtlink_rx_cleanup(rtlink_packet_t *pkt) {
     nrk_led_clr(GREEN_LED);
 }
 
-void rtlink_tx(rtlink_packet_t *pkt) {
+void rtlink_tx(uint8_t *pPayload, uint8_t len) {
     if( rtl_tx_pkt_check( RTL_TX_SLOT ) ) {
         printf( "rtl: pending packet on slot %d\r\n", RTL_TX_SLOT );
         rtl_wait_until_tx_done( RTL_TX_SLOT );
@@ -69,11 +69,11 @@ void rtlink_tx(rtlink_packet_t *pkt) {
         nrk_led_set(GREEN_LED);
 
         // first couple slots of buffer reserved
-        for(uint8_t i = pkt->len; i > 0; i--) {
-            pkt->payload[i+PKT_DATA_START-1] = pkt->payload[i-1];
+        for(uint8_t i = len; i > 0; i--) {
+            *(pPayload+i+PKT_DATA_START-1) = *(pPayload+i-1);
         }
 
-        rtl_tx_pkt( pkt->payload, pkt->len+PKT_DATA_START, RTL_TX_SLOT );
+        rtl_tx_pkt( pPayload, len+PKT_DATA_START, RTL_TX_SLOT );
         printf( "rtl: tx packet on slot %d\r\n",RTL_TX_SLOT );
 
         nrk_led_clr(GREEN_LED);

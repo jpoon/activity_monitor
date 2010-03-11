@@ -16,6 +16,8 @@
     #error Invalid Node ID
 #endif
 
+#define RTL_MAX_BUF_SIZE (MAX_RTL_PKT_SIZE-PKT_DATA_START)
+
 typedef struct rtlink_packet_t {
     uint8_t payload[MAX_RTL_PKT_SIZE];
     uint8_t len;
@@ -26,7 +28,8 @@ typedef struct rtlink_packet_t {
 void rtlink_init(void);
 void rtlink_setup(void);
 rtlink_packet_t* rtlink_rx(void);
-void rtlink_tx(rtlink_packet_t *);
+void rtlink_tx(uint8_t *, uint8_t);
 void rtlink_rx_cleanup(rtlink_packet_t *);
 void rtlink_print_packet(const rtlink_packet_t *);
+
 #endif // _RTLINK_H_

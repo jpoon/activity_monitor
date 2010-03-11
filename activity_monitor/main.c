@@ -56,31 +56,32 @@ void sensors_task(void)
 
 void rtlink_task(void)
 {
-    uint8_t length;
-
     rtlink_setup();
     uint8_t i = 1;
     while(1) {
         nrk_gpio_toggle(NRK_DEBUG_1);
 #ifdef COORDINATOR
+//        rtl_wait_until_rx_pkt();
         rtlink_rx(&rtlink_rx_buf);
         if (rtlink_rx_buf.len != 0) {
             rtlink_print_packet(&rtlink_rx_buf);
         }
         rtlink_rx_cleanup(&rtlink_rx_buf);
 #else
-        rtlink_rx(&rtlink_rx_buf);
+//        rtlink_rx(&rtlink_rx_buf);
         sprintf( &rtlink_tx_buf.payload[0], "hello %d world", i++);
         rtlink_tx_buf.len = strlen(&rtlink_tx_buf.payload[0]);
         rtlink_tx( &rtlink_tx_buf );
-#endif
+
         nrk_wait_until_next_period();
+#endif
     }
 }
 
 
 void _create_taskset()
 {
+#if NODE_ID == 1
     nrk_kprintf ( PSTR("taskset: creating rtlink\r\n") );
     TaskOne.task = rtlink_task;
     nrk_task_set_stk( &TaskOne, Stack1, NRK_APP_STACKSIZE);
@@ -88,15 +89,30 @@ void _create_taskset()
     TaskOne.FirstActivation = TRUE;
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
-    TaskOne.period.secs = 1;
-    TaskOne.period.nano_secs = 0;
+    TaskOne.period.secs = 0;
+    TaskOne.period.nano_secs = 100*NANOS_PER_MS;
     TaskOne.cpu_reserve.secs = 0;
+//    TaskOne.cpu_reserve.nano_secs = 100*NANOS_PER_MS;
+    TaskOne.cpu_reserve.nano_secs = 0;
+    TaskOne.offset.secs = 0;
+    TaskOne.offset.nano_secs= 0;
+    nrk_activate_task (&TaskOne);
+
+#else
+    nrk_kprintf ( PSTR("taskset: creating rtlink\r\n") );
+    TaskOne.task = rtlink_task;
+    nrk_task_set_stk( &TaskOne, Stack1, NRK_APP_STACKSIZE);
+    TaskOne.prio = 1;
+    TaskOne.FirstActivation = TRUE;
+    TaskOne.Type = BASIC_TASK;
+    TaskOne.SchType = PREEMPTIVE;
+    TaskOne.period.secs = 3;
+    TaskOne.period.nano_secs = 500*NANOS_PER_MS;
     TaskOne.cpu_reserve.nano_secs = 100*NANOS_PER_MS;
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;
     nrk_activate_task (&TaskOne);
 
-#if NODE_ID != 1
     nrk_kprintf ( PSTR("taskset: creating sensors\r\n") );
     TaskTwo.task = sensors_task;
     nrk_task_set_stk( &TaskTwo, Stack2, NRK_APP_STACKSIZE);

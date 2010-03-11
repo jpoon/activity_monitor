@@ -22,12 +22,11 @@
 // If you don't use any semaphores, set this to 0.  Be sure that libraries
 // you are using do not require semaphores.  These should be stated in any
 // documenation that comes with them.
-#define NRK_MAX_RESOURCE_CNT            2
+#define NRK_MAX_RESOURCE_CNT            3
 
-// We have at most NRK_DRIVER_CNT drivers to register
 #define NRK_MAX_DRIVER_CNT              1    
 
-#define	NRK_N_RES                       0
+//#define	NRK_N_RES                       0
 
 #define NRK_TASK_IDLE_STK_SIZE          128 // Idle task stack size min=32 
 #define NRK_APP_STACKSIZE               256

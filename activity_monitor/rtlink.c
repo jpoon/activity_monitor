@@ -82,8 +82,8 @@ void rtlink_print_packet(const rtlink_packet_t *pkt) {
     if (pkt->len > 0) {
         printf( "rtl: slot %d, len %d, rssi %d -- ", pkt->slot, pkt->len, pkt->rssi);
 
-        for(uint8_t i=0; i < pkt->len; i++ ) {
-            printf( "%c", pkt->payload[i+PKT_DATA_START] );
+        for(uint8_t i=PKT_DATA_START; i < pkt->len; i++ ) {
+            printf( "%c", pkt->payload[i] );
         }
  
         nrk_kprintf( PSTR("\r\n") );

@@ -61,14 +61,15 @@ void rtlink_task(void)
     while(1) {
         nrk_gpio_toggle(NRK_DEBUG_1);
 #ifdef COORDINATOR
-//        rtl_wait_until_rx_pkt();
         rtlink_rx(&rtlink_rx_buf);
         if (rtlink_rx_buf.len != 0) {
             rtlink_print_packet(&rtlink_rx_buf);
         }
         rtlink_rx_cleanup(&rtlink_rx_buf);
 #else
-//        rtlink_rx(&rtlink_rx_buf);
+        rtlink_rx(&rtlink_rx_buf);
+        rtlink_rx_cleanup(&rtlink_rx_buf);
+
         sprintf( &rtlink_tx_buf.payload[0], "hello %d world", i++);
         rtlink_tx_buf.len = strlen(&rtlink_tx_buf.payload[0]);
         rtlink_tx( &rtlink_tx_buf );
@@ -89,10 +90,9 @@ void _create_taskset()
     TaskOne.FirstActivation = TRUE;
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
-    TaskOne.period.secs = 0;
-    TaskOne.period.nano_secs = 100*NANOS_PER_MS;
+    TaskOne.period.secs = 1;
+    TaskOne.period.nano_secs = 0;
     TaskOne.cpu_reserve.secs = 0;
-//    TaskOne.cpu_reserve.nano_secs = 100*NANOS_PER_MS;
     TaskOne.cpu_reserve.nano_secs = 0;
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;
@@ -106,7 +106,7 @@ void _create_taskset()
     TaskOne.FirstActivation = TRUE;
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
-    TaskOne.period.secs = 3;
+    TaskOne.period.secs = 1;
     TaskOne.period.nano_secs = 500*NANOS_PER_MS;
     TaskOne.cpu_reserve.nano_secs = 100*NANOS_PER_MS;
     TaskOne.offset.secs = 0;

@@ -3,7 +3,7 @@
 
 #include <rt_link.h>
 
-#define NODE_ID	    1
+#define NODE_ID	    2
 
 #if NODE_ID == 1
 	#define RTL_TX_SLOT  6
@@ -15,7 +15,6 @@
 #else
     #error Invalid Node ID
 #endif
-
 
 typedef struct rtlink_packet_t {
     uint8_t payload[MAX_RTL_PKT_SIZE];

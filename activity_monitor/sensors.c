@@ -9,6 +9,18 @@ sensors_packet_t sensor_buf;
 
 void _sensors_print(const sensors_packet_t *);
 
+void sensors_register_drivers(void)
+{
+    int8_t val;
+
+    val = nrk_register_driver( &dev_manager_ff_sensors,FIREFLY_SENSOR_BASIC);
+    if( val == NRK_ERROR ) {
+        nrk_kprintf( PSTR("sensors: failed to load ADC driver\r\n") );
+    } else {
+        nrk_kprintf( PSTR("sensors: loaded ADC drivers successfully\r\n") );
+    }
+}
+
 void sensors_read(sensors_packet_t *pkt)
 {
     int8_t val, fd;
@@ -35,18 +47,6 @@ void sensors_read(sensors_packet_t *pkt)
         _sensors_print(pkt);
     }
     nrk_close(fd);
-}
-
-void sensors_register_drivers(void)
-{
-    int8_t val;
-
-    val = nrk_register_driver( &dev_manager_ff_sensors,FIREFLY_SENSOR_BASIC);
-    if( val == NRK_ERROR ) {
-        nrk_kprintf( PSTR("sensors: failed to load ADC driver\r\n") );
-    } else {
-        nrk_kprintf( PSTR("sensors: loaded ADC drivers successfully\r\n") );
-    }
 }
 
 void _sensors_print(const sensors_packet_t *pPkt) {

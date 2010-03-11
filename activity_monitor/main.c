@@ -61,6 +61,7 @@ void rtlink_task(void)
     while(1) {
         nrk_gpio_toggle(NRK_DEBUG_1);
 #ifdef COORDINATOR
+        rtl_wait_until_rx_pkt();
         pRxBuf = rtlink_rx();
         if (pRxBuf != NULL) {
             rtlink_print_packet(pRxBuf);

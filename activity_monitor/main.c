@@ -78,16 +78,15 @@ void sensors_task(void)
 void rtlink_task(void)
 {
     rtlink_setup();
-#ifdef COORDINATOR
     rtlink_packet_t *pRxBuf;
-#else
     int8_t v;
-#endif
 
     while(1) {
         nrk_gpio_toggle(NRK_DEBUG_1);
 #ifdef COORDINATOR
-        rtl_wait_until_rx_pkt();
+        if (rtl_rx_pkt_check() == 0)
+            rtl_wait_until_rx_pkt();
+
         pRxBuf = rtlink_rx();
         if (pRxBuf != NULL) {
             rtlink_print_packet(pRxBuf);

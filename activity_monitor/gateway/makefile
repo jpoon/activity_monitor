@@ -8,7 +8,7 @@ TARGET = main
 PROGRAMMING_PORT = /dev/ttyUSB1
 
 # Set this such that the nano-RK directory is the base path
-ROOT_DIR = ../nano-RK
+ROOT_DIR = ../../nano-RK
 
 # Set platform specific defines 
 # The following will be defined based on the PLATFORM variable:
@@ -18,8 +18,7 @@ ROOT_DIR = ../nano-RK
 include $(ROOT_DIR)/include/platform.mk
 
 SRC = $(TARGET).c
-SRC += sensors.c
-SRC += rtlink.c
+SRC += ../rtlink/rtlink.c
 SRC += $(ROOT_DIR)/src/net/rt_link/rt_link.c 
 SRC += $(ROOT_DIR)/src/net/rt_link/rtl_scheduler.c 
 SRC += $(ROOT_DIR)/src/net/rt_link/rtl_debug.c 
@@ -28,6 +27,7 @@ SRC += $(ROOT_DIR)/src/drivers/platform/$(PLATFORM_TYPE)/source/ff_basic_sensor.
 EXTRAINCDIRS = 
 EXTRAINCDIRS += $(ROOT_DIR)/src/net/rt_link/
 EXTRAINCDIRS += $(ROOT_DIR)/src/net/rt_link/platform/$(PLATFORM_TYPE)/
+EXTRAINCDIRS += ../rtlink/
 
 #  This is where the final compile and download happens
 include $(ROOT_DIR)/include/platform/$(PLATFORM)/common.mk

@@ -3,19 +3,6 @@
 
 #include <rt_link.h>
 
-#define NODE_ID	    1
-
-#if NODE_ID == 1
-	#define RTL_TX_SLOT  6
-	#define RTL_RX_SLOT  8
-    #define COORDINATOR
-#elif NODE_ID == 2
-	#define RTL_TX_SLOT  8
-	#define RTL_RX_SLOT  6
-#else
-    #error Invalid Node ID
-#endif
-
 #define RTL_MAX_BUF_SIZE (MAX_RTL_PKT_SIZE-PKT_DATA_START)
 
 typedef struct rtlink_packet_t {
@@ -26,7 +13,7 @@ typedef struct rtlink_packet_t {
 } rtlink_packet_t;
 
 void rtlink_init(void);
-void rtlink_setup(void);
+void rtlink_setup(rtl_node_mode_t type, uint8_t tx_slot, uint8_t rx_slot);
 rtlink_packet_t* rtlink_rx(void);
 void rtlink_tx(uint8_t *, uint8_t);
 void rtlink_rx_cleanup(rtlink_packet_t *);

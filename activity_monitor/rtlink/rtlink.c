@@ -5,21 +5,27 @@
 rtlink_packet_t rtlink_rx_buf;
 void _print_packet(const rtlink_packet_t *);
 
+uint8_t RTL_RX_SLOT;
+uint8_t RTL_TX_SLOT;
+
 void rtlink_init(void)
 {
     rtl_task_config();
 }
 
-void rtlink_setup(void) 
+void rtlink_setup(rtl_node_mode_t type, uint8_t tx_slot, uint8_t rx_slot) 
 {
-#ifdef COORDINATOR
-    nrk_kprintf( PSTR( "rtl: Coordinator\r\n") ); 
-    rtl_init(RTL_COORDINATOR);
-    nrk_led_set(RED_LED);  
-#else
-    nrk_kprintf( PSTR( "rtl: Mobile\r\n") ); 
-    rtl_init(RTL_MOBILE);
-#endif
+    if (type == RTL_COORDINATOR) {
+        nrk_kprintf( PSTR( "rtl: Coordinator\r\n") ); 
+        rtl_init(RTL_COORDINATOR);
+        nrk_led_set(RED_LED);  
+    } else {
+        nrk_kprintf( PSTR( "rtl: Mobile\r\n") ); 
+        rtl_init(RTL_MOBILE);
+    }
+
+    RTL_RX_SLOT = rx_slot;
+    RTL_TX_SLOT = tx_slot;
 
     printf( "rtl: TX %d  RX %d\r\n", RTL_TX_SLOT, RTL_RX_SLOT);
 
@@ -62,22 +68,19 @@ void rtlink_rx_cleanup(rtlink_packet_t *pkt) {
 }
 
 void rtlink_tx(uint8_t *pPayload, uint8_t len) {
-    if( rtl_tx_pkt_check( RTL_TX_SLOT ) ) {
-        printf( "rtl: pending packet on slot %d\r\n", RTL_TX_SLOT );
-        rtl_wait_until_tx_done( RTL_TX_SLOT );
-    } else {
-        nrk_led_set(GREEN_LED);
+    nrk_led_set(GREEN_LED);
 
-        // first couple slots of buffer reserved
-        for(uint8_t i = len; i > 0; i--) {
-            *(pPayload+i+PKT_DATA_START-1) = *(pPayload+i-1);
-        }
-
-        rtl_tx_pkt( pPayload, len+PKT_DATA_START, RTL_TX_SLOT );
-        printf( "rtl: tx packet on slot %d\r\n",RTL_TX_SLOT );
-
-        nrk_led_clr(GREEN_LED);
+    // first couple slots of buffer reserved
+    for(uint8_t i = len; i > 0; i--) {
+        *(pPayload+i+PKT_DATA_START-1) = *(pPayload+i-1);
     }
+
+    rtl_tx_pkt( pPayload, len+PKT_DATA_START, RTL_TX_SLOT );
+    printf( "rtl: tx packet on slot %d\r\n",RTL_TX_SLOT );
+
+    // block until sent
+    rtl_wait_until_tx_done( RTL_TX_SLOT );
+    nrk_led_clr(GREEN_LED);
 }
 
 void rtlink_print_packet(const rtlink_packet_t *pkt) {

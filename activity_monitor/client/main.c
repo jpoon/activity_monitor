@@ -31,7 +31,7 @@ nrk_task_type TaskTwo;
 sensors_packet_t sensor_buf;
 uint8_t rtlink_tx_buf[RTL_MAX_BUF_SIZE];
 
-nrk_sem_t *my_semaphore;
+nrk_sem_t *sensorPktSemaphore;
 
 int main(void)
 {
@@ -51,8 +51,8 @@ int main(void)
     rtlink_init();
     _create_taskset();
 
-    my_semaphore = nrk_sem_create(1,2);
-    if( my_semaphore==NULL ) {
+    sensorPktSemaphore = nrk_sem_create(1,2);
+    if( sensorPktSemaphore==NULL ) {
         nrk_kprintf( PSTR("Error creating sem\r\n" ));
     }
 
@@ -71,11 +71,11 @@ void sensors_task(void)
         nrk_gpio_toggle(NRK_DEBUG_0);
         sensors_read(&sensor_buf);
 
-        v = nrk_sem_pend(my_semaphore);
+        v = nrk_sem_pend(sensorPktSemaphore);
 
         sprintf(rtlink_tx_buf, "[%d] bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d", i++, sensor_buf.bat, sensor_buf.temp, sensor_buf.light, sensor_buf.mic, sensor_buf.adxl_x, sensor_buf.adxl_y, sensor_buf.adxl_z);
 
-        v = nrk_sem_post(my_semaphore);
+        v = nrk_sem_post(sensorPktSemaphore);
         nrk_wait_until_next_period();
     }
 }
@@ -99,9 +99,9 @@ void rtlink_task(void)
             rtlink_rx_cleanup(pRxBuf);
         }
 */
-        v = nrk_sem_pend(my_semaphore);
+        v = nrk_sem_pend(sensorPktSemaphore);
         rtlink_tx( &rtlink_tx_buf[0], strlen(&rtlink_tx_buf[0]) );
-        v = nrk_sem_post(my_semaphore);
+        v = nrk_sem_post(sensorPktSemaphore);
 
         nrk_wait_until_next_period();
     }

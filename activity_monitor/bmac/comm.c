@@ -53,6 +53,7 @@ void comm_tx(uint16_t dst, uint8_t *pPayload, uint8_t len) {
     err = bmac_tx_pkt( pPayload, len+1 );
 
     if (err == NRK_ERROR) {
+        // possibly do some power optimization here
         printf( "comm: tx packet -- no ack\r\n" );
     } else {
         printf( "comm: tx packet -- acked\r\n" );

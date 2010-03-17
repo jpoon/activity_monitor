@@ -35,8 +35,8 @@ int main(void)
 
     nrk_led_clr(ORANGE_LED);
     nrk_led_clr(GREEN_LED);
-    nrk_led_clr(RED_LED);
     nrk_led_clr(BLUE_LED);
+    nrk_led_set(RED_LED);
 
     nrk_time_set(0,0);
     comm_init();

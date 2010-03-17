@@ -7,7 +7,7 @@
 #include "sensors.h"
 #include "comm.h"
 
-#define MAC_ADDR         0x0002
+#define MAC_ADDR         0x0010
 
 static void createTaskset(void);
 static void sensors_task(void);
@@ -34,8 +34,8 @@ int main(void)
 
     nrk_led_clr(ORANGE_LED);
     nrk_led_clr(GREEN_LED);
-    nrk_led_clr(RED_LED);
     nrk_led_clr(BLUE_LED);
+    nrk_led_set(RED_LED);
 
     nrk_time_set(0,0);
     comm_init();

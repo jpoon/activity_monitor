@@ -80,17 +80,6 @@ static void comm_task(void)
     while(1) {
         nrk_gpio_toggle(NRK_DEBUG_1);
 
-/*
-        if (rtl_rx_pkt_check() == 0)
-            rtl_wait_until_rx_pkt();
-
-    comm_packet_t *pRxBuf;
-        pRxBuf = comm_rx();
-        if (pRxBuf != NULL) {
-            comm_print_packet(pRxBuf);
-            comm_rx_cleanup(pRxBuf);
-        }
-*/
         v = nrk_sem_pend(sensorPktSemaphore);
         if (sensorPktReady) {
             sprintf(tx_buf.payload, "[%d] bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d", i++, sensor_buf.bat, sensor_buf.temp, sensor_buf.light, sensor_buf.mic, sensor_buf.adxl_x, sensor_buf.adxl_y, sensor_buf.adxl_z);

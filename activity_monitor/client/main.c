@@ -71,11 +71,10 @@ static void sensors_task(void)
 
 static void comm_task(void)
 {
-    static uint8_t tx_buf[RF_MAX_PAYLOAD_SIZE];
+    comm_packet_t tx_buf;
     uint8_t i = 1;
 
     comm_setup(MAC_ADDR);
-    comm_packet_t *pRxBuf;
     int8_t v;
 
     while(1) {
@@ -85,6 +84,7 @@ static void comm_task(void)
         if (rtl_rx_pkt_check() == 0)
             rtl_wait_until_rx_pkt();
 
+    comm_packet_t *pRxBuf;
         pRxBuf = comm_rx();
         if (pRxBuf != NULL) {
             comm_print_packet(pRxBuf);
@@ -93,8 +93,10 @@ static void comm_task(void)
 */
         v = nrk_sem_pend(sensorPktSemaphore);
         if (sensorPktReady) {
-            sprintf(tx_buf, "[%d] bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d", i++, sensor_buf.bat, sensor_buf.temp, sensor_buf.light, sensor_buf.mic, sensor_buf.adxl_x, sensor_buf.adxl_y, sensor_buf.adxl_z);
-            comm_tx( COMM_BROADCAST, &tx_buf[0], strlen(&tx_buf[0]) );
+            sprintf(tx_buf.payload, "[%d] bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d", i++, sensor_buf.bat, sensor_buf.temp, sensor_buf.light, sensor_buf.mic, sensor_buf.adxl_x, sensor_buf.adxl_y, sensor_buf.adxl_z);
+            tx_buf.len = strlen(tx_buf.payload);
+            tx_buf.addr = COMM_BROADCAST;
+            comm_tx( &tx_buf );
             sensorPktReady = false;
         }
         v = nrk_sem_post(sensorPktSemaphore);
@@ -113,8 +115,8 @@ static void createTaskset(void)
     TaskOne.FirstActivation = TRUE;
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
-    TaskOne.period.secs = 0;
-    TaskOne.period.nano_secs = 500*NANOS_PER_MS;
+    TaskOne.period.secs = 1;
+    TaskOne.period.nano_secs = 0;
     TaskOne.cpu_reserve.nano_secs = 250*NANOS_PER_MS;
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;

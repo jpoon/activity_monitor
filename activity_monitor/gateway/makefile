@@ -22,12 +22,14 @@ SRC += ../rtlink/rtlink.c
 SRC += $(ROOT_DIR)/src/net/rt_link/rt_link.c 
 SRC += $(ROOT_DIR)/src/net/rt_link/rtl_scheduler.c 
 SRC += $(ROOT_DIR)/src/net/rt_link/rtl_debug.c 
+SRC += $(ROOT_DIR)/src/net/slip/slip.c
 SRC += $(ROOT_DIR)/src/drivers/platform/$(PLATFORM_TYPE)/source/ff_basic_sensor.c 
 
 EXTRAINCDIRS = 
 EXTRAINCDIRS += $(ROOT_DIR)/src/net/rt_link/
 EXTRAINCDIRS += $(ROOT_DIR)/src/net/rt_link/platform/$(PLATFORM_TYPE)/
 EXTRAINCDIRS += ../rtlink/
+EXTRAINCDIRS += $(ROOT_DIR)/src/net/slip
 
 #  This is where the final compile and download happens
 include $(ROOT_DIR)/include/platform/$(PLATFORM)/common.mk

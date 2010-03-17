@@ -4,13 +4,17 @@
 #include <stdio.h>
 #include <avr/sleep.h>
 #include <hal.h>
+#include <slip.h>
 #include "rtlink.h"
 
 #define RTL_TX_SLOT 6
 #define RTL_RX_SLOT 8
 
-void _create_taskset();
-void rtlink_task(void);
+#define MAX_SLIP_BUF 48
+
+static void createTaskset(void);
+static void rtlink_task(void);
+static void slipstream_task(void);
 
 NRK_STK Stack1[NRK_APP_STACKSIZE];
 nrk_task_type TaskOne;
@@ -19,6 +23,8 @@ NRK_STK Stack2[NRK_APP_STACKSIZE];
 nrk_task_type TaskTwo;
 
 uint8_t rtlink_tx_buf[RTL_MAX_BUF_SIZE];
+uint8_t slip_rx_buf[MAX_SLIP_BUF];
+uint8_t slip_tx_buf[MAX_SLIP_BUF];
 
 int main(void)
 {
@@ -36,14 +42,14 @@ int main(void)
 
     nrk_time_set(0,0);
     rtlink_init();
-    _create_taskset();
+    createTaskset();
 
     nrk_start();
   
     return 0;
 }
 
-void rtlink_task(void)
+static void rtlink_task(void)
 {
     rtlink_setup(RTL_COORDINATOR, RTL_TX_SLOT, RTL_RX_SLOT);
     rtlink_packet_t *pRxBuf;
@@ -65,8 +71,32 @@ void rtlink_task(void)
     }
 }
 
+static void slipstream_task() {
+    int8_t v;
 
-void _create_taskset()
+    slip_init(stdin, stdout, 0, 0);
+    while (slip_started () != 1)
+        nrk_wait_until_next_period ();
+
+    while(1) {
+        nrk_gpio_toggle(NRK_DEBUG_2);
+
+        int8_t cnt = 1;
+        sprintf (slip_tx_buf, "Hello %d", cnt);
+        slip_tx (slip_tx_buf, strlen (slip_tx_buf));
+ 
+        v = slip_rx(slip_rx_buf, MAX_SLIP_BUF);
+        if (v > 0) {
+            nrk_kprintf (PSTR ("slipstream: "));
+            for (uint8_t i = 0; i < v; i++)
+                printf ("%c", slip_rx_buf[i]);
+        }
+
+        nrk_wait_until_next_period();
+    }
+}
+
+static void createTaskset(void)
 {
     nrk_kprintf ( PSTR("taskset: creating rtlink\r\n") );
     TaskOne.task = rtlink_task;
@@ -82,5 +112,19 @@ void _create_taskset()
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;
     nrk_activate_task (&TaskOne);
+
+    TaskTwo.task = slipstream_task;
+    nrk_task_set_stk( &TaskTwo, Stack2, NRK_APP_STACKSIZE);
+    TaskTwo.prio = 2;
+    TaskTwo.FirstActivation = TRUE;
+    TaskTwo.Type = BASIC_TASK;
+    TaskTwo.SchType = PREEMPTIVE;
+    TaskTwo.period.secs = 0;
+    TaskTwo.period.nano_secs = 250 * NANOS_PER_MS;
+    TaskTwo.cpu_reserve.secs = 0;
+    TaskTwo.cpu_reserve.nano_secs = 0;
+    TaskTwo.offset.secs = 0;
+    TaskTwo.offset.nano_secs = 0;
+    nrk_activate_task (&TaskTwo);
 }
 

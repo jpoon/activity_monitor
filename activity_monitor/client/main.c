@@ -16,11 +16,9 @@
     #error Invalid Node ID
 #endif /* NODE_ID */
 
-
-
-void _create_taskset();
-void sensors_task(void);
-void rtlink_task(void);
+static void createTaskset(void);
+static void sensors_task(void);
+static void rtlink_task(void);
 
 NRK_STK Stack1[NRK_APP_STACKSIZE];
 nrk_task_type TaskOne;
@@ -49,7 +47,8 @@ int main(void)
 
     nrk_time_set(0,0);
     rtlink_init();
-    _create_taskset();
+    createTaskset();
+    
 
     sensorPktSemaphore = nrk_sem_create(1,2);
     if( sensorPktSemaphore==NULL ) {
@@ -61,7 +60,7 @@ int main(void)
     return 0;
 }
 
-void sensors_task(void)
+static void sensors_task(void)
 {
     int8_t v;
     uint8_t i = 1;
@@ -80,7 +79,7 @@ void sensors_task(void)
     }
 }
 
-void rtlink_task(void)
+static void rtlink_task(void)
 {
     rtlink_setup(RTL_MOBILE, RTL_TX_SLOT, RTL_RX_SLOT);
     rtlink_packet_t *pRxBuf;
@@ -108,7 +107,7 @@ void rtlink_task(void)
 }
 
 
-void _create_taskset()
+static void createTaskset(void)
 {
     nrk_kprintf ( PSTR("taskset: creating rtlink\r\n") );
     TaskOne.task = rtlink_task;

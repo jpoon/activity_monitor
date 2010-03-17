@@ -7,7 +7,7 @@
 
 sensors_packet_t sensor_buf;
 
-void _sensors_print(const sensors_packet_t *);
+static void sensors_print(const sensors_packet_t *);
 
 void sensors_register_drivers(void)
 {
@@ -44,11 +44,11 @@ void sensors_read(sensors_packet_t *pkt)
         val = nrk_set_status(fd,SENSOR_SELECT, ACC_Z);
         val = nrk_read(fd, &pkt->adxl_z, 2);
 
-        _sensors_print(pkt);
+        sensors_print(pkt);
     }
     nrk_close(fd);
 }
 
-void _sensors_print(const sensors_packet_t *pPkt) {
+void sensors_print(const sensors_packet_t *pPkt) {
     printf("Sensor Packet: bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d\r\n", pPkt->bat, pPkt->temp, pPkt->light, pPkt->mic, pPkt->adxl_x, pPkt->adxl_y, pPkt->adxl_z);
 }

@@ -50,5 +50,5 @@ void sensors_read(sensors_packet_t *pkt)
 }
 
 void sensors_print(const sensors_packet_t *pPkt) {
-    printf("Sensor Packet: bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d\r\n", pPkt->bat, pPkt->temp, pPkt->light, pPkt->mic, pPkt->adxl_x, pPkt->adxl_y, pPkt->adxl_z);
+    printf("sensors: bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d\r\n", pPkt->bat, pPkt->temp, pPkt->light, pPkt->mic, pPkt->adxl_x, pPkt->adxl_y, pPkt->adxl_z);
 }

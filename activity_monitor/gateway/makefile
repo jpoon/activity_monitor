@@ -18,18 +18,26 @@ ROOT_DIR = ../../nano-RK
 include $(ROOT_DIR)/include/platform.mk
 
 SRC = $(TARGET).c
-SRC += ../rtlink/rtlink.c
-SRC += $(ROOT_DIR)/src/net/rt_link/rt_link.c 
-SRC += $(ROOT_DIR)/src/net/rt_link/rtl_scheduler.c 
-SRC += $(ROOT_DIR)/src/net/rt_link/rtl_debug.c 
-SRC += $(ROOT_DIR)/src/net/slip/slip.c
-SRC += $(ROOT_DIR)/src/drivers/platform/$(PLATFORM_TYPE)/source/ff_basic_sensor.c 
-
 EXTRAINCDIRS = 
-EXTRAINCDIRS += $(ROOT_DIR)/src/net/rt_link/
-EXTRAINCDIRS += $(ROOT_DIR)/src/net/rt_link/platform/$(PLATFORM_TYPE)/
-EXTRAINCDIRS += ../rtlink/
+
+# slip 
+SRC += $(ROOT_DIR)/src/net/slip/slip.c 
 EXTRAINCDIRS += $(ROOT_DIR)/src/net/slip
+
+# bmac
+SRC += ../bmac/comm.c
+SRC += $(ROOT_DIR)/src/net/bmac/bmac.c 
+EXTRAINCDIRS += ../bmac/
+EXTRAINCDIRS += $(ROOT_DIR)/src/net/bmac/
+
+# rtlink
+# SRC += ../rtlink/rtlink.c
+# SRC += $(ROOT_DIR)/src/net/rt_link/rt_link.c 
+# SRC += $(ROOT_DIR)/src/net/rt_link/rtl_scheduler.c 
+# SRC += $(ROOT_DIR)/src/net/rt_link/rtl_debug.c 
+# EXTRAINCDIRS += $(ROOT_DIR)/src/net/rt_link/
+# EXTRAINCDIRS += $(ROOT_DIR)/src/net/rt_link/platform/$(PLATFORM_TYPE)/
+# EXTRAINCDIRS += ../rtlink/
 
 #  This is where the final compile and download happens
 include $(ROOT_DIR)/include/platform/$(PLATFORM)/common.mk

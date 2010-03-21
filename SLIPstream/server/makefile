@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I. -O -g
+CFLAGS=-I. -O -g -Wall -std=gnu99
 
 %.o: %.c 
 	$(CC) -c -o $@ $< $(CFLAGS)

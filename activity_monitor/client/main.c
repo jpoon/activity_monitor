@@ -41,7 +41,6 @@ int main(void)
     comm_init();
     createTaskset();
     
-
     sensorPktSemaphore = nrk_sem_create(1,2);
     if( sensorPktSemaphore==NULL ) {
         nrk_kprintf( PSTR("Error creating sem\r\n" ));

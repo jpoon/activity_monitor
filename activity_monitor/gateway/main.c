@@ -72,7 +72,7 @@ static void comm_task(void)
         pRxBuf = comm_rx();
         if (pRxBuf != NULL) {
             nrk_sem_pend(slipTxSemaphore);
-            sprintf( slip_tx_buf, "[%d] %s", pRxBuf->addr, pRxBuf->payload );
+            sprintf( slip_tx_buf, "%d %s", pRxBuf->addr, pRxBuf->payload );
             slipTxReady = true;
             nrk_sem_post(slipTxSemaphore);
 

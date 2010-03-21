@@ -285,9 +285,9 @@ void server_tx(char *buf, uint8_t size)
 void print_usage ()
 {
     printf("Usage: \n\
-    ./SLIPstream [-h] [-d] [-c DEVICE] [-p SERVER PORT]\n");
+    ./startServer [-h] [-d] [-c DEVICE] [-p SERVER PORT]\n");
     printf("Options: \n\
-    -h \t Prints this message and exists\n\
+    -h \t Prints this message and exits\n\
     -d \t Turns on debugging. Shows SLIP packets and incoming datagrams\n\
     -c \t Device in which programming board is connected\n\
     -p \t Port on which to listen for connections\n");

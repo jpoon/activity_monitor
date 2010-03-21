@@ -13,17 +13,17 @@
 #include <netdb.h>
 #include <stdlib.h>
 
-#define ASCII 1
-#define SLIP  0
-#define LAST_CONNECTION 0
-#define STATIC_CLIENT 1
-
 #define MAX_SLIP_BUF    1024
 
 // SLIP control sequences
-#define ESC 219
-#define END 192
-#define START   193
+#define ESC         219
+#define END         192
+#define START       193
+
+enum mode_t {
+    ascii,
+    slip
+};
 
 void server_tx(char* buf, uint8_t size);
 void print_usage ();
@@ -32,10 +32,7 @@ void server_non_blocking_rx (int fd);
 void slip_rx (int fd);
 void slip_tx (int fd, uint8_t * buf, int size);
 
-struct hostent *hp;
-int sock, length, fromlen,replylen, n,reply_sock;
-struct sockaddr_in server;
-struct sockaddr_in from;
+int sock, fromlen, replylen;
 struct sockaddr_in client;
 uint8_t buf[1024];
 int got_connection;
@@ -51,7 +48,7 @@ int main (int argc, char *argv[])
 
     got_connection = 0;
 
-    int mode = ASCII;
+    mode_t mode = ascii;
 
     long BAUD = B115200;
     long DATABITS = CS8;
@@ -117,13 +114,13 @@ int main (int argc, char *argv[])
         res = read (fd, &c, 1);
         if (res > 0) {
             if (c == START) {
-                mode = SLIP;
+                mode = slip;
             }
-            if (mode == SLIP) {
+            if (mode == slip) {
                 slip_rx (fd);
-                mode = ASCII;
+                mode = ascii;
             }
-            if (mode == ASCII) {
+            if (mode == ascii) {
                 if(debug) printf ("%c", c);
             }
         } else {
@@ -139,8 +136,8 @@ void slip_rx (int fd)
     int i;
 
     int received = 0;
-    int mode = SLIP;
-    while (mode == SLIP) {
+    mode_t mode = slip;
+    while (mode == slip) {
         // get a character to process
         int res = read (fd, &c, 1);
         if (res > 0) {
@@ -157,7 +154,7 @@ void slip_rx (int fd)
                     unsigned int size = slip_buf[0];
                     if (received - 2 != size) {
                         if(debug) printf("slip: rx size mismatch %d vs %d\n", received - 2, size);
-                        mode = ASCII;
+                        mode = ascii;
                         break;
                     }
 
@@ -168,13 +165,13 @@ void slip_rx (int fd)
                     checksum &= 0x7F;
                     if (checksum != slip_buf[received - 1]) {
                         if(debug) printf("slip: rx checksum error %d != %d...\n", checksum, slip_buf[received - 1]);
-                        mode = ASCII;
+                        mode = ascii;
                         break;
                     }
                     server_tx (&slip_buf[1], size);
                 }
 
-                mode = ASCII;
+                mode = ascii;                
                 break;
 
             // if it's the same code as an ESC character, wait and get another 
@@ -206,6 +203,8 @@ void slip_rx (int fd)
 
 void server_open(unsigned int port)
 {
+    struct sockaddr_in server;
+
     got_connection = 0;
     sock = socket (AF_INET, SOCK_DGRAM, 0);
     // Non-blocking socket
@@ -213,12 +212,11 @@ void server_open(unsigned int port)
     if (sock < 0) {
         perror ("Opening socket");
     }
-    length = sizeof(server);
-    bzero (&server, length);
+    bzero (&server, sizeof(server));
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_port = htons (port);
-    if (bind (sock, (struct sockaddr *) &server, length) < 0) {
+    if (bind (sock, (struct sockaddr *) &server, sizeof(server)) < 0) {
         perror ("binding");
     }
     fromlen = sizeof (struct sockaddr_in);
@@ -227,8 +225,9 @@ void server_open(unsigned int port)
 
 void server_non_blocking_rx (int fd)
 {
-    n = recvfrom (sock, buf, 1024, 0, (struct sockaddr *) &from, (socklen_t *) &fromlen);
+    struct sockaddr_in from;
 
+    int n = recvfrom (sock, buf, 1024, 0, (struct sockaddr *) &from, (socklen_t *) &fromlen);
     if (n > 0) {
         bcopy(&from,&client,sizeof(struct sockaddr));
         got_connection = 1;
@@ -275,7 +274,7 @@ void slip_tx (int fd, uint8_t * buf, int size)
 void server_tx(char *buf, uint8_t size)
 {
     if (got_connection != 0) {
-        n = sendto (sock, buf, size, 0, (struct sockaddr *) &client, replylen);
+        int n = sendto (sock, buf, size, 0, (struct sockaddr *) &client, replylen);
 
         if (n < 0)
             perror ("sendto");
@@ -288,7 +287,9 @@ void print_usage ()
     printf("Usage: \n\
     ./SLIPstream [-h] [-d] [-c DEVICE] [-p SERVER PORT]\n");
     printf("Options: \n\
-    -d \t Turns on debugging. Shows SLIP packets and incoming datagrams\n");
-    printf("Example: ./SLIPstream /dev/ttyUSB0 4000\n");
+    -h \t Prints this message and exists\n\
+    -d \t Turns on debugging. Shows SLIP packets and incoming datagrams\n\
+    -c \t Device in which programming board is connected\n\
+    -p \t Port on which to listen for connections\n");
     exit(-1);
 }

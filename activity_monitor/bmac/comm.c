@@ -89,11 +89,11 @@ void comm_tx(comm_packet_t *pkt) {
 
 void comm_printPacket(const comm_packet_t *pkt) {
     if (pkt->len > 0) {
-        printf( "comm: addr %d rssi %d -- ", pkt->addr, pkt->rssi);
+        printf( "comm: addr=%d rssi=%d contents=[ ", pkt->addr, pkt->rssi);
 
         for(uint8_t i=0; i < pkt->len; i++ ) {
             printf( "%c", pkt->payload[i] );
         }
-        nrk_kprintf( PSTR("\r\n") );
+        nrk_kprintf( PSTR(" ]\r\n") );
     }     
 }

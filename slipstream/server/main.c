@@ -1,17 +1,15 @@
 #include <termios.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <stdint.h>
 #include <fcntl.h>
-#include <sys/signal.h>
-#include <sys/types.h>
 #include <errno.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
+#include <sys/signal.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <netdb.h>
-#include <stdlib.h>
 
 #define MAX_SLIP_BUF    1024
 
@@ -207,12 +205,11 @@ void server_open(unsigned int port)
 
     got_connection = 0;
     sock = socket (AF_INET, SOCK_DGRAM, 0);
-    // Non-blocking socket
-    fcntl (sock, F_SETFL, O_NONBLOCK);
+    fcntl( sock, F_SETFL, O_NONBLOCK );
     if (sock < 0) {
         perror ("Opening socket");
     }
-    bzero (&server, sizeof(server));
+    memset(&server, 0, sizeof(server));
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_port = htons (port);

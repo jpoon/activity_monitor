@@ -18,10 +18,6 @@
 
 #define NRK_MAX_TASKS                   4
 
-// NRK_MAX_RESOURCE_CNT defines the number of semaphores in the system.
-// If you don't use any semaphores, set this to 0.  Be sure that libraries
-// you are using do not require semaphores.  These should be stated in any
-// documenation that comes with them.
 #define NRK_MAX_RESOURCE_CNT            3
 
 #define NRK_MAX_DRIVER_CNT              1    

@@ -71,7 +71,6 @@ static void sensors_task(void)
 static void comm_task(void)
 {
     comm_packet_t tx_buf;
-    uint8_t i = 1;
 
     comm_setup(MAC_ADDR);
     int8_t v;
@@ -81,7 +80,7 @@ static void comm_task(void)
 
         v = nrk_sem_pend(sensorPktSemaphore);
         if (sensorPktReady) {
-            sprintf(tx_buf.payload, "[%d] bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d", i++, sensor_buf.bat, sensor_buf.temp, sensor_buf.light, sensor_buf.mic, sensor_buf.adxl_x, sensor_buf.adxl_y, sensor_buf.adxl_z);
+            sprintf(tx_buf.payload, "bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d", sensor_buf.bat, sensor_buf.temp, sensor_buf.light, sensor_buf.mic, sensor_buf.adxl_x, sensor_buf.adxl_y, sensor_buf.adxl_z);
             tx_buf.len = strlen(tx_buf.payload);
             tx_buf.addr = COMM_BROADCAST;
             comm_tx( &tx_buf );

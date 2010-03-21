@@ -1,0 +1,11 @@
+CC=gcc
+CFLAGS=-I. -O -g
+
+%.o: %.c 
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+all: main.o
+	gcc -o SLIPstream main.o $(CFLAGS)
+clean: 
+	rm -f *.o *~ core SLIPstream
+

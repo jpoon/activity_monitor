@@ -1,3 +1,4 @@
+EXE=startServer
 CC=gcc
 CFLAGS=-I. -O -g -Wall -std=gnu99
 
@@ -5,7 +6,7 @@ CFLAGS=-I. -O -g -Wall -std=gnu99
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 all: main.o
-	gcc -o SLIPstream main.o $(CFLAGS)
+	gcc -o $(EXE) main.o $(CFLAGS)
 clean: 
-	rm -f *.o *~ core SLIPstream
+	rm -f *.o *~ core $(EXE)
 

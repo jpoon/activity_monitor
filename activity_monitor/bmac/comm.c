@@ -15,10 +15,15 @@ void comm_setup(uint16_t addr)
 {
     mac_addr = addr;
 
+    // initializes bmac on a specific radio channel
     bmac_init(COMM_CHANNEL);
 
+    // enable radio level packet decoding
+    // radio will selectively process or disregard packets
     bmac_addr_decode_set_my_mac(mac_addr);
     bmac_addr_decode_enable();
+
+    // enable auto ack of received packets
     bmac_auto_ack_enable();
 
     bmac_rx_pkt_set_buffer(rx_buf.payload, RF_MAX_PAYLOAD_SIZE);
@@ -32,6 +37,7 @@ void comm_setup(uint16_t addr)
 }
 
 comm_packet_t* comm_rx(void) {
+    // blocking read
     if( bmac_rx_pkt_ready()==0 ) 
         bmac_wait_until_rx_pkt();
 
@@ -57,9 +63,6 @@ void comm_rxCleanup(comm_packet_t *pkt) {
     nrk_led_clr(GREEN_LED);
 }
 
-/*
- * block until sent
- */
 void comm_tx(comm_packet_t *pkt) {
     int8_t err;
     nrk_led_set(GREEN_LED);
@@ -73,13 +76,13 @@ void comm_tx(comm_packet_t *pkt) {
     pkt->payload[1] = mac_addr & 0xFF;
     pkt->len += sizeof(pkt->addr);
 
+    // blocks until sent
     err = bmac_tx_pkt( pkt->payload, pkt->len );
+
     if (err == NRK_ERROR) {
         // possibly do some power optimization here
         printf( "comm: tx packet -- no ack\r\n" );
-    } else {
-        printf( "comm: tx packet -- acked\r\n" );
-    }
+    } 
 
     nrk_led_clr(GREEN_LED);
 }

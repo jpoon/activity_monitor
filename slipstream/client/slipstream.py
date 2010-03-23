@@ -6,6 +6,7 @@ class SlipStream:
     def __init__(self, host, port):
         self.addr = (host, port)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sensor = Sensor()
 
     def connect(self):
         # hack: since we are using UDP, theres no way to
@@ -26,12 +27,11 @@ class SlipStream:
             msg, server = self.sock.recvfrom(255)
 
             msg = msg.split()
-            nodeId = msg.pop(0)
+            nodeId = int(msg.pop(0))
+            
+            logging.debug('Received packet from Node ID: %s' % nodeId)
 
-            sensorPkt = Sensor()
-            for item in msg:
-                sensor, value = item.split('=')
-                sensorPkt.set(sensor, value.strip(','))
+            self.sensor.add(nodeId, msg)
 
     def close(self):
         self.sock.close()

@@ -8,10 +8,14 @@ Options:
     -p  Port in which server is located (e.g. 4000)
 """
 
-from threading import Thread
 from slipstream import *
+from sensor import *
 import logging
-def main():
+from threading import *
+
+killThread = False
+
+def ParseArguments():
     logging.basicConfig(level=logging.DEBUG)
 
     host = "127.0.0.1"
@@ -36,14 +40,85 @@ def main():
         print "Error: Missing argument(s)"
         sys.exit(2)
 
-#    t = Thread(target=slipstream, args=(host,port,))
-#    t.start()
-    slipstream(host, port)
+    return (host, port)
 
-def slipstream(host, port):
-    client = SlipStream(host, port)
-    client.connect()
-    client.receive()
+class StoppableThread (Thread):
+    """Thread class with a stop() method. The thread itself has to check
+    regularly for the stopped() condition."""
+
+    def __init__(self):
+        super(StoppableThread, self).__init__()
+        self._stop = Event()
+
+    def stop(self):
+        self._stop.set()
+
+    def stopped(self):
+        return self._stop.isSet()
+
+class SlipStream_Thread(StoppableThread):
+    def __init__ (self, cond, sensor, host, port, name=None):
+        Thread.__init__(self)
+        super(SlipStream_Thread, self).__init__()
+        self.cond = cond
+        self.sensor = sensor
+        self.host = host
+        self.port = port
+        self.name = "SlipStream Thread"
+
+    def run(self):
+        client = SlipStream(self.host, self.port)
+
+        while True:
+            if self.stopped():
+                with self.cond:
+                    self.cond.notify()
+                logging.debug("%s has exited properly" % self.name)
+                break
+
+            (sensor_location, msg) = client.receive()
+
+            with self.cond:
+                sensor.add(sensor_location, msg)
+                if (sensor.getNumSamples() % 10) == 0:
+                    self.cond.notify() 
+
+class Graph_Thread(StoppableThread):
+    def __init__(self, cond, sensor, name=None):
+        Thread.__init__(self)
+        super(Graph_Thread, self).__init__()
+        self.cond = cond
+        self.sensor = sensor
+        self.name = "Graph Thread"
+
+    def run(self):
+        while True:
+            if self.stopped():
+                logging.debug("%s has exited properly" % self.name)
+                break
+
+            with self.cond:
+                self.cond.wait()
+                self.sensor.graph()
 
 if __name__ == '__main__':
-    main()
+    (host, port) = ParseArguments()
+
+    sensor = Sensor()
+    condition = Condition()
+
+    t1 = SlipStream_Thread(condition, sensor, host, port)
+    t2 = Graph_Thread(condition, sensor)
+
+    t1.start()
+    t2.start()
+
+    while True:
+        import time
+        try:
+            time.sleep(1)
+        except KeyboardInterrupt:
+            t1.stop()
+            t2.stop()
+            break
+

@@ -12,7 +12,7 @@ class Sensor:
             self.acc_y = []
             self.acc_z = []
 
-        def add(self, pkt):
+        def parse(self, pkt):
             for item in pkt:
                 attr, val = item.split('=')
                 val = int(val.strip(','))
@@ -26,22 +26,28 @@ class Sensor:
             list = getattr(self, attr)
             return (min(list), max(list))
 
+        def getNumSamples(self):
+            return len(self.bat)
+
     def __init__(self):
         self.left_arm = Sensor.Value()
         self.right_arm = Sensor.Value()
         self.left_leg = Sensor.Value()
         self.right_leg = Sensor.Value()
 
-    def add(self, nodeId, pkt):
-        if nodeId == 16:
-            self.left_arm.add(pkt)
+    def add(self, sensor_location, pkt):
+        try:
+            getattr(self, sensor_location).parse(pkt)
+        except:
+            logging.error('Unknown sensor location: %s' % sensor_location)
 
+    def getNumSamples(self):
+        return self.left_arm.getNumSamples()
+
+    def graph(self):
         graph = LineGraph()
-        if (len(self.left_arm.acc_x) % 10) == 0:
+        if (self.left_arm.getNumSamples() % 10) == 0:
             bounds = self.left_arm.getBounds("acc_x")
             graph.create("leftarm", self.left_arm.acc_x, bounds)
             print self.left_arm.acc_x
 
-    def graph(self):
-        graph = Graph()
-         

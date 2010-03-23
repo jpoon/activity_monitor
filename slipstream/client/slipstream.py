@@ -3,10 +3,11 @@ from sensor import *
 import logging
 
 class SlipStream:
-    def __init__(self, host, port):
+    def __init__(self, host, port, condition=None):
         self.addr = (host, port)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sensor = Sensor()
+        self.condition = condition
+        self.connect()
 
     def connect(self):
         # hack: since we are using UDP, theres no way to
@@ -23,15 +24,19 @@ class SlipStream:
         self.sock.sendto(msg, self.addr) 
 
     def receive(self):
-        while True:
-            msg, server = self.sock.recvfrom(255)
+        msg, server = self.sock.recvfrom(255)
 
-            msg = msg.split()
-            nodeId = int(msg.pop(0))
-            
-            logging.debug('Received packet from Node ID: %s' % nodeId)
-
-            self.sensor.add(nodeId, msg)
+        msg = msg.split()
+        nodeId = int(msg.pop(0))
+    
+        logging.debug('Received packet from Node ID: %s' % nodeId)
+        return (self.__nodeIdToSensorLocation(nodeId) , msg) 
 
     def close(self):
         self.sock.close()
+
+    def __nodeIdToSensorLocation(self, nodeId):
+        if nodeId == 16:
+            return "left_arm"
+        else:
+            logging.error('Illegal Node ID of %d' % nodeID)

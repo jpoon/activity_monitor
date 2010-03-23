@@ -46,8 +46,7 @@ class Sensor:
 
     def graph(self):
         graph = LineGraph()
-        if (self.left_arm.getNumSamples() % 10) == 0:
-            bounds = self.left_arm.getBounds("acc_x")
-            graph.create("leftarm", self.left_arm.acc_x, bounds)
-            print self.left_arm.acc_x
+        bounds = self.left_arm.getBounds("acc_x")
+        graph.create("leftarm", self.left_arm.acc_x)
+        logging.debug("Updating graph")
 

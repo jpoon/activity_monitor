@@ -63,12 +63,21 @@ void comm_rxCleanup(comm_packet_t *pkt) {
     nrk_led_clr(GREEN_LED);
 }
 
+// blocks until sent
 void comm_tx(comm_packet_t *pkt) {
     int8_t err;
     nrk_led_set(GREEN_LED);
 
     bmac_addr_decode_dest_mac(pkt->addr);
 
+    // print contents of packet
+    nrk_kprintf( PSTR("comm: contents=[ ") );
+    for(uint8_t i=0; i < pkt->len; i++ ) {
+        printf( "%c", pkt->payload[i] );
+    }
+    nrk_kprintf( PSTR(" ]\r\n"));
+
+    // shift array
     for (int8_t i = pkt->len; i >= 0; i--) {
         pkt->payload[i+2] = pkt->payload[i];
     }
@@ -78,7 +87,6 @@ void comm_tx(comm_packet_t *pkt) {
 
     // blocks until sent
     err = bmac_tx_pkt( pkt->payload, pkt->len );
-
     if (err == NRK_ERROR) {
         // possibly do some power optimization here
         printf( "comm: tx packet -- no ack\r\n" );
@@ -89,7 +97,9 @@ void comm_tx(comm_packet_t *pkt) {
 
 void comm_printPacket(const comm_packet_t *pkt) {
     if (pkt->len > 0) {
-        printf( "comm: addr=%d rssi=%d contents=[ ", pkt->addr, pkt->rssi);
+
+        nrk_kprintf( PSTR("comm: ") );
+        printf( "addr=%d rssi=%d contents=[ ", pkt->addr, pkt->rssi );
 
         for(uint8_t i=0; i < pkt->len; i++ ) {
             printf( "%c", pkt->payload[i] );

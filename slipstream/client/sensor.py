@@ -37,9 +37,10 @@ class Sensor:
             self.left_arm.add(pkt)
 
         graph = LineGraph()
-        if len(self.left_arm.acc_x) == 10:
+        if (len(self.left_arm.acc_x) % 10) == 0:
             bounds = self.left_arm.getBounds("acc_x")
             graph.create("leftarm", self.left_arm.acc_x, bounds)
+            print self.left_arm.acc_x
 
     def graph(self):
         graph = Graph()

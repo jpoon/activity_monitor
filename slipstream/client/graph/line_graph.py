@@ -10,9 +10,8 @@ class LineGraph:
     def create(self, name, data, v_bounds = None):
         CairoPlot.dot_line_plot(name=name,
                                 data=data,
-                                width=500,
-                                height=500,
+                                width=800,
+                                height=800,
+                                axis=True,
                                 grid=True,
-                                v_bounds=v_bounds,
-                                axis=True)
-
+                                v_bounds=v_bounds)

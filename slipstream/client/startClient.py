@@ -80,7 +80,7 @@ class SlipStream_Thread(StoppableThread):
 
             with self.cond:
                 sensor.add(sensor_location, msg)
-                if (sensor.getNumSamples() % 10) == 0:
+                if (sensor.getNumSamples() % 5) == 0:
                     self.cond.notify() 
 
 class Graph_Thread(StoppableThread):

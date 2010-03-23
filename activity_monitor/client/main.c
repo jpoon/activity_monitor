@@ -7,7 +7,9 @@
 #include "sensors.h"
 #include "comm.h"
 
-#define MAC_ADDR         0x0010
+#define MAC_ADDR            0x0010
+#define NUM_SAMPLES         5
+#define DEBUG               1
 
 static void createTaskset(void);
 static void sensors_task(void);
@@ -19,9 +21,9 @@ nrk_task_type TaskOne;
 NRK_STK Stack2[NRK_APP_STACKSIZE];
 nrk_task_type TaskTwo;
 
-sensors_packet_t sensor_buf;
-bool sensorPktReady = false;
-nrk_sem_t *sensorPktSemaphore;
+comm_packet_t tx_buf;
+bool txPktReady = false;
+nrk_sem_t *txPktSemaphore;
 
 int main(void)
 {
@@ -41,8 +43,8 @@ int main(void)
     comm_init();
     createTaskset();
     
-    sensorPktSemaphore = nrk_sem_create(1,2);
-    if( sensorPktSemaphore==NULL ) {
+    txPktSemaphore = nrk_sem_create(1,2);
+    if( txPktSemaphore==NULL ) {
         nrk_kprintf( PSTR("Error creating sem\r\n" ));
     }
 
@@ -53,16 +55,46 @@ int main(void)
 
 static void sensors_task(void)
 {
-    int8_t v;
+    uint8_t num_samples = 0;
+    sensors_packet_t sample, sample_total;
 
     sensors_register_drivers();
+    memset( &sample_total, 0, sizeof(sensors_packet_t) );
     while(1) {
         nrk_gpio_toggle(NRK_DEBUG_0);
 
-        v = nrk_sem_pend(sensorPktSemaphore);
-        sensors_read(&sensor_buf);
-        sensorPktReady = true;
-        v = nrk_sem_post(sensorPktSemaphore);
+        sensors_read(&sample);
+
+        sample_total.bat += sample.bat;
+        sample_total.light += sample.light;
+        sample_total.mic += sample.mic;
+        sample_total.temp += sample.temp;
+        sample_total.adxl_x += sample.adxl_x;
+        sample_total.adxl_y += sample.adxl_y;
+        sample_total.adxl_z += sample.adxl_z;
+
+        num_samples++;
+
+        if ( num_samples == NUM_SAMPLES ) {
+            nrk_sem_pend(txPktSemaphore);
+
+            sample_total.bat = sample_total.bat/NUM_SAMPLES;
+            sample_total.light = sample_total.light/NUM_SAMPLES;
+            sample_total.mic = sample_total.mic/NUM_SAMPLES;
+            sample_total.temp = sample_total.temp/NUM_SAMPLES;
+            sample_total.adxl_x = sample_total.adxl_x/NUM_SAMPLES;
+            sample_total.adxl_y = sample_total.adxl_y/NUM_SAMPLES;
+            sample_total.adxl_z = sample_total.adxl_z/NUM_SAMPLES;
+
+            sprintf(tx_buf.payload, "bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d", sample_total.bat, sample_total.temp, sample_total.light, sample_total.mic, sample_total.adxl_x, sample_total.adxl_y, sample_total.adxl_z);
+            tx_buf.addr = COMM_BROADCAST;
+
+            txPktReady = true;
+            num_samples = 0;
+            memset( &sample_total, 0, sizeof(sensors_packet_t) );
+
+            nrk_sem_post(txPktSemaphore);
+        }
 
         nrk_wait_until_next_period();
     }
@@ -70,23 +102,20 @@ static void sensors_task(void)
 
 static void comm_task(void)
 {
-    comm_packet_t tx_buf;
-
     comm_setup(MAC_ADDR);
-    int8_t v;
 
     while(1) {
         nrk_gpio_toggle(NRK_DEBUG_1);
 
-        v = nrk_sem_pend(sensorPktSemaphore);
-        if (sensorPktReady) {
-            sprintf(tx_buf.payload, "bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d", sensor_buf.bat, sensor_buf.temp, sensor_buf.light, sensor_buf.mic, sensor_buf.adxl_x, sensor_buf.adxl_y, sensor_buf.adxl_z);
+        nrk_sem_pend(txPktSemaphore);
+        if (txPktReady) {
             tx_buf.len = strlen(tx_buf.payload);
-            tx_buf.addr = COMM_BROADCAST;
             comm_tx( &tx_buf );
-            sensorPktReady = false;
+            memset(&tx_buf, 0, sizeof(comm_packet_t));
+
+            txPktReady = false;
         }
-        v = nrk_sem_post(sensorPktSemaphore);
+        nrk_sem_post(txPktSemaphore);
 
         nrk_wait_until_next_period();
     }
@@ -102,9 +131,9 @@ static void createTaskset(void)
     TaskOne.FirstActivation = TRUE;
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
-    TaskOne.period.secs = 1;
-    TaskOne.period.nano_secs = 0;
-    TaskOne.cpu_reserve.nano_secs = 250*NANOS_PER_MS;
+    TaskOne.period.secs = 0;
+    TaskOne.period.nano_secs = 500*NANOS_PER_MS;
+    TaskOne.cpu_reserve.nano_secs = 0;
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;
     nrk_activate_task (&TaskOne);
@@ -116,10 +145,10 @@ static void createTaskset(void)
     TaskTwo.FirstActivation = TRUE;
     TaskTwo.Type = BASIC_TASK;
     TaskTwo.SchType = PREEMPTIVE;
-    TaskTwo.period.secs = 1;
-    TaskTwo.period.nano_secs = 0;
+    TaskTwo.period.secs = 0;
+    TaskTwo.period.nano_secs = 100*NANOS_PER_MS;
     TaskTwo.cpu_reserve.secs = 0;
-    TaskTwo.cpu_reserve.nano_secs = 500*NANOS_PER_MS;
+    TaskTwo.cpu_reserve.nano_secs = 0;
     TaskTwo.offset.secs = 0;
     TaskTwo.offset.nano_secs= 0;
     nrk_activate_task (&TaskTwo);

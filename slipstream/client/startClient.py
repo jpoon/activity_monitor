@@ -79,9 +79,8 @@ class SlipStream_Thread(StoppableThread):
             (sensor_location, msg) = client.receive()
 
             with self.cond:
-                sensor.add(sensor_location, msg)
-                if (sensor.getNumSamples() % 5) == 0:
-                    self.cond.notify() 
+                self.sensor.add(sensor_location, msg)
+                self.cond.notify()
 
 class Graph_Thread(StoppableThread):
     def __init__(self, cond, sensor, name=None):
@@ -99,7 +98,16 @@ class Graph_Thread(StoppableThread):
 
             with self.cond:
                 self.cond.wait()
-                self.sensor.graph()
+
+                for sensor_location in sensor.__dict__:
+                    try:
+                        numSamples = getattr(self.sensor, sensor_location).getNumSamples()
+
+                        if (numSamples > 0 and numSamples % 5 == 0):
+                            self.sensor.createGraphSensor(sensor_location)
+                    except:
+                        pass
+
 
 if __name__ == '__main__':
     (host, port) = ParseArguments()

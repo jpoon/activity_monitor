@@ -38,5 +38,7 @@ class SlipStream:
     def __nodeIdToSensorLocation(self, nodeId):
         if nodeId == 16:
             return "left_arm"
+        elif nodeId == 17:
+            return "right_arm"
         else:
             logging.error('Illegal Node ID of %d' % nodeID)

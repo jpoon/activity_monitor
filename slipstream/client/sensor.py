@@ -41,12 +41,23 @@ class Sensor:
         except:
             logging.error('Unknown sensor location: %s' % sensor_location)
 
-    def getNumSamples(self):
-        return self.left_arm.getNumSamples()
+    def getNumSamples(self, sensor):
+        return getattr(self, sensor).getNumSamples()
 
-    def graph(self):
+    def createGraphSensor(self, sensor):
+        data = {}
+
+        acc_x = getattr(self, sensor).acc_x
+        acc_y = getattr(self, sensor).acc_y
+        acc_z = getattr(self, sensor).acc_z
+
+        data['acc_x'] = acc_x
+        data['acc_y'] = acc_y
+        data['acc_z'] = acc_z
+
         graph = LineGraph()
-        bounds = self.left_arm.getBounds("acc_x")
-        graph.create("leftarm", self.left_arm.acc_x)
-        logging.debug("Updating graph")
+        #bounds = self.left_arm.getBounds("acc_x")
+        graph.create(sensor, data)
+
+        logging.debug("Updating for %s" % sensor)
 

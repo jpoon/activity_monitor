@@ -14,6 +14,7 @@ Contents:
    assignments/proposal.rst
    assignments/progressreport.rst
    os.rst
+   firefly.rst
 
 Indices and tables
 ==================

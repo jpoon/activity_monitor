@@ -4,10 +4,10 @@ from graph.line_graph import *
 class Sensor:
     class Value:
         def __init__(self):
-            self.battery = []
-            self.temperature = []
+            self.bat = []
+            self.temp = []
             self.light = []
-            self.microphone = []
+            self.mic = []
             self.acc_x = []
             self.acc_y = []
             self.acc_z = []
@@ -16,23 +16,15 @@ class Sensor:
             for item in pkt:
                 attr, val = item.split('=')
                 val = int(val.strip(','))
-                
-                if attr == "bat":
-                    self.battery.append(val)
-                elif attr == "temp":
-                    self.temperature.append(val)
-                elif attr == "light":
-                    self.light.append(val)
-                elif attr == "mic":
-                    self.microphone.append(val)
-                elif attr == "acc_x":
-                    self.acc_x.append(val)
-                elif attr == "acc_y":
-                    self.acc_y.append(val)
-                elif attr == "acc_z":
-                    self.acc_z.append(val)
-                else:
+         
+                try:
+                    getattr(self, attr).append(val)
+                except:
                     logging.error('Unknown attribute: %s' % attr)
+
+        def getBounds(self, attr):
+            list = getattr(self, attr)
+            return (min(list), max(list))
 
     def __init__(self):
         self.left_arm = Sensor.Value()
@@ -46,7 +38,8 @@ class Sensor:
 
         graph = LineGraph()
         if len(self.left_arm.acc_x) == 10:
-            graph.create("leftarm", self.left_arm.acc_x)
+            bounds = self.left_arm.getBounds("acc_x")
+            graph.create("leftarm", self.left_arm.acc_x, bounds)
 
     def graph(self):
         graph = Graph()

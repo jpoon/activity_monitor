@@ -1,9 +1,14 @@
 import logging
-from graph.line_graph import *
+import cairoplot
+from datetime import datetime
 
 class Sensor:
+    graph_min = 100
+    graph_max = 700
+
     class Value:
         def __init__(self):
+            self.time = []
             self.bat = []
             self.temp = []
             self.light = []
@@ -22,10 +27,6 @@ class Sensor:
                 except:
                     logging.error('Unknown attribute: %s' % attr)
 
-        def getBounds(self, attr):
-            list = getattr(self, attr)
-            return (min(list), max(list))
-
         def getNumSamples(self):
             return len(self.bat)
 
@@ -35,11 +36,26 @@ class Sensor:
         self.left_leg = Sensor.Value()
         self.right_leg = Sensor.Value()
 
-    def add(self, sensor_location, pkt):
+    def add(self, nodeId, pkt):
+        sensor_location = self.__nodeIdToSensorLocation(nodeId)
+
         try:
             getattr(self, sensor_location).parse(pkt)
+            getattr(self, sensor_location).time.append(datetime.time(datetime.now()).strftime("%M:%S"))
         except:
             logging.error('Unknown sensor location: %s' % sensor_location)
+
+    def __nodeIdToSensorLocation(self, nodeId):
+        if nodeId == 16:
+            return "left_arm"
+        elif nodeId == 17:
+            return "right_arm"
+        elif nodeId == 18:
+            return "left_leg"
+        elif nodeId == 19:
+            return "right_leg"
+        else:
+            logging.error('Illegal Node ID of %d' % nodeId)
 
     def getNumSamples(self, sensor):
         return getattr(self, sensor).getNumSamples()
@@ -55,9 +71,18 @@ class Sensor:
         data['acc_y'] = acc_y
         data['acc_z'] = acc_z
 
-        graph = LineGraph()
-        #bounds = self.left_arm.getBounds("acc_x")
-        graph.create(sensor, data)
+        cairoplot.dot_line_plot(name=sensor,
+                                data=data,
+                                width=900,
+                                height=900,
+                                border=5,
+                                axis=True,
+                                grid=True,
+                                series_legend=True,
+                                x_labels=getattr(self, sensor).time,
+                                y_bounds=(Sensor.graph_min, Sensor.graph_max),
+                                x_title = "Time (minutes:seconds)",
+                                y_title = "")
 
         logging.debug("Updating for %s" % sensor)
 

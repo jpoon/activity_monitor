@@ -84,5 +84,5 @@ class Sensor:
                                 x_title = "Time (minutes:seconds)",
                                 y_title = "")
 
-        logging.debug("Updating for %s" % sensor)
+        logging.debug("Updating %s graph" % sensor)
 

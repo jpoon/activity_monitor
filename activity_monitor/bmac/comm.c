@@ -41,7 +41,7 @@ comm_packet_t* comm_rx(void) {
     if( bmac_rx_pkt_ready()==0 ) 
         bmac_wait_until_rx_pkt();
 
-    nrk_led_set(GREEN_LED);
+    nrk_led_set(ORANGE_LED);
     bmac_rx_pkt_get(&rx_buf.len, &rx_buf.rssi);
 
     rx_buf.addr |= (rx_buf.payload[0] & 0xFF) << 8;
@@ -60,13 +60,13 @@ void comm_rxCleanup(comm_packet_t *pkt) {
     pkt->len = 0;
     pkt->rssi = 0;
     pkt->addr = 0;
-    nrk_led_clr(GREEN_LED);
+    nrk_led_clr(ORANGE_LED);
 }
 
 // blocks until sent
 void comm_tx(comm_packet_t *pkt) {
     int8_t err;
-    nrk_led_set(GREEN_LED);
+    nrk_led_set(ORANGE_LED);
 
     bmac_addr_decode_dest_mac(pkt->addr);
 
@@ -92,7 +92,7 @@ void comm_tx(comm_packet_t *pkt) {
         printf( "comm: tx packet -- no ack\r\n" );
     } 
 
-    nrk_led_clr(GREEN_LED);
+    nrk_led_clr(ORANGE_LED);
 }
 
 void comm_printPacket(const comm_packet_t *pkt) {

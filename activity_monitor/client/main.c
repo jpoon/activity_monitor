@@ -8,7 +8,7 @@
 #include "comm.h"
 
 #define MAC_ADDR            0x0010
-#define NUM_SAMPLES         5
+#define NUM_SAMPLES         5 
 #define DEBUG               1
 
 static void createTaskset(void);
@@ -37,7 +37,19 @@ int main(void)
     nrk_led_clr(ORANGE_LED);
     nrk_led_clr(GREEN_LED);
     nrk_led_clr(BLUE_LED);
-    nrk_led_set(RED_LED);
+    nrk_led_clr(RED_LED);
+
+    switch (MAC_ADDR) {
+        case 0x0010:
+        case 0x0011:
+            nrk_led_set(RED_LED);
+            break;
+
+        case 0x0012:
+        case 0x0013:
+            nrk_led_set(GREEN_LED);
+            break;
+    }
 
     nrk_time_set(0,0);
     comm_init();
@@ -74,7 +86,7 @@ static void sensors_task(void)
         sample_total.adxl_z += sample.adxl_z;
 
         num_samples++;
-
+        printf("%d\r\n", num_samples);
         if ( num_samples == NUM_SAMPLES ) {
             nrk_sem_pend(txPktSemaphore);
 
@@ -132,7 +144,7 @@ static void createTaskset(void)
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
     TaskOne.period.secs = 0;
-    TaskOne.period.nano_secs = 500*NANOS_PER_MS;
+    TaskOne.period.nano_secs = 250*NANOS_PER_MS;
     TaskOne.cpu_reserve.nano_secs = 0;
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;
@@ -146,7 +158,7 @@ static void createTaskset(void)
     TaskTwo.Type = BASIC_TASK;
     TaskTwo.SchType = PREEMPTIVE;
     TaskTwo.period.secs = 0;
-    TaskTwo.period.nano_secs = 100*NANOS_PER_MS;
+    TaskTwo.period.nano_secs = 150*NANOS_PER_MS;
     TaskTwo.cpu_reserve.secs = 0;
     TaskTwo.cpu_reserve.nano_secs = 0;
     TaskTwo.offset.secs = 0;

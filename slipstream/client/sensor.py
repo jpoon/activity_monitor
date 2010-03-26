@@ -6,7 +6,8 @@ class Sensor:
     graph_min = 100
     graph_max = 700
 
-    def __init__(self, name):
+    def __init__(self, dir, name):
+        self.dir = dir
         self.name = name
 
         self.time = []
@@ -42,7 +43,7 @@ class Sensor:
         data['acc_y'] = self.acc_y
         data['acc_z'] = self.acc_z
 
-        cairoplot.dot_line_plot(name="omg/" + self.name,
+        cairoplot.dot_line_plot(name=self.dir + "/" + self.name,
                                 data=data,
                                 width=900,
                                 height=900,

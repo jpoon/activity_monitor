@@ -1,4 +1,5 @@
 import logging
+import os
 import cairoplot
 from datetime import datetime
 
@@ -43,7 +44,8 @@ class Sensor:
         data['acc_y'] = self.acc_y
         data['acc_z'] = self.acc_z
 
-        cairoplot.dot_line_plot(name=self.dir + "/" + self.name,
+        filename = self.dir + "/" + self.name
+        cairoplot.dot_line_plot(name=filename,
                                 data=data,
                                 width=900,
                                 height=900,
@@ -56,5 +58,8 @@ class Sensor:
                                 x_title = "Time (minutes:seconds)",
                                 y_title = "")
 
+        self.__convertToPng(filename)
         logging.debug("Updating %s graph" % self.name)
 
+    def __convertToPng(self, filename):
+        os.system("gimp -i -b '(svg-to-raster \"%s.svg\" \"%s.png\" 72 0 0)' -b '(gimp-quit 0)' &> /dev/null &" % (filename, filename))

@@ -13,9 +13,9 @@ Options:
 
 from slipstream import *
 from sensor import *
-import logging
-import os
 from util import *
+import os
+import logging
 
 killThread = False
 
@@ -49,7 +49,7 @@ def ParseArguments():
         sys.exit(2)
 
     graph_dir = prefix_graph_dir + "/" + graph_dir 
-    os.system("mkdir %s" % graph_dir)
+    os.system("mkdir %s &> /dev/null" % graph_dir)
 
     return (host, port, graph_dir)
 
@@ -106,8 +106,11 @@ class Graph_Thread(StoppableThread):
             with self.cond:
                 self.cond.wait()
 
-                sensor_location = self.update.pop()
-                self.sensors[sensor_location].createGraphSensor()
+                try:
+                    sensor_location = self.update.pop()
+                    self.sensors[sensor_location].createGraphSensor()
+                except:
+                    pass
 
 
 if __name__ == '__main__':

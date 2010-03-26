@@ -26,9 +26,10 @@ class Sensor:
                     getattr(self, attr).append(val)
                 except:
                     logging.error('Unknown attribute: %s' % attr)
+            self.time.append(datetime.time(datetime.now()).strftime("%M:%S"))
 
         def getNumSamples(self):
-            return len(self.bat)
+            return len(self.time)
 
     def __init__(self):
         self.left_arm = Sensor.Value()
@@ -41,7 +42,6 @@ class Sensor:
 
         try:
             getattr(self, sensor_location).parse(pkt)
-            getattr(self, sensor_location).time.append(datetime.time(datetime.now()).strftime("%M:%S"))
         except:
             logging.error('Unknown sensor location: %s' % sensor_location)
 

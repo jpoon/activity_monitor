@@ -11,7 +11,7 @@ Options:
 from slipstream import *
 from sensor import *
 import logging
-from threading import *
+from util import *
 
 killThread = False
 
@@ -42,32 +42,20 @@ def ParseArguments():
 
     return (host, port)
 
-class StoppableThread (Thread):
-    """Thread class with a stop() method. The thread itself has to check
-    regularly for the stopped() condition."""
-
-    def __init__(self):
-        super(StoppableThread, self).__init__()
-        self._stop = Event()
-
-    def stop(self):
-        self._stop.set()
-
-    def stopped(self):
-        return self._stop.isSet()
-
 class SlipStream_Thread(StoppableThread):
-    def __init__ (self, cond, sensor, host, port, name=None):
+    def __init__ (self, cond, sensors, updateStack, (host, port)):
         Thread.__init__(self)
         super(SlipStream_Thread, self).__init__()
+
         self.cond = cond
-        self.sensor = sensor
+        self.sensors = sensors
+        self.update = updateStack
         self.host = host
         self.port = port
         self.name = "SlipStream Thread"
 
     def run(self):
-        logging.debug("Started slipstream thread")
+        logging.debug("Starting %s" % self.name)
         client = SlipStream(self.host, self.port)
         while True:
             if self.stopped():
@@ -76,23 +64,29 @@ class SlipStream_Thread(StoppableThread):
                 logging.debug("%s has exited properly" % self.name)
                 break
 
-            (nodeId, msg) = client.receive()
+            (sensor, msg) = client.receive()
             
             if msg is not None:
                 with self.cond:
-                    self.sensor.add(nodeId, msg)
-                    self.cond.notify()
+                    self.sensors[sensor].add(msg)
+
+                    numSamples = self.sensors[sensor].getNumSamples()
+                    if (numSamples > 0 and numSamples % 5 == 0):
+                        self.update.append(sensor)
+                        self.cond.notify()
 
 class Graph_Thread(StoppableThread):
-    def __init__(self, cond, sensor, name=None):
+    def __init__(self, cond, sensors, updateStack):
         Thread.__init__(self)
         super(Graph_Thread, self).__init__()
+
         self.cond = cond
-        self.sensor = sensor
+        self.sensors = sensors
+        self.update = updateStack
         self.name = "Graph Thread"
 
     def run(self):
-        logging.debug("Started graphing thread")
+        logging.debug("Starting %s" % self.name)
         while True:
             if self.stopped():
                 logging.debug("%s has exited properly" % self.name)
@@ -101,21 +95,25 @@ class Graph_Thread(StoppableThread):
             with self.cond:
                 self.cond.wait()
 
-                for sensor_location in sensor.__dict__:
-                    numSamples = getattr(self.sensor, sensor_location).getNumSamples()
-
-                    if (numSamples > 0 and numSamples % 5 == 0):
-                        self.sensor.createGraphSensor(sensor_location)
+                sensor_location = self.update.pop()
+                self.sensors[sensor_location].createGraphSensor()
 
 
 if __name__ == '__main__':
-    (host, port) = ParseArguments()
+    addr = ParseArguments()
 
-    sensor = Sensor()
     condition = Condition()
 
-    t1 = SlipStream_Thread(condition, sensor, host, port)
-    t2 = Graph_Thread(condition, sensor)
+    sensors = {}
+    sensors['left_arm'] = Sensor("left_arm")
+    sensors['right_arm'] = Sensor("right_arm")
+    sensors['left_leg'] = Sensor("left_leg")
+    sensors['right_leg'] = Sensor("right_leg")
+
+    graphUpdateStack = []
+
+    t1 = SlipStream_Thread(condition, sensors, graphUpdateStack, addr)
+    t2 = Graph_Thread(condition, sensors, graphUpdateStack)
 
     t1.start()
     t2.start()

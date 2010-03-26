@@ -29,12 +29,25 @@ class SlipStream:
 
             msg = msg.split()
             nodeId = int(msg.pop(0))
-    
-            logging.debug('Received packet from Node ID: %s' % nodeId)
-            return (nodeId, msg) 
+            sensor = self.__convertNodeIdToSensorLocation(nodeId)
+            logging.debug('Received packet from %s' % sensor)
+            return (sensor, msg) 
         except:
             return (None, None)
 
     def close(self):
         self.sock.close()
+
+    def __convertNodeIdToSensorLocation(self, nodeId):
+        if nodeId == 16:
+            return "left_arm"
+        elif nodeId == 17:
+            return "right_arm"
+        elif nodeId == 18:
+            return "left_leg"
+        elif nodeId == 19:
+            return "right_leg"
+        else:
+            logging.error('Illegal Node ID of %d' % nodeId)
+
 

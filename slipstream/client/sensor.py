@@ -21,19 +21,16 @@ class Sensor:
         self.acc_z = []
 
     def add(self, pkt):
-        try:
-            for item in pkt:
-                attr, val = item.split('=')
-                val = int(val.strip(','))
-         
-                try:
-                    getattr(self, attr).append(val)
-                except:
-                    logging.error('Unknown attribute: %s' % attr)
+        for item in pkt:
+            attr, val = item.split('=')
+            val = int(val.strip(','))
+     
+            try:
+                getattr(self, attr).append(val)
+            except:
+                logging.error('Unknown attribute: %s' % attr)
 
-            self.time.append(datetime.time(datetime.now()).strftime("%M:%S"))
-        except:
-            logging.error('Unknown sensor location: %s' % sensor_location)
+        self.time.append(datetime.time(datetime.now()).strftime("%M:%S"))
 
     def getNumSamples(self):
         return len(self.time)

@@ -8,7 +8,7 @@
 #include "comm.h"
 
 #define MAC_ADDR            0x0010
-#define NUM_SAMPLES         5 
+#define NUM_SAMPLES         10
 #define DEBUG               1
 
 static void createTaskset(void);
@@ -86,7 +86,6 @@ static void sensors_task(void)
         sample_total.adxl_z += sample.adxl_z;
 
         num_samples++;
-        printf("%d\r\n", num_samples);
         if ( num_samples == NUM_SAMPLES ) {
             nrk_sem_pend(txPktSemaphore);
 
@@ -98,7 +97,7 @@ static void sensors_task(void)
             sample_total.adxl_y = sample_total.adxl_y/NUM_SAMPLES;
             sample_total.adxl_z = sample_total.adxl_z/NUM_SAMPLES;
 
-            sprintf(tx_buf.payload, "bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d", sample_total.bat, sample_total.temp, sample_total.light, sample_total.mic, sample_total.adxl_x, sample_total.adxl_y, sample_total.adxl_z);
+            sprintf(tx_buf.payload, "bat=%d temp=%d light=%d mic=%d acc_x=%d acc_y=%d acc_z=%d", sample_total.bat, sample_total.temp, sample_total.light, sample_total.mic, sample_total.adxl_x, sample_total.adxl_y, sample_total.adxl_z);
             tx_buf.addr = COMM_BROADCAST;
 
             txPktReady = true;
@@ -144,7 +143,7 @@ static void createTaskset(void)
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
     TaskOne.period.secs = 0;
-    TaskOne.period.nano_secs = 250*NANOS_PER_MS;
+    TaskOne.period.nano_secs = 400*NANOS_PER_MS;
     TaskOne.cpu_reserve.nano_secs = 0;
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;
@@ -158,7 +157,7 @@ static void createTaskset(void)
     TaskTwo.Type = BASIC_TASK;
     TaskTwo.SchType = PREEMPTIVE;
     TaskTwo.period.secs = 0;
-    TaskTwo.period.nano_secs = 150*NANOS_PER_MS;
+    TaskTwo.period.nano_secs = 50*NANOS_PER_MS;
     TaskTwo.cpu_reserve.secs = 0;
     TaskTwo.cpu_reserve.nano_secs = 0;
     TaskTwo.offset.secs = 0;

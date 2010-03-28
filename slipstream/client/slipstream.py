@@ -50,4 +50,3 @@ class SlipStream:
         else:
             logging.error('Illegal Node ID of %d' % nodeId)
 
-

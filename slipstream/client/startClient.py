@@ -11,6 +11,7 @@ Options:
         Eg. -d running will place the graphs under graphs/running
 """
 
+from calibrate import *
 from slipstream import *
 from sensor import *
 from util import *
@@ -71,7 +72,7 @@ class SlipStream_Thread(StoppableThread):
         while True:
             if self.stopped():
                 with self.cond:
-                    self.cond.notify()
+                    self.cond.notifyAll()
                 logging.debug("%s has exited properly" % self.name)
                 break
 
@@ -80,11 +81,8 @@ class SlipStream_Thread(StoppableThread):
             if msg is not None:
                 with self.cond:
                     self.sensors[sensor].add(msg)
-
-                    numSamples = self.sensors[sensor].getNumSamples()
-                    if (numSamples > 0 and numSamples % 5 == 0):
-                        self.update.append(sensor)
-                        self.cond.notify()
+                    self.update.append(sensor)
+                    self.cond.notifyAll()
 
 class Graph_Thread(StoppableThread):
     def __init__(self, cond, sensors, updateStack):
@@ -105,10 +103,13 @@ class Graph_Thread(StoppableThread):
 
             with self.cond:
                 self.cond.wait()
-
                 try:
                     sensor_location = self.update.pop()
-                    self.sensors[sensor_location].createGraphSensor()
+                    numSamples = self.sensors[sensor_location].getNumSamples()
+
+                    if (numSamples > 0 and numSamples % 5 == 0):
+                        self.sensors[sensor_location].createGraphSensor()
+
                 except:
                     pass
 
@@ -128,9 +129,11 @@ if __name__ == '__main__':
 
     t1 = SlipStream_Thread(condition, sensors, graphUpdateStack, host, port)
     t2 = Graph_Thread(condition, sensors, graphUpdateStack)
+    t3 = Calibrate_Thread(condition, sensors)
 
     t1.start()
     t2.start()
+    t3.start()
 
     while True:
         import time
@@ -139,5 +142,6 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             t1.stop()
             t2.stop()
+            t3.stop()
             break
 

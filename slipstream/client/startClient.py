@@ -128,11 +128,15 @@ if __name__ == '__main__':
     graphUpdateStack = []
 
     t1 = SlipStream_Thread(condition, sensors, graphUpdateStack, host, port)
-    t2 = Graph_Thread(condition, sensors, graphUpdateStack)
-    t3 = Calibrate_Thread(condition, sensors)
+
+    t2 = Calibrate_Thread(condition, sensors)
+    t3 = Graph_Thread(condition, sensors, graphUpdateStack)
 
     t1.start()
+
     t2.start()
+    t2.join()
+
     t3.start()
 
     while True:

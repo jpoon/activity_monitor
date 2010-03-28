@@ -6,38 +6,25 @@ class Calibrate_Thread(StoppableThread):
     sample_size = 5
     key_dataStart = "dataStart"
 
-    class State:
+    class Position:
         def __init__(self):
-            self.stateList = []
+            self.positionList = []
             self.outputResponse = {}
-            self._iter = iter(self.stateList)
+            self.description = {}
 
-        def __repr__(self):
-            return self.current_state
+        def add(self, position, outputResponse, description):
+            self.positionList.append(position)
+            self.outputResponse[position] = outputResponse
+            self.description[position] = description 
 
-        def addState(self, stateName, outputResponse):
-            self.stateList.append(stateName)
-            self.outputResponse[stateName] = outputResponse
+        def getPositionList(self):
+            return self.positionList
 
-        def start(self):
-            # append a "done" state to end of state list
-            self.stateList.append("done")
-            self.current_state = self._iter.next()
+        def getOutputResponse(self, position):
+            return self.outputResponse[position]
 
-        def getStateList(self):
-            return self.stateList[:-1]
-
-        def getOutputResponse(self, state):
-            return self.outputResponse[state]
-
-        def next(self):
-            self.current_state = self._iter.next()
-
-        def isDone(self):
-            if self.current_state == self.stateList[-1]:
-                return True
-            else:
-                return False
+        def getPositionDescription(self, position):
+            return self.description[position] 
 
     def __init__(self, cond, sensors):
         # for each sensor location, create a dictionary with keys being
@@ -51,10 +38,11 @@ class Calibrate_Thread(StoppableThread):
         self.sensors = sensors
         self.name = "Calibration Thread"
 
-        self.state = self.State()
-        self.state.addState("position_1", (0, 0, 1))
-        self.state.addState("position_2", (1, 1, 0))
-        self.state.start()
+        self.position= self.Position()
+
+        self.position.add("position_1", (0, 0, 1), "lying flat horizontally")
+        self.position.add("position_2", (1, 0, 0), "node placed upright with 'FireFly' text upright")
+        self.position.add("position_3", (0, 1, 0), "node lying on its side with LEDs situated on the top edge")
 
         # Create dictionary for each sensor location
         for key in self.sensors.keys():
@@ -63,63 +51,80 @@ class Calibrate_Thread(StoppableThread):
     def run(self):
         logging.debug("Starting %s" % self.name)
 
-        while True:
-            if self.stopped():
-                logging.debug("%s has exited properly" % self.name)
-                break
+        for calibrate_position in self.position.getPositionList():
+            self.__printPrompt(calibrate_position)
 
-            with self.cond:
-                self.cond.wait()
+            while True:
+                if self.stopped():
+                    logging.debug("%s has exited properly" % self.name)
+                    return
+ 
+                with self.cond:
+                    self.cond.wait()
 
-                for sensor_location in self.sensors.keys():
-                    # Determine whether we have already obtained values at
-                    # the current position for the given sensor location
-                    if repr(self.state) not in getattr(self, sensor_location):
-                        current_data_id = self.sensors[sensor_location].getNumSamples()
+                    for sensor_location in self.sensors.keys():
+                        # Determine whether we have already obtained values at
+                        # the current position for the given sensor location
+                        if calibrate_position not in getattr(self, sensor_location):
+                            current_data_id = self.sensors[sensor_location].getNumSamples()
 
-                        if Calibrate_Thread.key_dataStart not in getattr(self, sensor_location):
-                            getattr(self, sensor_location)[Calibrate_Thread.key_dataStart] = current_data_id
-                        else:
-                            numSamples = current_data_id - getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
-                            if (numSamples == Calibrate_Thread.sample_size):
-                                del getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
-                                getattr(self, sensor_location)[repr(self.state)] = self.__getAverage(sensor_location)
+                            if Calibrate_Thread.key_dataStart not in getattr(self, sensor_location):
+                                getattr(self, sensor_location)[Calibrate_Thread.key_dataStart] = current_data_id
+                            else:
+                                data_start = getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
+                                numSamples = current_data_id - data_start
+                                if (numSamples == Calibrate_Thread.sample_size):
+                                    getattr(self, sensor_location)[calibrate_position] = self.__getAverage(sensor_location, data_start, current_data_id)
+                                    del getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
 
-                missing = []
-                for sensor_location in self.sensors.keys():
-                    if repr(self.state) not in getattr(self, sensor_location):
-                        missing.append(sensor_location)
+                    missing = []
+                    for sensor_location in self.sensors.keys():
+                        if calibrate_position not in getattr(self, sensor_location):
+                            missing.append(sensor_location)
 
-                if len(missing) == 3:
-                    self.state.next()
-                    if self.state.isDone():
-                        self.__doAnalysis()
-                        logging.debug("%s has exited properly" % self.name)
+                    if len(missing) == 3:
                         break
-                else:
-                    logging.debug("Missing calibration data from %s for %s" % (missing, self.state))
+                    else:
+                        pass
+                        #logging.debug("Missing calibration data from %s for %s" % (missing, calibrate_position))
 
-    def __getAverage(self, key):
-        def getAverage(list):
+        self.__doAnalysis()
+        logging.debug("%s has exited properly" % self.name)
+
+    def __getAverage(self, key, data_start, data_end):
+        def average(list, start, end):
             sum = 0
-            for val in list:
+            for val in list[data_start:data_end]:
                 sum += val
-            return sum/len(list)
+            return sum/(data_end - data_start)
 
-        acc_x = getAverage(self.sensors[key].acc_x)
-        acc_y = getAverage(self.sensors[key].acc_y)
-        acc_z = getAverage(self.sensors[key].acc_z)
+        acc_x = average(self.sensors[key].acc_x, data_start, data_end)
+        acc_y = average(self.sensors[key].acc_y, data_start, data_end)
+        acc_z = average(self.sensors[key].acc_z, data_start, data_end)
 
         return (acc_x, acc_y, acc_z)
 
     def __doAnalysis(self):
         for sensor_location in self.sensors.keys():
-            print "--"
-            print sensor_location
-            for state in self.state.getStateList():
-                print self.state.getOutputResponse(state)
+            x_axis = []
+            y_axis = []
+            z_axis = []
+            for calibrate_position in self.position.getPositionList():
                 try:
-                    print state
-                    print getattr(self, sensor_location)[state]
+                    outputResponse = self.position.getOutputResponse(calibrate_position)
+                    data = getattr(self, sensor_location)[calibrate_position]
+
+                    x_axis.append((outputResponse[0], data[0]))
+                    y_axis.append((outputResponse[1], data[1]))
+                    z_axis.append((outputResponse[2], data[2]))
                 except:
                     pass
+           
+            print x_axis
+            print y_axis
+            print z_axis
+
+    def __printPrompt(self, position):
+       import time
+       time.sleep(1)
+       raw_input("Calibration: Move sensors to %s where %s. Once ready, press 'y' to continue.\r\n" % (position, self.position.getPositionDescription(position)))

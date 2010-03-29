@@ -26,6 +26,25 @@ class Calibrate_Thread(StoppableThread):
         def getPositionDescription(self, position):
             return self.description[position] 
 
+    class Axis_Data():
+        def __init__(self, data):
+            self.axis_data = data
+
+        def get_zero_g_value(self):
+            for i in range(len(self.axis_data)):
+                if self.axis_data[i][0] == 0:
+                    return self.axis_data[i][1]
+
+        def get_adcCounts_per_g(self):
+            for i in range(len(self.axis_data)-1):
+                item1 = self.axis_data[i]
+                item2 = self.axis_data[i+1]
+
+                outputResponse_diff = item1[0]-item2[0]
+                if outputResponse_diff != 0:
+                    count_diff = item1[1] - item2[1]
+                    return abs((item1[1] - item2[1])/outputResponse_diff)
+
     def __init__(self, cond, sensors):
         # for each sensor location, create a dictionary with keys being
         # the states (e.g. POSITION_1, POSITION_2). The values of each
@@ -51,6 +70,7 @@ class Calibrate_Thread(StoppableThread):
     def run(self):
         logging.debug("Starting %s" % self.name)
 
+        # for each calibration position, obtain a set of samples from each sensor node
         for calibrate_position in self.position.getPositionList():
             self.__printPrompt(calibrate_position)
 
@@ -105,6 +125,7 @@ class Calibrate_Thread(StoppableThread):
         return (acc_x, acc_y, acc_z)
 
     def __doAnalysis(self):
+        calibratedSensors = {}
         for sensor_location in self.sensors.keys():
             x_axis = []
             y_axis = []
@@ -119,11 +140,25 @@ class Calibrate_Thread(StoppableThread):
                     z_axis.append((outputResponse[2], data[2]))
                 except:
                     pass
-           
-            print x_axis
-            print y_axis
-            print z_axis
 
+            adcCount = (
+                self.Axis_Data(x_axis).get_adcCounts_per_g(),
+                self.Axis_Data(y_axis).get_adcCounts_per_g(),
+                self.Axis_Data(z_axis).get_adcCounts_per_g(),
+            )
+            zero_g_value = (
+                self.Axis_Data(x_axis).get_zero_g_value(),
+                self.Axis_Data(y_axis).get_zero_g_value(),
+                self.Axis_Data(z_axis).get_zero_g_value(),
+            )
+
+            calibratedSensors[sensor_location] = (
+                adcCount,
+                zero_g_value
+            )
+
+        print calibratedSensors
+            
     def __printPrompt(self, position):
        import time
        time.sleep(1)

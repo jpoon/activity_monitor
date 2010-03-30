@@ -150,24 +150,17 @@ class Calibrate_Thread(StoppableThread):
                 except:
                     pass
 
-            adcCount = (
-                self.Axis_Data(x_axis).get_adcCounts_per_g(),
-                self.Axis_Data(y_axis).get_adcCounts_per_g(),
-                self.Axis_Data(z_axis).get_adcCounts_per_g(),
-            )
-            zero_g_value = (
-                self.Axis_Data(x_axis).get_zero_g_value(),
-                self.Axis_Data(y_axis).get_zero_g_value(),
-                self.Axis_Data(z_axis).get_zero_g_value(),
-            )
+            adcCount = {}
+            adcCount['acc_x'] = self.Axis_Data(x_axis).get_adcCounts_per_g()
+            adcCount['acc_y'] = self.Axis_Data(y_axis).get_adcCounts_per_g()
+            adcCount['acc_z'] = self.Axis_Data(z_axis).get_adcCounts_per_g()
 
-            calibratedSensors[sensor_location] = (
-                adcCount,
-                zero_g_value
-            )
+            zero_g_value = {}
+            zero_g_value['acc_x'] = self.Axis_Data(x_axis).get_zero_g_value()
+            zero_g_value['acc_y'] = self.Axis_Data(y_axis).get_zero_g_value()
+            zero_g_value['acc_z'] = self.Axis_Data(z_axis).get_zero_g_value()
 
-        # adcCount_per_g (x, y, z), zero_g_value(x, y, z)
-        print calibratedSensors
+            self.sensors[sensor_location].setCalibration(adcCount, zero_g_value)
             
     def __printPrompt(self, position):
        import time

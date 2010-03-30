@@ -116,20 +116,16 @@ class Graph_Thread(StoppableThread):
             if self.stopped():
                 slipstream_thread.stop()
                 logging.debug("%s has exited properly" % self.getName())
-                break
+                return
 
             with cond:
                 cond.wait()
-                try:
-                    sensor_location = updateList.pop()
-                    numSamples = self.sensors[sensor_location].getNumSamples()
 
-                    if (numSamples > 0 and numSamples % 5 == 0):
-                        self.sensors[sensor_location].createGraphSensor()
+                sensor_location = updateList.pop()
+                numSamples = self.sensors[sensor_location].getNumSamples()
 
-                except:
-                    pass
-
+                if (numSamples > 0 and numSamples % 5 == 0):
+                    self.sensors[sensor_location].createGraphSensor()
 
 if __name__ == '__main__':
     (host, port, dir) = ParseArguments()
@@ -145,10 +141,10 @@ if __name__ == '__main__':
     graphUpdateStack = []
 
     t1 = Calibrate_Thread(sensors, host, port)
-    t2 = Graph_Thread(sensors, host, port)
-
     t1.start()
     t1.join()
+ 
+    t2 = Graph_Thread(sensors, host, port)
     t2.start()
 
     while True:

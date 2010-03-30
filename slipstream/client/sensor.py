@@ -1,12 +1,10 @@
-import logging
-import os
-import cairoplot
+from __future__ import division
 from datetime import datetime
+import os
+import logging
+import cairoplot
 
 class Sensor:
-    graph_min = 100
-    graph_max = 700
-
     def __init__(self, dir, name):
         self.dir = dir
         self.name = name
@@ -20,6 +18,8 @@ class Sensor:
         self.acc_y = []
         self.acc_z = []
 
+        self.calibrated = False
+
     def add(self, pkt):
         for item in pkt:
             attr, val = item.split('=')
@@ -32,14 +32,31 @@ class Sensor:
 
         self.time.append(datetime.time(datetime.now()).strftime("%M:%S"))
 
+    def setCalibration(self, adcCounts_per_g, zero_g_value):
+        self.calibrated = True
+        self.adcCounts_per_g = adcCounts_per_g
+        self.zero_g_value = zero_g_value
+
+        logging.info('Calibration: %s' % self.name)
+        logging.info('ADC counts per g = %s' % self.adcCounts_per_g)
+        logging.info('Zero g value = %s' % self.zero_g_value)
+        
     def getNumSamples(self):
         return len(self.time)
 
     def createGraphSensor(self):
         data = {}
-        data['acc_x'] = self.acc_x
-        data['acc_y'] = self.acc_y
-        data['acc_z'] = self.acc_z
+        y_bounds = None
+
+        if self.calibrated:
+            for key in self.adcCounts_per_g.keys():
+                dataset = []
+                for datapoint in getattr(self,key):
+                    converted_value = (datapoint-self.zero_g_value[key])/self.adcCounts_per_g[key]
+                    dataset.append(converted_value)
+                data[key] = dataset
+
+            y_bounds = (-4, 4)
 
         filename = self.dir + "/" + self.name
         cairoplot.dot_line_plot(name=filename,
@@ -51,8 +68,8 @@ class Sensor:
                                 grid=True,
                                 series_legend=True,
                                 x_labels=self.time,
-                                y_bounds=(Sensor.graph_min, Sensor.graph_max),
                                 x_title = "Time (minutes:seconds)",
+                                y_bounds = y_bounds,
                                 y_title = "")
 
         self.__convertToPng(filename)

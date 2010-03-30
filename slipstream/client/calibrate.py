@@ -1,5 +1,6 @@
 from util import *
 from sensor import *
+from startClient import *
 import logging
 
 class Calibrate_Thread(StoppableThread):
@@ -45,7 +46,7 @@ class Calibrate_Thread(StoppableThread):
                     count_diff = item1[1] - item2[1]
                     return abs((item1[1] - item2[1])/outputResponse_diff)
 
-    def __init__(self, cond, sensors):
+    def __init__(self, sensors, host, port):
         # for each sensor location, create a dictionary with keys being
         # the states (e.g. POSITION_1, POSITION_2). The values of each
         # corresponding key represent ADC values at each position
@@ -53,9 +54,10 @@ class Calibrate_Thread(StoppableThread):
         Thread.__init__(self)
         super(Calibrate_Thread, self).__init__()
 
-        self.cond = cond
+        self.host = host
+        self.port = port
         self.sensors = sensors
-        self.name = "Calibration Thread"
+        self.setName("Calibration Thread")
 
         self.position= self.Position()
 
@@ -74,13 +76,18 @@ class Calibrate_Thread(StoppableThread):
         for calibrate_position in self.position.getPositionList():
             self.__printPrompt(calibrate_position)
 
+            cond = Condition()
+            slipstream_thread = SlipStream_Thread(self.host, self.port, self.sensors)
+            slipstream_thread.setCond(cond)
+            slipstream_thread.start()
             while True:
                 if self.stopped():
-                    logging.debug("%s has exited properly" % self.name)
+                    slipstream_thread.stop()
+                    logging.debug("%s has exited properly" % self.getName())
                     return
  
-                with self.cond:
-                    self.cond.wait()
+                with cond:
+                    cond.wait()
 
                     for sensor_location in self.sensors.keys():
                         # Determine whether we have already obtained values at
@@ -107,6 +114,8 @@ class Calibrate_Thread(StoppableThread):
                     else:
                         pass
                         #logging.debug("Missing calibration data from %s for %s" % (missing, calibrate_position))
+
+            slipstream_thread.stop()
 
         self.__doAnalysis()
         logging.debug("%s has exited properly" % self.name)
@@ -157,6 +166,7 @@ class Calibrate_Thread(StoppableThread):
                 zero_g_value
             )
 
+        # adcCount_per_g (x, y, z), zero_g_value(x, y, z)
         print calibratedSensors
             
     def __printPrompt(self, position):

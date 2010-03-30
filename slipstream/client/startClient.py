@@ -55,19 +55,24 @@ def ParseArguments():
     return (host, port, graph_dir)
 
 class SlipStream_Thread(StoppableThread):
-    def __init__ (self, cond, sensors, updateStack, host, port):
+    def __init__ (self, host, port, sensors):
         Thread.__init__(self)
         super(SlipStream_Thread, self).__init__()
 
-        self.cond = cond
-        self.sensors = sensors
-        self.update = updateStack
         self.host = host
         self.port = port
-        self.name = "SlipStream Thread"
+        self.sensors = sensors
+
+        self.setName("SlipStream Thread")
+
+    def setCond(self, cond):
+        self.cond = cond
+
+    def setUpdateList(self, list):
+        self.update = list
 
     def run(self):
-        logging.debug("Starting %s" % self.name)
+        logging.debug("Starting %s" % self.getName())
         client = SlipStream(self.host, self.port)
         while True:
             if self.stopped():
@@ -81,30 +86,42 @@ class SlipStream_Thread(StoppableThread):
             if msg is not None:
                 with self.cond:
                     self.sensors[sensor].add(msg)
-                    self.update.append(sensor)
+                    if hasattr(self, "update"):
+                        self.update.append(sensor)
                     self.cond.notifyAll()
 
 class Graph_Thread(StoppableThread):
-    def __init__(self, cond, sensors, updateStack):
+    def __init__(self, sensors, host, port):
         Thread.__init__(self)
         super(Graph_Thread, self).__init__()
 
-        self.cond = cond
         self.sensors = sensors
-        self.update = updateStack
-        self.name = "Graph Thread"
+        self.host = host
+        self.port = port
+
+        self.setName("Graph Thread")
 
     def run(self):
         logging.debug("Starting %s" % self.name)
+
+        cond = Condition()
+        updateList = []
+
+        slipstream_thread = SlipStream_Thread(self.host, self.port, self.sensors)
+        slipstream_thread.setCond(cond)
+        slipstream_thread.setUpdateList(updateList)
+        slipstream_thread.start()
+        
         while True:
             if self.stopped():
-                logging.debug("%s has exited properly" % self.name)
+                slipstream_thread.stop()
+                logging.debug("%s has exited properly" % self.getName())
                 break
 
-            with self.cond:
-                self.cond.wait()
+            with cond:
+                cond.wait()
                 try:
-                    sensor_location = self.update.pop()
+                    sensor_location = updateList.pop()
                     numSamples = self.sensors[sensor_location].getNumSamples()
 
                     if (numSamples > 0 and numSamples % 5 == 0):
@@ -127,25 +144,18 @@ if __name__ == '__main__':
 
     graphUpdateStack = []
 
-    t1 = SlipStream_Thread(condition, sensors, graphUpdateStack, host, port)
-
-    t2 = Calibrate_Thread(condition, sensors)
-    t3 = Graph_Thread(condition, sensors, graphUpdateStack)
+    t1 = Calibrate_Thread(sensors, host, port)
+    t2 = Graph_Thread(sensors, host, port)
 
     t1.start()
-
+    t1.join()
     t2.start()
-    t2.join()
-
-    t3.start()
 
     while True:
         import time
         try:
             time.sleep(1)
         except KeyboardInterrupt:
-            t1.stop()
             t2.stop()
-            t3.stop()
             break
 

@@ -63,7 +63,7 @@ class Calibrate_Thread(StoppableThread):
 
         self.position= self.Position()
 
-        self.position.add("position_1", (0, 0, 1), "lying flat horizontally")
+        self.position.add("position_1", (0, 0, 1), "node lying flat horizontally")
         self.position.add("position_2", (1, 0, 0), "node placed upright with 'FireFly' text upright")
         self.position.add("position_3", (0, 1, 0), "node lying on its side with LEDs situated on the top edge")
 
@@ -111,7 +111,7 @@ class Calibrate_Thread(StoppableThread):
                         if calibrate_position not in getattr(self, sensor_location):
                             missing.append(sensor_location)
 
-                    if len(missing) == 3:
+                    if len(missing) == 0:
                         break
                     else:
                         pass

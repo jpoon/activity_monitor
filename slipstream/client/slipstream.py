@@ -78,7 +78,7 @@ class SlipStream_Thread(StoppableThread):
                 with self.cond:
                     self.cond.notifyAll()
                 logging.debug("%s has exited properly" % self.name)
-                break
+                return
 
             (sensor, msg) = client.receive()
             

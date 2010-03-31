@@ -15,11 +15,9 @@ from calibrate import *
 from slipstream import *
 from sensor import *
 from graph import *
-from util import *
+from threading import *
 import os
 import logging
-
-killThread = False
 
 def ParseArguments():
     logging.basicConfig(level=logging.DEBUG)
@@ -58,7 +56,7 @@ def ParseArguments():
 if __name__ == '__main__':
     (host, port, dir) = ParseArguments()
 
-    condition = Condition()
+    Watcher()
 
     sensors = {}
     sensors['left_arm'] = Sensor(dir, "left_arm")
@@ -66,20 +64,10 @@ if __name__ == '__main__':
     sensors['left_leg'] = Sensor(dir, "left_leg")
     sensors['right_leg'] = Sensor(dir, "right_leg")
 
-    graphUpdateStack = []
-
     t1 = Calibrate_Thread(sensors, host, port)
     t1.start()
     t1.join()
- 
+
     t2 = Graph_Thread(sensors, host, port)
     t2.start()
-
-    while True:
-        import time
-        try:
-            time.sleep(1)
-        except KeyboardInterrupt:
-            t2.stop()
-            break
 

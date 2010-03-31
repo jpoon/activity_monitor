@@ -169,6 +169,4 @@ class Calibrate_Thread(StoppableThread):
             self.sensors[sensor_location].setCalibration(adcCount, zero_g_value)
             
     def __printPrompt(self, position):
-       import time
-       time.sleep(1)
        raw_input("Calibration: Move sensors to %s where %s. Once ready, press any to continue.\n" % (position, self.position.getPositionDescription(position)))

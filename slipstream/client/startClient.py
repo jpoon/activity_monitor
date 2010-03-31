@@ -54,42 +54,6 @@ def ParseArguments():
 
     return (host, port, graph_dir)
 
-class SlipStream_Thread(StoppableThread):
-    def __init__ (self, host, port, sensors):
-        Thread.__init__(self)
-        super(SlipStream_Thread, self).__init__()
-
-        self.host = host
-        self.port = port
-        self.sensors = sensors
-
-        self.setName("SlipStream Thread")
-
-    def setCond(self, cond):
-        self.cond = cond
-
-    def setUpdateList(self, list):
-        self.update = list
-
-    def run(self):
-        logging.debug("Starting %s" % self.getName())
-        client = SlipStream(self.host, self.port)
-        while True:
-            if self.stopped():
-                with self.cond:
-                    self.cond.notifyAll()
-                logging.debug("%s has exited properly" % self.name)
-                break
-
-            (sensor, msg) = client.receive()
-            
-            if msg is not None:
-                with self.cond:
-                    self.sensors[sensor].add(msg)
-                    if hasattr(self, "update"):
-                        self.update.append(sensor)
-                    self.cond.notifyAll()
-
 class Graph_Thread(StoppableThread):
     def __init__(self, sensors, host, port):
         Thread.__init__(self)

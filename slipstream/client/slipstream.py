@@ -1,5 +1,6 @@
 import socket
 from sensor import *
+from util import *
 import logging
 
 class SlipStream:
@@ -25,7 +26,7 @@ class SlipStream:
 
     def receive(self):
         try:
-            msg, server = self.sock.recvfrom(255)
+            msg = self.sock.recv(255)
 
             msg = msg.split()
             nodeId = int(msg.pop(0))
@@ -49,4 +50,40 @@ class SlipStream:
             return "right_leg"
         else:
             logging.error('Illegal Node ID of %d' % nodeId)
+
+class SlipStream_Thread(StoppableThread):
+    def __init__ (self, host, port, sensors):
+        Thread.__init__(self)
+        super(SlipStream_Thread, self).__init__()
+
+        self.host = host
+        self.port = port
+        self.sensors = sensors
+
+        self.setName("SlipStream Thread")
+
+    def setCond(self, cond):
+        self.cond = cond
+
+    def setUpdateList(self, list):
+        self.update = list
+
+    def run(self):
+        logging.debug("Starting %s" % self.getName())
+        client = SlipStream(self.host, self.port)
+        while True:
+            if self.stopped():
+                with self.cond:
+                    self.cond.notifyAll()
+                logging.debug("%s has exited properly" % self.name)
+                break
+
+            (sensor, msg) = client.receive()
+            
+            if msg is not None:
+                with self.cond:
+                    self.sensors[sensor].add(msg)
+                    if hasattr(self, "update"):
+                        self.update.append(sensor)
+                    self.cond.notifyAll()
 

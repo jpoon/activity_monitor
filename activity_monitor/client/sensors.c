@@ -7,8 +7,6 @@
 
 sensors_packet_t sensor_buf;
 
-static void sensors_print(const sensors_packet_t *);
-
 void sensors_register_drivers(void)
 {
     int8_t val;
@@ -43,8 +41,6 @@ void sensors_read(sensors_packet_t *pkt)
         val = nrk_read(fd, &(pkt->adxl_y), 2);
         val = nrk_set_status(fd,SENSOR_SELECT, ACC_Z);
         val = nrk_read(fd, &pkt->adxl_z, 2);
-
-        sensors_print(pkt);
     }
     nrk_close(fd);
 }

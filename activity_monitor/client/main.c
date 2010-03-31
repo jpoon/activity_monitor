@@ -4,12 +4,12 @@
 #include <stdio.h>
 #include <avr/sleep.h>
 #include <hal.h>
+#include <nrk_error.h>
 #include "sensors.h"
 #include "comm.h"
 
-#define MAC_ADDR            0x0010
-#define NUM_SAMPLES         10
-#define DEBUG               1
+#define MAC_ADDR            0x0013
+#define NUM_SAMPLES         15
 
 static void createTaskset(void);
 static void sensors_task(void);
@@ -76,6 +76,7 @@ static void sensors_task(void)
         nrk_gpio_toggle(NRK_DEBUG_0);
 
         sensors_read(&sample);
+//        sensors_print(&sample);
 
         sample_total.bat += sample.bat;
         sample_total.light += sample.light;
@@ -87,8 +88,6 @@ static void sensors_task(void)
 
         num_samples++;
         if ( num_samples == NUM_SAMPLES ) {
-            nrk_sem_pend(txPktSemaphore);
-
             sample_total.bat = sample_total.bat/NUM_SAMPLES;
             sample_total.light = sample_total.light/NUM_SAMPLES;
             sample_total.mic = sample_total.mic/NUM_SAMPLES;
@@ -97,14 +96,15 @@ static void sensors_task(void)
             sample_total.adxl_y = sample_total.adxl_y/NUM_SAMPLES;
             sample_total.adxl_z = sample_total.adxl_z/NUM_SAMPLES;
 
+            nrk_sem_pend(txPktSemaphore);
             sprintf(tx_buf.payload, "bat=%d temp=%d light=%d mic=%d acc_x=%d acc_y=%d acc_z=%d", sample_total.bat, sample_total.temp, sample_total.light, sample_total.mic, sample_total.adxl_x, sample_total.adxl_y, sample_total.adxl_z);
             tx_buf.addr = COMM_BROADCAST;
 
             txPktReady = true;
+            nrk_sem_post(txPktSemaphore);
+
             num_samples = 0;
             memset( &sample_total, 0, sizeof(sensors_packet_t) );
-
-            nrk_sem_post(txPktSemaphore);
         }
 
         nrk_wait_until_next_period();
@@ -113,6 +113,7 @@ static void sensors_task(void)
 
 static void comm_task(void)
 {
+    int8_t err;
     comm_setup(MAC_ADDR);
 
     while(1) {
@@ -121,9 +122,21 @@ static void comm_task(void)
         nrk_sem_pend(txPktSemaphore);
         if (txPktReady) {
             tx_buf.len = strlen(tx_buf.payload);
-            comm_tx( &tx_buf );
-            memset(&tx_buf, 0, sizeof(comm_packet_t));
 
+            // print contents of packet
+            nrk_kprintf( PSTR("comm: contents=[ ") );
+            for(uint8_t i=0; i < tx_buf.len; i++ ) {
+                printf( "%c", tx_buf.payload[i] );
+            }
+            nrk_kprintf( PSTR(" ]\r\n"));
+
+            err = comm_tx( &tx_buf );
+            if (err == NRK_ERROR) {
+                // possibly do some power optimization here
+                printf( "comm: tx packet -- no ack\r\n" );
+            } 
+
+            memset(&tx_buf, 0, sizeof(comm_packet_t));
             txPktReady = false;
         }
         nrk_sem_post(txPktSemaphore);
@@ -143,7 +156,7 @@ static void createTaskset(void)
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
     TaskOne.period.secs = 0;
-    TaskOne.period.nano_secs = 400*NANOS_PER_MS;
+    TaskOne.period.nano_secs = 200*NANOS_PER_MS;
     TaskOne.cpu_reserve.nano_secs = 0;
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;
@@ -157,7 +170,7 @@ static void createTaskset(void)
     TaskTwo.Type = BASIC_TASK;
     TaskTwo.SchType = PREEMPTIVE;
     TaskTwo.period.secs = 0;
-    TaskTwo.period.nano_secs = 50*NANOS_PER_MS;
+    TaskTwo.period.nano_secs = 30*NANOS_PER_MS;
     TaskTwo.cpu_reserve.secs = 0;
     TaskTwo.cpu_reserve.nano_secs = 0;
     TaskTwo.offset.secs = 0;

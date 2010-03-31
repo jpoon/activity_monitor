@@ -16,5 +16,6 @@ typedef struct sensors_packet_t
 
 void sensors_register_drivers(void);
 void sensors_read(sensors_packet_t*);
+void sensors_print(const sensors_packet_t*);
 
 #endif // _SENSORS_H_

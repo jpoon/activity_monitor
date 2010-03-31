@@ -156,7 +156,7 @@ static void createTaskset(void)
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
     TaskOne.period.secs = 0;
-    TaskOne.period.nano_secs = 200*NANOS_PER_MS;
+    TaskOne.period.nano_secs = 400*NANOS_PER_MS;
     TaskOne.cpu_reserve.nano_secs = 0;
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;

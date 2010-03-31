@@ -5,6 +5,8 @@ import logging
 
 class SlipStream:
     def __init__(self, host, port):
+        self.logging = logging.getLogger("slipstream")
+
         self.addr = (host, port)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setblocking(0)
@@ -16,12 +18,12 @@ class SlipStream:
         # sending an initial packet such that the server
         # accepts the connection and starts forwarding
         # packets to our address
-        logging.debug('Attempting to connect to %s %s' % self.addr)
+        self.logging.debug('Attempting to connect to %s %s' % self.addr)
         message = "%s connected\r\n" % socket.gethostname()
         self.sock.sendto(message, self.addr)
 
     def send(self, msg):
-        logging.debug('Sending %s' % msg)
+        self.logging.debug('Sending %s' % msg)
         self.sock.sendto(msg, self.addr) 
 
     def receive(self):
@@ -31,7 +33,7 @@ class SlipStream:
             msg = msg.split()
             nodeId = int(msg.pop(0))
             sensor = self.__convertNodeIdToSensorLocation(nodeId)
-            logging.debug('Received packet from %s' % sensor)
+            self.logging.debug('Received packet from %s' % sensor)
             return (sensor, msg) 
         except:
             return (None, None)
@@ -49,7 +51,7 @@ class SlipStream:
         elif nodeId == 19:
             return "right_leg"
         else:
-            logging.error('Illegal Node ID of %d' % nodeId)
+            self.logging.error('Illegal Node ID of %d' % nodeId)
 
 class SlipStream_Thread(StoppableThread):
     def __init__ (self, host, port, sensors):

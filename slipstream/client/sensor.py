@@ -6,6 +6,8 @@ import cairoplot
 
 class Sensor:
     def __init__(self, dir, name):
+        self.logging = logging.getLogger("sensor")
+
         self.dir = dir
         self.name = name
 
@@ -28,7 +30,7 @@ class Sensor:
             try:
                 getattr(self, attr).append(val)
             except:
-                logging.error('Unknown attribute: %s' % attr)
+                self.logging.error('Unknown attribute: %s' % attr)
 
         self.time.append(datetime.time(datetime.now()).strftime("%M:%S"))
 
@@ -37,9 +39,9 @@ class Sensor:
         self.adcCounts_per_g = adcCounts_per_g
         self.zero_g_value = zero_g_value
 
-        logging.info('Calibration: %s' % self.name)
-        logging.info('ADC counts per g = %s' % self.adcCounts_per_g)
-        logging.info('Zero g value = %s' % self.zero_g_value)
+        self.logging.info('Calibration: %s' % self.name)
+        self.logging.info('ADC counts per g = %s' % self.adcCounts_per_g)
+        self.logging.info('Zero g value = %s' % self.zero_g_value)
         
     def getNumSamples(self):
         return len(self.time)
@@ -73,7 +75,7 @@ class Sensor:
                                 y_title = "")
 
         self.__convertToPng(filename)
-        logging.debug("Updating %s graph" % self.name)
+        self.logging.debug("Updating %s graph" % self.name)
 
     def __convertToPng(self, filename):
         os.system("gimp -i -b '(svg-to-raster \"%s.svg\" \"%s.png\" 72 0 0)' -b '(gimp-quit 0)' &> /dev/null &" % (filename, filename))

@@ -54,6 +54,8 @@ class Calibrate_Thread(StoppableThread):
         Thread.__init__(self)
         super(Calibrate_Thread, self).__init__()
 
+        self.logging = logging.getLogger("calibrate")
+
         self.host = host
         self.port = port
         self.sensors = sensors
@@ -70,7 +72,7 @@ class Calibrate_Thread(StoppableThread):
             setattr(self, key, {})
 
     def run(self):
-        logging.debug("Starting %s" % self.name)
+        self.logging.debug("Starting %s" % self.name)
 
         # for each calibration position, obtain a set of samples from each sensor node
         for calibrate_position in self.position.getPositionList():
@@ -83,7 +85,7 @@ class Calibrate_Thread(StoppableThread):
             while True:
                 if self.stopped():
                     slipstream_thread.stop()
-                    logging.debug("%s has exited properly" % self.getName())
+                    self.logging.debug("%s has exited properly" % self.getName())
                     return
  
                 with cond:
@@ -118,7 +120,7 @@ class Calibrate_Thread(StoppableThread):
             slipstream_thread.stop()
 
         self.__doAnalysis()
-        logging.debug("%s has exited properly" % self.name)
+        self.logging.debug("%s has exited properly" % self.name)
 
     def __getAverage(self, key, data_start, data_end):
         def average(list, start, end):

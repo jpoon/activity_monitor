@@ -5,10 +5,9 @@ import logging
 import cairoplot
 
 class Sensor:
-    def __init__(self, dir, name):
+    def __init__(self, name):
         self.logging = logging.getLogger("sensor")
 
-        self.dir = dir
         self.name = name
 
         self.time = []
@@ -57,7 +56,7 @@ class Sensor:
     def getNumSamples(self):
         return len(self.time)
 
-    def createGraphSensor(self):
+    def createGraphSensor(self, filename):
         data = {}
         y_bounds = None
 
@@ -79,7 +78,6 @@ class Sensor:
             data["acc_z"] = self.acc_z
 
 
-        filename = self.dir + "/" + self.name
         cairoplot.dot_line_plot(name=filename,
                                 data=data,
                                 width=900,

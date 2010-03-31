@@ -4,6 +4,8 @@ from slipstream import *
 import logging
 
 class Graph_Thread(StoppableThread):
+    graph_dir = "graphs"
+
     def __init__(self, sensors, host, port):
         Thread.__init__(self)
         super(Graph_Thread, self).__init__()
@@ -13,6 +15,9 @@ class Graph_Thread(StoppableThread):
         self.port = port
 
         self.setName("Graph Thread")
+
+        import os
+        os.system("mkdir %s &> /dev/null" % Graph_Thread.graph_dir)
 
     def run(self):
         logging.debug("Starting %s" % self.name)
@@ -38,6 +43,6 @@ class Graph_Thread(StoppableThread):
                 numSamples = self.sensors[sensor_location].getNumSamples()
 
                 if (numSamples > 0 and numSamples % 5 == 0):
-                    self.sensors[sensor_location].createGraphSensor()
-
+                    filename = Graph_Thread.graph_dir + "/" + sensor_location
+                    self.sensors[sensor_location].createGraphSensor(filename)
 

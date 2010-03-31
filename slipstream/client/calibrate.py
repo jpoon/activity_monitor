@@ -162,9 +162,13 @@ class Calibrate_Thread(StoppableThread):
             zero_g_value['acc_y'] = self.Axis_Data(y_axis).get_zero_g_value()
             zero_g_value['acc_z'] = self.Axis_Data(z_axis).get_zero_g_value()
 
+            self.logging.info('%s' % self.name)
+            self.logging.info('ADC Counts per G = %s' % adcCount)
+            self.logging.info('Zero G Value = %s' % zero_g_value)
+
             self.sensors[sensor_location].setCalibration(adcCount, zero_g_value)
             
     def __printPrompt(self, position):
        import time
        time.sleep(1)
-       raw_input("Calibration: Move sensors to %s where %s. Once ready, press 'y' to continue.\r\n" % (position, self.position.getPositionDescription(position)))
+       raw_input("Calibration: Move sensors to %s where %s. Once ready, press any to continue.\n" % (position, self.position.getPositionDescription(position)))

@@ -38,11 +38,7 @@ class Sensor:
         self.calibrated = True
         self.adcCounts_per_g = adcCounts_per_g
         self.zero_g_value = zero_g_value
-
-        self.logging.info('Calibration: %s' % self.name)
-        self.logging.info('ADC counts per g = %s' % self.adcCounts_per_g)
-        self.logging.info('Zero g value = %s' % self.zero_g_value)
-        
+       
     def getNumSamples(self):
         return len(self.time)
 
@@ -54,11 +50,19 @@ class Sensor:
             for key in self.adcCounts_per_g.keys():
                 dataset = []
                 for datapoint in getattr(self,key):
-                    converted_value = (datapoint-self.zero_g_value[key])/self.adcCounts_per_g[key]
-                    dataset.append(converted_value)
+                    try:
+                        converted_value = (datapoint-self.zero_g_value[key])/self.adcCounts_per_g[key]
+                        dataset.append(converted_value)
+                    except ZeroDevisionError:
+                        self.logging.error("Zero Divison Error: (%s-%s)/%s" % (datapoint, self.zero_g_value[key], self.adcCounts_per_g[key]))
                 data[key] = dataset
 
             y_bounds = (-4, 4)
+        else:
+            data["acc_x"] = self.acc_x
+            data["acc_y"] = self.acc_y
+            data["acc_z"] = self.acc_z
+
 
         filename = self.dir + "/" + self.name
         cairoplot.dot_line_plot(name=filename,

@@ -14,6 +14,7 @@ Options:
 from calibrate import *
 from slipstream import *
 from sensor import *
+from graph import *
 from util import *
 import os
 import logging
@@ -53,43 +54,6 @@ def ParseArguments():
     os.system("mkdir %s &> /dev/null" % graph_dir)
 
     return (host, port, graph_dir)
-
-class Graph_Thread(StoppableThread):
-    def __init__(self, sensors, host, port):
-        Thread.__init__(self)
-        super(Graph_Thread, self).__init__()
-
-        self.sensors = sensors
-        self.host = host
-        self.port = port
-
-        self.setName("Graph Thread")
-
-    def run(self):
-        logging.debug("Starting %s" % self.name)
-
-        cond = Condition()
-        updateList = []
-
-        slipstream_thread = SlipStream_Thread(self.host, self.port, self.sensors)
-        slipstream_thread.setCond(cond)
-        slipstream_thread.setUpdateList(updateList)
-        slipstream_thread.start()
-        
-        while True:
-            if self.stopped():
-                slipstream_thread.stop()
-                logging.debug("%s has exited properly" % self.getName())
-                return
-
-            with cond:
-                cond.wait()
-
-                sensor_location = updateList.pop()
-                numSamples = self.sensors[sensor_location].getNumSamples()
-
-                if (numSamples > 0 and numSamples % 5 == 0):
-                    self.sensors[sensor_location].createGraphSensor()
 
 if __name__ == '__main__':
     (host, port, dir) = ParseArguments()

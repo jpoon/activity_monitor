@@ -15,7 +15,7 @@ typedef struct comm_packet_t {
 void comm_init(void);
 void comm_setup(uint16_t addr);
 comm_packet_t* comm_rx(void);
-void comm_tx(comm_packet_t*);
+int8_t comm_tx(comm_packet_t*);
 void comm_rxCleanup(comm_packet_t *);
 void comm_printPacket(const comm_packet_t *);
 

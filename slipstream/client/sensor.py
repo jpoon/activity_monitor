@@ -25,12 +25,17 @@ class Sensor:
     def add(self, pkt):
         for item in pkt:
             attr, val = item.split('=')
-            val = int(val.strip(','))
+
+            if val.isdigit():
+                val = int(val)
      
-            try:
-                getattr(self, attr).append(val)
-            except:
-                self.logging.error('Unknown attribute: %s' % attr)
+                try:
+                    getattr(self, attr).append(val)
+                except:
+                    self.logging.error('Unknown attribute: %s' % attr)
+
+            else:
+                self.logging.error('Received value of %s could not be parsed into integer: %s' % (val, item))
 
         self.time.append(datetime.time(datetime.now()).strftime("%M:%S"))
 
@@ -38,6 +43,16 @@ class Sensor:
         self.calibrated = True
         self.adcCounts_per_g = adcCounts_per_g
         self.zero_g_value = zero_g_value
+
+        # clear the previously received packets
+        del self.time[:]
+        del self.bat[:]
+        del self.temp[:]
+        del self.light[:]
+        del self.mic[:]
+        del self.acc_x[:]
+        del self.acc_y[:]
+        del self.acc_z[:]
        
     def getNumSamples(self):
         return len(self.time)

@@ -54,13 +54,13 @@ class SlipStream:
             self.logging.error('Illegal Node ID of %d' % nodeId)
 
 class SlipStream_Thread(StoppableThread):
-    def __init__ (self, host, port, sensors):
+    def __init__ (self, host, port, sensorList):
         Thread.__init__(self)
         super(SlipStream_Thread, self).__init__()
 
         self.host = host
         self.port = port
-        self.sensors = sensors
+        self.sensorList = sensorList
 
         self.setName("SlipStream Thread")
 
@@ -84,7 +84,7 @@ class SlipStream_Thread(StoppableThread):
             
             if msg is not None:
                 with self.cond:
-                    self.sensors[sensor].add(msg)
+                    self.sensorList.addSample(sensor, msg)
                     if hasattr(self, "update"):
                         self.update.append(sensor)
                     self.cond.notifyAll()

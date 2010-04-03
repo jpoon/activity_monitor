@@ -47,16 +47,16 @@ if __name__ == '__main__':
 
     Watcher()
 
-    sensors = {}
-    sensors['left_arm'] = Sensor("left_arm")
-    sensors['right_arm'] = Sensor("right_arm")
-    sensors['left_leg'] = Sensor("left_leg")
-    sensors['right_leg'] = Sensor("right_leg")
+    sensorList = SensorList()
+    sensorList.addSensor("left_arm")
+    sensorList.addSensor("right_arm")
+    sensorList.addSensor("left_leg")
+    sensorList.addSensor("right_leg")
 
-    t1 = Calibrate_Thread(sensors, host, port)
-    t1.start()
-    t1.join()
+#    t1 = Calibrate_Thread(sensorList, host, port)
+#    t1.start()
+#    t1.join()
 
-    t2 = Graph_Thread(sensors, host, port)
+    t2 = Graph_Thread(sensorList, host, port)
     t2.start()
 

@@ -46,7 +46,7 @@ class Calibrate_Thread(StoppableThread):
                     count_diff = item1[1] - item2[1]
                     return abs((item1[1] - item2[1])/outputResponse_diff)
 
-    def __init__(self, sensors, host, port):
+    def __init__(self, sensorList, host, port):
         # for each sensor location, create a dictionary with keys being
         # the states (e.g. POSITION_1, POSITION_2). The values of each
         # corresponding key represent ADC values at each position
@@ -59,7 +59,7 @@ class Calibrate_Thread(StoppableThread):
 
         self.host = host
         self.port = port
-        self.sensors = sensors
+        self.sensorList = sensorList
 
         self.position = self.Position()
         self.position.add("position_1", (0, 0, 1), "node lying flat horizontally")
@@ -67,7 +67,7 @@ class Calibrate_Thread(StoppableThread):
         self.position.add("position_3", (0, 1, 0), "node lying on its side with LEDs situated on the top edge")
 
         # Create dictionary for each sensor location
-        for key in self.sensors.keys():
+        for key in self.sensorList.getSensorKeys():
             setattr(self, key, {})
 
     def run(self):
@@ -78,7 +78,7 @@ class Calibrate_Thread(StoppableThread):
             self.__printPrompt(calibrate_position)
 
             cond = Condition()
-            slipstream_thread = SlipStream_Thread(self.host, self.port, self.sensors)
+            slipstream_thread = SlipStream_Thread(self.host, self.port, self.sensorList)
             slipstream_thread.setCond(cond)
             slipstream_thread.start()
 
@@ -91,11 +91,11 @@ class Calibrate_Thread(StoppableThread):
                 with cond:
                     cond.wait()
 
-                    for sensor_location in self.sensors.keys():
+                    for sensor_location in self.sensorList.getSensorKeys():
                         # Determine whether we have already obtained values at
                         # the current position for the given sensor location
                         if calibrate_position not in getattr(self, sensor_location):
-                            current_data_id = self.sensors[sensor_location].getNumSamples()
+                            current_data_id = self.sensorList.getNumSamples(sensor_location)
 
                             if Calibrate_Thread.key_dataStart not in getattr(self, sensor_location):
                                 getattr(self, sensor_location)[Calibrate_Thread.key_dataStart] = current_data_id
@@ -107,7 +107,7 @@ class Calibrate_Thread(StoppableThread):
                                     del getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
 
                     missing = []
-                    for sensor_location in self.sensors.keys():
+                    for sensor_location in self.sensorList.getSensorKeys():
                         if calibrate_position not in getattr(self, sensor_location):
                             missing.append(sensor_location)
 
@@ -130,15 +130,15 @@ class Calibrate_Thread(StoppableThread):
                 sum += val
             return sum/(data_end - data_start)
 
-        acc_x = average(self.sensors[key].acc_x, data_start, data_end)
-        acc_y = average(self.sensors[key].acc_y, data_start, data_end)
-        acc_z = average(self.sensors[key].acc_z, data_start, data_end)
+        acc_x = average(self.sensorList.getSensor(key).acc_x, data_start, data_end)
+        acc_y = average(self.sensorList.getSensor(key).acc_y, data_start, data_end)
+        acc_z = average(self.sensorList.getSensor(key).acc_z, data_start, data_end)
 
         return (acc_x, acc_y, acc_z)
 
     def __doAnalysis(self):
         calibratedSensors = {}
-        for sensor_location in self.sensors.keys():
+        for sensor_location in self.sensorList.getSensorKeys():
             x_axis = []
             y_axis = []
             z_axis = []
@@ -167,7 +167,7 @@ class Calibrate_Thread(StoppableThread):
             self.logging.info('ADC Counts per G = %s' % adcCount)
             self.logging.info('Zero G Value = %s' % zero_g_value)
 
-            self.sensors[sensor_location].setCalibration(adcCount, zero_g_value)
+            self.sensorList.calibrate(sensor_location, adcCount, zero_g_value)
             
     def __printPrompt(self, position):
        raw_input("Calibration: Move sensors to %s where %s. Once ready, press any to continue.\n" % (position, self.position.getPositionDescription(position)))

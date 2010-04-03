@@ -9,14 +9,13 @@ class Graph_Thread(StoppableThread):
     graph_dir = "graphs"
     graph_frequency = 10
 
-    def __init__(self, sensors, host, port):
+    def __init__(self, sensorList, host, port):
         Thread.__init__(self)
         super(Graph_Thread, self).__init__()
         self.setName("Graph Thread")
-
         self.logging = logging.getLogger("run")
 
-        self.sensors = sensors
+        self.sensorList = sensorList
         self.host = host
         self.port = port
         self.data_analysis = Data_Analysis()
@@ -33,7 +32,7 @@ class Graph_Thread(StoppableThread):
         cond = Condition()
         updateList = []
 
-        slipstream_thread = SlipStream_Thread(self.host, self.port, self.sensors)
+        slipstream_thread = SlipStream_Thread(self.host, self.port, self.sensorList)
         slipstream_thread.setCond(cond)
         slipstream_thread.setUpdateList(updateList)
         slipstream_thread.start()
@@ -48,17 +47,17 @@ class Graph_Thread(StoppableThread):
                 cond.wait()
 
                 sensor_location = updateList.pop()
-                numSamples = self.sensors[sensor_location].getNumSamples()
+                numSamples = self.sensorList.getNumSamples(sensor_location)
 
                 if (numSamples > 0):
                     if (numSamples % Graph_Thread.graph_frequency == 0):
                         filename = filedir + "/" + sensor_location
-                        self.sensors[sensor_location].createGraphSensor(filename)
+                        self.sensorList.getSensor(sensor_location).createGraphSensor(filename)
 #                       self.__convertToPng(filename)
 
                     if (numSamples % 10 == 0):
-                        print self.data_analysis.getAverage(self.sensors[sensor_location], numSamples-10, numSamples)
-                        print self.data_analysis.getStndDeviation(self.sensors[sensor_location], numSamples-10, numSamples)
+                        print self.data_analysis.getAverage(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
+                        print self.data_analysis.getStndDeviation(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
 
     def __convertToPng(self, filename):
         os.system("gimp -i -b '(svg-to-raster \"%s.svg\" \"%s.png\" 72 0 0)' -b '(gimp-quit 0)' &> /dev/null &" % (filename, filename))

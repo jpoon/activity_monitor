@@ -53,16 +53,15 @@ class Calibrate_Thread(StoppableThread):
 
         Thread.__init__(self)
         super(Calibrate_Thread, self).__init__()
+        self.setName("Calibration Thread")
 
         self.logging = logging.getLogger("calibrate")
 
         self.host = host
         self.port = port
         self.sensors = sensors
-        self.setName("Calibration Thread")
 
-        self.position= self.Position()
-
+        self.position = self.Position()
         self.position.add("position_1", (0, 0, 1), "node lying flat horizontally")
         self.position.add("position_2", (1, 0, 0), "node placed upright with 'FireFly' text upright")
         self.position.add("position_3", (0, 1, 0), "node lying on its side with LEDs situated on the top edge")
@@ -72,7 +71,7 @@ class Calibrate_Thread(StoppableThread):
             setattr(self, key, {})
 
     def run(self):
-        self.logging.debug("Starting %s" % self.name)
+        self.logging.debug("Starting %s" % self.getName())
 
         # for each calibration position, obtain a set of samples from each sensor node
         for calibrate_position in self.position.getPositionList():
@@ -82,6 +81,7 @@ class Calibrate_Thread(StoppableThread):
             slipstream_thread = SlipStream_Thread(self.host, self.port, self.sensors)
             slipstream_thread.setCond(cond)
             slipstream_thread.start()
+
             while True:
                 if self.stopped():
                     slipstream_thread.stop()
@@ -111,13 +111,14 @@ class Calibrate_Thread(StoppableThread):
                         if calibrate_position not in getattr(self, sensor_location):
                             missing.append(sensor_location)
 
-                    if len(missing) == 0:
+                    if len(missing) == 3:
                         break
                     else:
                         pass
                         #logging.debug("Missing calibration data from %s for %s" % (missing, calibrate_position))
 
             slipstream_thread.stop()
+            slipstream_thread.join()
 
         self.__doAnalysis()
         self.logging.debug("%s has exited properly" % self.name)

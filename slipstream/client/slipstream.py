@@ -9,7 +9,7 @@ class SlipStream:
 
         self.addr = (host, port)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.setblocking(0)
+        self.sock.setblocking(1)
         self.connect()
 
     def connect(self):

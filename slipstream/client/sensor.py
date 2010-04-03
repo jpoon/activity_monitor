@@ -91,8 +91,6 @@ class Sensor:
                                 y_bounds = y_bounds,
                                 y_title = "")
 
-        self.__convertToPng(filename)
         self.logging.debug("Updating %s graph" % self.name)
 
-    def __convertToPng(self, filename):
-        os.system("gimp -i -b '(svg-to-raster \"%s.svg\" \"%s.png\" 72 0 0)' -b '(gimp-quit 0)' &> /dev/null &" % (filename, filename))
+

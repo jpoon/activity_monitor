@@ -1,5 +1,6 @@
 from util import *
 from sensor import *
+from data_analysis import *
 from startClient import *
 import logging
 
@@ -60,6 +61,7 @@ class Calibrate_Thread(StoppableThread):
         self.host = host
         self.port = port
         self.sensorList = sensorList
+        self.data_analysis = Data_Analysis()
 
         self.position = self.Position()
         self.position.add("position_1", (0, 0, 1), "node lying flat horizontally")
@@ -67,8 +69,8 @@ class Calibrate_Thread(StoppableThread):
         self.position.add("position_3", (0, 1, 0), "node lying on its side with LEDs situated on the top edge")
 
         # Create dictionary for each sensor location
-        for key in self.sensorList.getSensorKeys():
-            setattr(self, key, {})
+        for sensor_location in self.sensorList.getSensorKeys():
+            setattr(self, sensor_location, {})
 
     def run(self):
         self.logging.debug("Starting %s" % self.getName())
@@ -98,12 +100,14 @@ class Calibrate_Thread(StoppableThread):
                             current_data_id = self.sensorList.getNumSamples(sensor_location)
 
                             if Calibrate_Thread.key_dataStart not in getattr(self, sensor_location):
+                                # Set Start Index
                                 getattr(self, sensor_location)[Calibrate_Thread.key_dataStart] = current_data_id
                             else:
                                 data_start = getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
                                 numSamples = current_data_id - data_start
+
                                 if (numSamples == Calibrate_Thread.sample_size):
-                                    getattr(self, sensor_location)[calibrate_position] = self.__getAverage(sensor_location, data_start, current_data_id)
+                                    getattr(self, sensor_location)[calibrate_position] = self.data_analysis.getAverage(self.sensorList.getSensor(sensor_location), data_start, current_data_id)
                                     del getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
 
                     missing = []
@@ -122,19 +126,6 @@ class Calibrate_Thread(StoppableThread):
 
         self.__doAnalysis()
         self.logging.debug("%s has exited properly" % self.name)
-
-    def __getAverage(self, key, data_start, data_end):
-        def average(list, start, end):
-            sum = 0
-            for val in list[data_start:data_end]:
-                sum += val
-            return sum/(data_end - data_start)
-
-        acc_x = average(self.sensorList.getSensor(key).acc_x, data_start, data_end)
-        acc_y = average(self.sensorList.getSensor(key).acc_y, data_start, data_end)
-        acc_z = average(self.sensorList.getSensor(key).acc_z, data_start, data_end)
-
-        return (acc_x, acc_y, acc_z)
 
     def __doAnalysis(self):
         calibratedSensors = {}

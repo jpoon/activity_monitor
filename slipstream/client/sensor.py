@@ -19,6 +19,13 @@ class SensorList:
             self.calibrated = False
 
         def add(self, attr, val):
+            if self.calibrated:
+                if attr in self.adcCounts_per_g.keys():
+                    try:
+                        val = (val-self.zero_g_value[attr])/self.adcCounts_per_g[attr]
+                    except ZeroDevisionError:
+                        self.logging.error("Zero Divison Error: (%s-%s)/%s" % (datapoint, self.zero_g_value[key], self.adcCounts_per_g[key]))
+
             try:
                 getattr(self, attr).append(val)
             except:
@@ -32,7 +39,9 @@ class SensorList:
             self.adcCounts_per_g = adcCounts_per_g
             self.zero_g_value = zero_g_value
 
-            # clear the previously received packets
+            self.clearData()
+
+        def clearData(self):
             del self.time[:]
             del self.bat[:]
             del self.temp[:]
@@ -47,25 +56,15 @@ class SensorList:
 
         def createGraphSensor(self, filename):
             data = {}
-            y_bounds = None
 
             if self.calibrated:
-                for key in self.adcCounts_per_g.keys():
-                    dataset = []
-                    for datapoint in getattr(self,key):
-                        try:
-                            converted_value = (datapoint-self.zero_g_value[key])/self.adcCounts_per_g[key]
-                            dataset.append(converted_value)
-                        except ZeroDevisionError:
-                            self.logging.error("Zero Divison Error: (%s-%s)/%s" % (datapoint, self.zero_g_value[key], self.adcCounts_per_g[key]))
-                    data[key] = dataset
-
                 y_bounds = (-4, 4)
             else:
-                data["acc_x"] = self.acc_x
-                data["acc_y"] = self.acc_y
-                data["acc_z"] = self.acc_z
+                y_bounds = None
 
+            data["acc_x"] = self.acc_x
+            data["acc_y"] = self.acc_y
+            data["acc_z"] = self.acc_z
 
             cairoplot.dot_line_plot(name=filename,
                                     data=data,

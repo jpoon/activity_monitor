@@ -56,8 +56,11 @@ class Graph_Thread(StoppableThread):
 #                       self.__convertToPng(filename)
 
                     if (numSamples % 10 == 0):
-                        print self.data_analysis.getAverage(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
-                        print self.data_analysis.getStndDeviation(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
+                        avg = self.data_analysis.getAverage(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
+                        stdDeviation = self.data_analysis.getStndDeviation(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
+
+                        print avg
+                        print stdDeviation
 
     def __convertToPng(self, filename):
         os.system("gimp -i -b '(svg-to-raster \"%s.svg\" \"%s.png\" 72 0 0)' -b '(gimp-quit 0)' &> /dev/null &" % (filename, filename))

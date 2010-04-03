@@ -53,9 +53,9 @@ if __name__ == '__main__':
     sensorList.addSensor("left_leg")
     sensorList.addSensor("right_leg")
 
-#    t1 = Calibrate_Thread(sensorList, host, port)
-#    t1.start()
-#    t1.join()
+    t1 = Calibrate_Thread(sensorList, host, port)
+    t1.start()
+    t1.join()
 
     t2 = Graph_Thread(sensorList, host, port)
     t2.start()

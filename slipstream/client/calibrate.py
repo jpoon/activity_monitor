@@ -1,7 +1,7 @@
+from slipstream import *
 from util import *
 from sensor import *
 from data_analysis import *
-from startClient import *
 import logging
 
 class Calibrate_Thread(StoppableThread):

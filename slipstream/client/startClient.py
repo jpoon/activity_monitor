@@ -8,11 +8,9 @@ Options:
     -p  Port in which server is located (e.g. 4000)
 """
 
-from calibrate import *
-from slipstream import *
 from sensor import *
-from graph import *
-from threading import *
+from calibrate import *
+from monitor import *
 import logging
 
 def ParseArguments():
@@ -57,6 +55,6 @@ if __name__ == '__main__':
     t1.start()
     t1.join()
 
-    t2 = Graph_Thread(sensorList, host, port)
+    t2 = Monitor_Thread(sensorList, host, port)
     t2.start()
 

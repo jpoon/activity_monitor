@@ -5,13 +5,13 @@ from data_analysis import *
 import logging
 import os
 
-class Graph_Thread(StoppableThread):
+class Monitor_Thread(StoppableThread):
     graph_dir = "graphs"
     graph_frequency = 10
 
     def __init__(self, sensorList, host, port):
         Thread.__init__(self)
-        super(Graph_Thread, self).__init__()
+        super(Monitor_Thread, self).__init__()
         self.setName("Graph Thread")
         self.logging = logging.getLogger("run")
 
@@ -20,13 +20,13 @@ class Graph_Thread(StoppableThread):
         self.port = port
         self.data_analysis = Data_Analysis()
 
-        os.system("mkdir %s &> /dev/null" % Graph_Thread.graph_dir)
+        os.system("mkdir %s &> /dev/null" % Monitor_Thread.graph_dir)
 
     def run(self):
         self.logging.debug("Starting %s" % self.getName())
 
         testCase = raw_input("Graph: Name of Test Case:\n")
-        filedir = Graph_Thread.graph_dir + "/" + testCase + "/"
+        filedir = Monitor_Thread.graph_dir + "/" + testCase + "/"
         os.system("mkdir %s &> /dev/null" % filedir)
 
         cond = Condition()
@@ -50,7 +50,7 @@ class Graph_Thread(StoppableThread):
                 numSamples = self.sensorList.getNumSamples(sensor_location)
 
                 if (numSamples > 0):
-                    if (numSamples % Graph_Thread.graph_frequency == 0):
+                    if (numSamples % Monitor_Thread.graph_frequency == 0):
                         filename = filedir + "/" + sensor_location
                         self.sensorList.getSensor(sensor_location).createGraphSensor(filename)
 #                       self.__convertToPng(filename)

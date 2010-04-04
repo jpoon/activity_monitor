@@ -108,8 +108,10 @@ class SensorList:
     def getNumSamples(self, name):
         return self._sensorDict[name].getNumSamples()
 
-    def calibrate(self, name, adcCounts_per_g, zero_g_value):
-        self._sensorDict[name].setCalibration(adcCounts_per_g, zero_g_value) 
+    def calibrate(self, data):
+        for k in self.getSensorKeys():
+            (adcCount, zero_g) = data[k]
+            self._sensorDict[k].setCalibration(adcCount, zero_g) 
 
     def createGraph(self, name, filedir, convertToPng=False):
         filename = filedir + "/" + name

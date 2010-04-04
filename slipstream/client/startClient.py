@@ -1,9 +1,10 @@
 #!/usr/bin/python
 """
 Usage: 
-    ./startClient [-h] [-a Server Address] [-p Server Port]
+    ./startClient [-h] [-c] [-a Server Address] [-p Server Port]
 Options:
     -h  Prints this message and exits
+    -c  Load calibration data
     -a  Address in which server is located (e.g. 127.0.0.1)
     -p  Port in which server is located (e.g. 4000)
 """
@@ -18,14 +19,17 @@ def ParseArguments():
 
     host = "127.0.0.1"
     port = 4000
+    loadCalibrationData = None
 
     import sys, getopt
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hpa:", ["help", "port=", "addr="])
+        opts, args = getopt.getopt(sys.argv[1:], "hcpa:", ["help", "cal", "port=", "addr="])
         for o, a in opts:
             if o in ("-h", "--help"):
                 print __doc__ 
                 sys.exit()
+            if o in ("-c", "--cal"):
+                loadCalibrationData = True
             if o in ("-p", "--port"):
                 portNum = a
             if o in ("-a", "--addr"):
@@ -38,10 +42,10 @@ def ParseArguments():
         print "Error: Missing argument(s)"
         sys.exit(2)
 
-    return (host, port)
+    return (host, port, loadCalibrationData)
 
 if __name__ == '__main__':
-    (host, port) = ParseArguments()
+    (host, port, loadCalibrationData) = ParseArguments()
 
     Watcher()
 
@@ -51,7 +55,7 @@ if __name__ == '__main__':
     sensorList.addSensor("left_leg")
     sensorList.addSensor("right_leg")
 
-    t1 = Calibrate_Thread(sensorList, host, port)
+    t1 = Calibrate_Thread(sensorList, host, port, loadCalibrationData)
     t1.start()
     t1.join()
 

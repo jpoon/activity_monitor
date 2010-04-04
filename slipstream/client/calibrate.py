@@ -3,10 +3,12 @@ from util import *
 from sensor import *
 from data_analysis import *
 import logging
+import pickle
 
 class Calibrate_Thread(StoppableThread):
     sample_size = 5
     key_dataStart = "dataStart"
+    filename_savedData = "calibration.tmp"
 
     class Position:
         def __init__(self):
@@ -47,7 +49,7 @@ class Calibrate_Thread(StoppableThread):
                     count_diff = item1[1] - item2[1]
                     return abs((item1[1] - item2[1])/outputResponse_diff)
 
-    def __init__(self, sensorList, host, port):
+    def __init__(self, sensorList, host, port, loadData):
         # for each sensor location, create a dictionary with keys being
         # the states (e.g. POSITION_1, POSITION_2). The values of each
         # corresponding key represent ADC values at each position
@@ -61,6 +63,7 @@ class Calibrate_Thread(StoppableThread):
         self.host = host
         self.port = port
         self.sensorList = sensorList
+        self.loadData = loadData
 
         self.position = self.Position()
         self.position.add("position_1", (0, 0, 1), "node lying flat horizontally")
@@ -73,6 +76,10 @@ class Calibrate_Thread(StoppableThread):
 
     def run(self):
         self.logging.debug("Starting %s" % self.getName())
+
+        if self.loadData:
+            self.__loadSavedCalibration()
+            return
 
         # for each calibration position, obtain a set of samples from each sensor node
         for calibrate_position in self.position.getPositionList():
@@ -110,25 +117,29 @@ class Calibrate_Thread(StoppableThread):
                                     del getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
 
                     # break only when we have enough packets for each sensor location
-                    missing = []
-                    for sensor_location in self.sensorList.getSensorKeys():
-                        if calibrate_position not in getattr(self, sensor_location):
-                            missing.append(sensor_location)
-
-                    if len(missing) == 0:
+                    if self.__isDone(calibrate_position):
                         break
-                    else:
-                        pass
-                        #logging.debug("Missing calibration data from %s for %s" % (missing, calibrate_position))
 
             slipstream_thread.stop()
             slipstream_thread.join()
 
-        self.__doAnalysis()
+        self.__analysis()
         self.logging.debug("%s has exited properly" % self.name)
 
-    def __doAnalysis(self):
-        calibratedSensors = {}
+    def __isDone(self, position):
+        missing = []
+        for sensor_location in self.sensorList.getSensorKeys():
+            if position not in getattr(self, sensor_location):
+                missing.append(sensor_location)
+
+        if len(missing) == 3:
+            return True
+        else:
+            #logging.debug("Missing calibration data from %s for %s" % (missing, calibrate_position))
+            return False
+
+    def __analysis(self):
+        calibratedData = {}
         for sensor_location in self.sensorList.getSensorKeys():
             x_axis = []
             y_axis = []
@@ -158,7 +169,21 @@ class Calibrate_Thread(StoppableThread):
             self.logging.info('ADC Counts per G = %s' % adcCount)
             self.logging.info('Zero G Value = %s' % zero_g_value)
 
-            self.sensorList.calibrate(sensor_location, adcCount, zero_g_value)
-            
+            calibratedData[sensor_location] = [adcCount, zero_g_value]
+
+        self.sensorList.calibrate(calibratedData) 
+        self.__saveCalibration(calibratedData)
+
+    def __saveCalibration(self, data):
+        f = open(self.filename_savedData, 'w')
+        pickle.dump(data, f)
+        f.close()
+
+    def __loadSavedCalibration(self):
+        f = open(self.filename_savedData, 'r')
+        data = pickle.load(f)
+        self.logging.info('%s', data)
+        self.__saveCalibration(data)
+
     def __printPrompt(self, position):
        raw_input("Calibration: Move sensors to %s where %s. Once ready, press any to continue.\n" % (position, self.position.getPositionDescription(position)))

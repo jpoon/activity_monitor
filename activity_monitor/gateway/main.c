@@ -133,7 +133,7 @@ static void createTaskset(void)
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
     TaskOne.period.secs = 0;
-    TaskOne.period.nano_secs = 75*NANOS_PER_MS;
+    TaskOne.period.nano_secs = 10*NANOS_PER_MS;
     TaskOne.cpu_reserve.secs = 0;
     TaskOne.cpu_reserve.nano_secs = 0;
     TaskOne.offset.secs = 0;
@@ -147,7 +147,7 @@ static void createTaskset(void)
     TaskTwo.Type = BASIC_TASK;
     TaskTwo.SchType = PREEMPTIVE;
     TaskTwo.period.secs = 0;
-    TaskTwo.period.nano_secs = 75*NANOS_PER_MS;
+    TaskTwo.period.nano_secs = 10*NANOS_PER_MS;
     TaskTwo.cpu_reserve.secs = 0;
     TaskTwo.cpu_reserve.nano_secs = 0;
     TaskTwo.offset.secs = 0;
@@ -160,8 +160,8 @@ static void createTaskset(void)
     TaskThree.FirstActivation = TRUE;
     TaskThree.Type = BASIC_TASK;
     TaskThree.SchType = PREEMPTIVE;
-    TaskThree.period.secs = 1;
-    TaskThree.period.nano_secs = 0;
+    TaskThree.period.secs = 0;
+    TaskThree.period.nano_secs = 500*NANOS_PER_MS;
     TaskThree.cpu_reserve.secs = 0;
     TaskThree.cpu_reserve.nano_secs = 0;
     TaskThree.offset.secs = 0;

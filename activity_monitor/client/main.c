@@ -9,7 +9,7 @@
 #include "comm.h"
 
 #define MAC_ADDR            0x0013
-#define NUM_SAMPLES         15
+#define NUM_SAMPLES         10
 
 static void createTaskset(void);
 static void sensors_task(void);
@@ -130,11 +130,7 @@ static void comm_task(void)
             }
             nrk_kprintf( PSTR(" ]\r\n"));
 
-            err = comm_tx( &tx_buf );
-            if (err == NRK_ERROR) {
-                // possibly do some power optimization here
-                printf( "comm: tx packet -- no ack\r\n" );
-            } 
+            comm_tx( &tx_buf );
 
             memset(&tx_buf, 0, sizeof(comm_packet_t));
             txPktReady = false;
@@ -156,7 +152,7 @@ static void createTaskset(void)
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
     TaskOne.period.secs = 0;
-    TaskOne.period.nano_secs = 100*NANOS_PER_MS;
+    TaskOne.period.nano_secs = 80*NANOS_PER_MS;
     TaskOne.cpu_reserve.nano_secs = 0;
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;

@@ -23,8 +23,7 @@ void comm_setup(uint16_t addr)
     bmac_addr_decode_set_my_mac(mac_addr);
     bmac_addr_decode_enable();
 
-    // enable auto ack of received packets
-    bmac_auto_ack_enable();
+    bmac_auto_ack_disable();
 
     bmac_rx_pkt_set_buffer(rx_buf.payload, RF_MAX_PAYLOAD_SIZE);
 

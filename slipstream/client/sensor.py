@@ -6,7 +6,7 @@ import cairoplot
 
 class SensorList:
     class Sensor:
-        def __init__(self):
+        def __init__(self, name):
             self.time = []
             self.bat = []
             self.temp = []
@@ -16,6 +16,8 @@ class SensorList:
             self.acc_y = []
             self.acc_z = []
 
+            self.logging = logging.getLogger(name)
+
             self.calibrated = False
 
         def add(self, attr, val):
@@ -23,8 +25,8 @@ class SensorList:
                 if attr in self.adcCounts_per_g.keys():
                     try:
                         val = (val-self.zero_g_value[attr])/self.adcCounts_per_g[attr]
-                    except ZeroDevisionError:
-                        self.logging.error("Zero Divison Error: (%s-%s)/%s" % (datapoint, self.zero_g_value[key], self.adcCounts_per_g[key]))
+                    except:
+                        self.logging.error("Math Error: (%s-%s)/%s" % (val, self.zero_g_value[attr], self.adcCounts_per_g[attr]))
 
             try:
                 getattr(self, attr).append(val)
@@ -54,14 +56,13 @@ class SensorList:
         def getNumSamples(self):
             return len(self.time)
 
-        def createGraphSensor(self, filename):
-            data = {}
-
+        def createGraph(self, filename):
             if self.calibrated:
                 y_bounds = (-4, 4)
             else:
                 y_bounds = None
 
+            data = {}
             data["acc_x"] = self.acc_x
             data["acc_y"] = self.acc_y
             data["acc_z"] = self.acc_z
@@ -81,9 +82,10 @@ class SensorList:
 
     def __init__(self):
         self._sensorDict = {}
+        self.logging = logging.getLogger("activity")
 
     def addSensor(self, name):
-        self._sensorDict[name] = self.Sensor()
+        self._sensorDict[name] = self.Sensor(name)
 
     def addSample(self, name, pkt):
         for item in pkt:
@@ -108,4 +110,12 @@ class SensorList:
 
     def calibrate(self, name, adcCounts_per_g, zero_g_value):
         self._sensorDict[name].setCalibration(adcCounts_per_g, zero_g_value) 
+
+    def createGraph(self, name, filedir, convertToPng=False):
+        filename = filedir + "/" + name
+        self._sensorDict[name].createGraph(filename)
+
+        if convertToPng:
+            import os
+            os.system("gimp -i -b '(svg-to-raster \"%s.svg\" \"%s.png\" 72 0 0)' -b '(gimp-quit 0)' &> /dev/null &" % (filename, filename))
 

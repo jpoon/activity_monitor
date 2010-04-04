@@ -61,7 +61,6 @@ class Calibrate_Thread(StoppableThread):
         self.host = host
         self.port = port
         self.sensorList = sensorList
-        self.data_analysis = Data_Analysis()
 
         self.position = self.Position()
         self.position.add("position_1", (0, 0, 1), "node lying flat horizontally")
@@ -107,15 +106,16 @@ class Calibrate_Thread(StoppableThread):
                                 numSamples = current_data_id - data_start
 
                                 if (numSamples == Calibrate_Thread.sample_size):
-                                    getattr(self, sensor_location)[calibrate_position] = self.data_analysis.getAverage(self.sensorList.getSensor(sensor_location), data_start, current_data_id)
+                                    getattr(self, sensor_location)[calibrate_position] = Data_Analysis.getAverage(self.sensorList.getSensor(sensor_location), data_start, current_data_id)
                                     del getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
 
+                    # break only when we have enough packets for each sensor location
                     missing = []
                     for sensor_location in self.sensorList.getSensorKeys():
                         if calibrate_position not in getattr(self, sensor_location):
                             missing.append(sensor_location)
 
-                    if len(missing) == 3:
+                    if len(missing) == 0:
                         break
                     else:
                         pass

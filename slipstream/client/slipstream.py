@@ -57,27 +57,29 @@ class SlipStream_Thread(StoppableThread):
     def __init__ (self, host, port, sensorList):
         Thread.__init__(self)
         super(SlipStream_Thread, self).__init__()
+        self.setName("SlipStream Thread")
+
+        self.logging = logging.getLogger("slipstream")
 
         self.host = host
         self.port = port
         self.sensorList = sensorList
 
-        self.setName("SlipStream Thread")
-
     def setCond(self, cond):
         self.cond = cond
 
-    def setUpdateList(self, list):
-        self.update = list
+    def getUpdateList(self):
+        self.update = []
+        return self.update
 
     def run(self):
-        logging.debug("Starting %s" % self.getName())
+        self.logging.debug("Starting %s" % self.getName())
         client = SlipStream(self.host, self.port)
         while True:
             if self.stopped():
                 with self.cond:
                     self.cond.notifyAll()
-                logging.debug("%s has exited properly" % self.name)
+                self.logging.debug("%s has exited properly" % self.name)
                 return
 
             (sensor, msg) = client.receive()

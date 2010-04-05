@@ -11,7 +11,8 @@ class Monitor_Thread(StoppableThread):
     graph_dir = "graphs"
     graph_frequency = 5
 
-    activity_frequency = 5
+    activity_frequency = 3
+    activity_samples = 5
 
     def __init__(self, sensorList, host, port):
         Thread.__init__(self)
@@ -71,9 +72,9 @@ class Monitor_Thread(StoppableThread):
 
                 for sensor_location in self.sensorList.getSensorKeys():
                     numSamples = self.sensorList.getNumSamples(sensor_location)
-                    if numSamples > 10:
-                        avg = statistics.getAverage(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
-                        stdDeviation = statistics.getStndDeviation(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
+                    if numSamples > Monitor_Thread.activity_samples:
+                        avg = statistics.getAverage(self.sensorList.getSensor(sensor_location), numSamples-Monitor_Thread.activity_samples, numSamples)
+                        stdDeviation = statistics.getStndDeviation(self.sensorList.getSensor(sensor_location), numSamples-Monitor_Thread.activity_samples, numSamples)
                         self.activity.add(sensor_location, avg, stdDeviation)
 
 

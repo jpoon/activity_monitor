@@ -31,7 +31,7 @@ void sensors_read(sensors_packet_t *pkt)
         val = nrk_read(fd, &(pkt->adxl_x), 2);
         val = nrk_set_status(fd, SENSOR_SELECT, ACC_Y);
         val = nrk_read(fd, &(pkt->adxl_y), 2);
-        val = nrk_set_status(fd,SENSOR_SELECT, ACC_Z);
+        val = nrk_set_status(fd, SENSOR_SELECT, ACC_Z);
         val = nrk_read(fd, &pkt->adxl_z, 2);
     }
     nrk_close(fd);

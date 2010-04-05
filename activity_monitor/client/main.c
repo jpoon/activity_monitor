@@ -10,7 +10,7 @@
 #include <math.h>
 
 #define MAC_ADDR            0x0013
-#define NUM_SAMPLES         10
+#define NUM_SAMPLES         5
 
 static void createTaskset(void);
 static void sensors_task(void);
@@ -81,7 +81,7 @@ static void sensors_task(void)
         num_samples++;
         if ( num_samples == NUM_SAMPLES ) {
             uint8_t i;
-            uint16_t avg_x, avg_y, avg_z;
+            uint16_t avg_x=0, avg_y=0, avg_z=0;
 
             // averages
             for (i=0; i < NUM_SAMPLES; i++) {
@@ -89,12 +89,12 @@ static void sensors_task(void)
                 avg_y += sample[i].adxl_y;
                 avg_z += sample[i].adxl_z; 
             }
-            avg_x /= NUM_SAMPLES;
-            avg_y /= NUM_SAMPLES;
-            avg_z /= NUM_SAMPLES;
+            avg_x = avg_x/NUM_SAMPLES;
+            avg_y = avg_y/NUM_SAMPLES;
+            avg_z = avg_z/NUM_SAMPLES;
 
             nrk_sem_pend(txPktSemaphore);
-            sprintf(tx_buf.payload, "x=%d y=%d z=%d", avg_x, avg_y, avg_z);
+            sprintf(tx_buf.payload, "x=%u y=%u z=%u", avg_x, avg_y, avg_z);
             txPktReady = true;
             nrk_sem_post(txPktSemaphore);
 
@@ -142,12 +142,12 @@ static void createTaskset(void)
     nrk_kprintf ( PSTR("taskset: creating comm\r\n") );
     TaskOne.task = comm_task;
     nrk_task_set_stk( &TaskOne, Stack1, NRK_APP_STACKSIZE);
-    TaskOne.prio = 1;
+    TaskOne.prio = 2;
     TaskOne.FirstActivation = TRUE;
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
     TaskOne.period.secs = 0;
-    TaskOne.period.nano_secs = 175*NANOS_PER_MS;
+    TaskOne.period.nano_secs = 100*NANOS_PER_MS;
     TaskOne.cpu_reserve.nano_secs = 0;
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;
@@ -156,12 +156,12 @@ static void createTaskset(void)
     nrk_kprintf ( PSTR("taskset: creating sensors\r\n") );
     TaskTwo.task = sensors_task;
     nrk_task_set_stk( &TaskTwo, Stack2, NRK_APP_STACKSIZE);
-    TaskTwo.prio = 2;
+    TaskTwo.prio = 1;
     TaskTwo.FirstActivation = TRUE;
     TaskTwo.Type = BASIC_TASK;
     TaskTwo.SchType = PREEMPTIVE;
     TaskTwo.period.secs = 0;
-    TaskTwo.period.nano_secs = 20*NANOS_PER_MS;
+    TaskTwo.period.nano_secs = 25*NANOS_PER_MS;
     TaskTwo.cpu_reserve.secs = 0;
     TaskTwo.cpu_reserve.nano_secs = 0;
     TaskTwo.offset.secs = 0;

@@ -1,6 +1,7 @@
 import socket
 from sensor import *
 from util import *
+from sets import Set
 import logging
 
 class SlipStream:
@@ -68,8 +69,8 @@ class SlipStream_Thread(StoppableThread):
     def setCond(self, cond):
         self.cond = cond
 
-    def getUpdateList(self):
-        self.update = []
+    def getUpdate(self):
+        self.update = Set()
         return self.update
 
     def run(self):
@@ -95,6 +96,6 @@ class SlipStream_Thread(StoppableThread):
     def __run(self, sensor, msg):
         self.sensorList.addSample(sensor, msg)
         if hasattr(self, "update"):
-            self.update.append(sensor)
+            self.update.add(sensor)
         self.cond.notifyAll()
  

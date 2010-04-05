@@ -49,6 +49,12 @@ class SensorList:
             return len(self.time)
 
         def createGraph(self, filename):
+            if self.getNumSamples() < 5:
+                self.logging.debug('Not enough samples to create %s graph' % filename)
+                return
+            else:
+                self.logging.debug('Updating %s graph' % filename)
+
             if self.calibrated:
                 y_bounds = (-4, 4)
                 y_title = "Acceleration (g)"
@@ -61,21 +67,18 @@ class SensorList:
             data["y"] = self.y
             data["z"] = self.z
 
-            try:
-                cairoplot.dot_line_plot(name=filename,
-                                        data=data,
-                                        width=900,
-                                        height=900,
-                                        border=5,
-                                        axis=True,
-                                        grid=True,
-                                        series_legend=True,
-                                        x_labels=self.time,
-                                        x_title = "Time (minutes:seconds)",
-                                        y_bounds = y_bounds,
-                                        y_title = y_title) 
-            except:
-                pass
+            cairoplot.dot_line_plot(name=filename,
+                                    data=data,
+                                    width=900,
+                                    height=900,
+                                    border=5,
+                                    axis=True,
+                                    grid=True,
+                                    series_legend=True,
+                                    x_labels=self.time,
+                                    x_title = "Time (minutes:seconds)",
+                                    y_bounds = y_bounds,
+                                    y_title = y_title) 
 
     def __init__(self):
         self._sensorDict = {}
@@ -104,13 +107,6 @@ class SensorList:
 
     def getNumSamples(self, name):
         return self._sensorDict[name].getNumSamples()
-
-    def isReady(self):
-        for k in self.getSensorKeys():
-            if self._sensorDict[k].getNumSamples() <= 0:
-                return False
-        return True
-
 
     def calibrate(self, data):
         for k in self.getSensorKeys():

@@ -3,8 +3,6 @@
 
 #define COMM_CHANNEL    25
 
-#define COMM_BROADCAST  0xFFFF
-
 typedef struct comm_packet_t {
     uint8_t payload[RF_MAX_PAYLOAD_SIZE-sizeof(uint16_t)];
     uint8_t len;

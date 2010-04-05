@@ -18,11 +18,7 @@ void comm_setup(uint16_t addr)
     // initializes bmac on a specific radio channel
     bmac_init(COMM_CHANNEL);
 
-    // enable radio level packet decoding
-    // radio will selectively process or disregard packets
-    bmac_addr_decode_set_my_mac(mac_addr);
-    bmac_addr_decode_enable();
-
+    bmac_addr_decode_disable();
     bmac_auto_ack_disable();
 
     bmac_rx_pkt_set_buffer(rx_buf.payload, RF_MAX_PAYLOAD_SIZE);
@@ -66,8 +62,6 @@ void comm_rxCleanup(comm_packet_t *pkt) {
 int8_t comm_tx(comm_packet_t *pkt) {
     int8_t err;
     nrk_led_set(ORANGE_LED);
-
-    bmac_addr_decode_dest_mac(pkt->addr);
 
     // shift array
     for (int8_t i = pkt->len; i >= 0; i--) {

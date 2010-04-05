@@ -1,7 +1,7 @@
 from slipstream import *
 from util import *
 from sensor import *
-from data_analysis import *
+import statistics
 import logging
 import pickle
 
@@ -33,8 +33,6 @@ class Calibrate_Thread(StoppableThread):
     class Axis_Data():
         def __init__(self, data):
             self.outputResponse, self.datapoints = zip(*data)
-            print self.outputResponse
-            print self.datapoints
 
         def get_zero_g_value(self):
             for i in range(len(self.datapoints)):
@@ -112,7 +110,7 @@ class Calibrate_Thread(StoppableThread):
                                 numSamples = current_data_id - data_start
 
                                 if (numSamples == Calibrate_Thread.sample_size):
-                                    getattr(self, sensor_location)[calibrate_position] = Data_Analysis.getAverage(self.sensorList.getSensor(sensor_location), data_start, current_data_id)
+                                    getattr(self, sensor_location)[calibrate_position] = statistics.getAverage(self.sensorList.getSensor(sensor_location), data_start, current_data_id)
                                     del getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
 
                     # break only when we have enough packets for each sensor location

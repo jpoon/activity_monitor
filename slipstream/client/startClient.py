@@ -10,7 +10,7 @@ Options:
 """
 
 from sensor import *
-from calibrate import *
+from calibration import *
 from monitor import *
 import logging
 

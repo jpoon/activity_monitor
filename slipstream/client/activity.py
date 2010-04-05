@@ -37,38 +37,73 @@ class Activity:
     def add(self, name, avg, std_deviation):
         self._sensorDict[name].add(avg, std_deviation)
 
+    def doAllTests(self):
+        for k in self._sensorDict.keys():
+            if self._sensorDict[k].getNumDataPoints() <= 0:
+                return
+
+        self.logging.info("Lying Down:\t%s", self.isLyingDown())
+        self.logging.info("Standing:\t\t %s", self.isStanding())
+
     def isLyingDown(self):
         for k in self._sensorDict.keys():
             avg_x = self._sensorDict[k].avg["x"][-1]
             avg_y = self._sensorDict[k].avg["y"][-1]
             avg_z = self._sensorDict[k].avg["z"][-1]
 
-            if self.__isHorizontal(avg_x,avg_y,avg_z) is False:
-                print "%s - %s %s %s" % (k, avg_x, avg_y, avg_z)
+            dev_x = self._sensorDict[k].std_deviation["x"][-1]
+            dev_y = self._sensorDict[k].std_deviation["y"][-1]
+            dev_z = self._sensorDict[k].std_deviation["z"][-1]
+
+            if not self.__isHorizontal(avg_x, avg_y, avg_z):
                 return False
+ 
+            if not self.__isStable(dev_x, dev_y, dev_z):
+                return False
+
+        return True
+
+    def isStanding(self):
+        for k in self._sensorDict.keys():
+            avg_x = self._sensorDict[k].avg["x"][-1]
+            avg_y = self._sensorDict[k].avg["y"][-1]
+            avg_z = self._sensorDict[k].avg["z"][-1]
 
             dev_x = self._sensorDict[k].std_deviation["x"][-1]
             dev_y = self._sensorDict[k].std_deviation["y"][-1]
             dev_z = self._sensorDict[k].std_deviation["z"][-1]
 
-            if self.__isStable(dev_x, dev_y, dev_z) is False:
-                print "%s - %s %s %s" % (k, dev_x, dev_y, dev_z)
+            if not self.__isVertical(avg_x, avg_y, avg_z):
+                return False
+ 
+            if not self.__isStable(dev_x, dev_y, dev_z):
                 return False
 
         return True
 
-def __isHorizontal(self, x, y, z):
-    errorMargin = 0.15
+    def __isVertical(self, x, y, z):
+        errorMargin = 0.20
 
-    if (-errorMargin) <= x <= (errorMargin):
-        if (-errorMargin) <= y <= (errorMargin):
-            if (1-errorMargin) <= z <= (1+errorMargin):
-                return True
+        if (1-errorMargin) <= x <= (1+errorMargin):
+            if (-errorMargin) <= y <= (errorMargin):
+                if (-errorMargin) <= z <= (errorMargin):
+                    return True
 
-    return False
+        return False
+
+    def __isHorizontal(self, x, y, z):
+        errorMargin = 0.20
+
+        if (-errorMargin) <= x <= (errorMargin):
+            if (-errorMargin) <= y <= (errorMargin):
+                if (1-errorMargin) <= z <= (1+errorMargin):
+                    return True
+
+        return False
         
     def __isStable(self, x, y, z):
         errorMargin = 0.15
+
         if (-errorMargin) <= x <= (errorMargin):
             if (-errorMargin) <= y <= (errorMargin):
                 if (-errorMargin) <= z <= (errorMargin):

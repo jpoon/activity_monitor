@@ -71,9 +71,9 @@ class Monitor_Thread(StoppableThread):
 
                 for sensor_location in self.sensorList.getSensorKeys():
                     numSamples = self.sensorList.getNumSamples(sensor_location)
-                    if numSamples > 5:
-                        avg = statistics.getAverage(self.sensorList.getSensor(sensor_location), numSamples-5, numSamples)
-                        stdDeviation = statistics.getStndDeviation(self.sensorList.getSensor(sensor_location), numSamples-5, numSamples)
+                    if numSamples > 10:
+                        avg = statistics.getAverage(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
+                        stdDeviation = statistics.getStndDeviation(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
                         self.activity.add(sensor_location, avg, stdDeviation)
 
 

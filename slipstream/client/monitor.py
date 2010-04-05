@@ -1,14 +1,15 @@
 from sensor import *
 from util import *
 from slipstream import *
-from data_analysis import *
 from activity import *
+import statistics
 import logging
 import os
-
+import time
+ 
 class Monitor_Thread(StoppableThread):
     graph_dir = "graphs"
-    graph_frequency = 10
+    graph_frequency = 5
 
     def __init__(self, sensorList, host, port):
         Thread.__init__(self)
@@ -33,9 +34,12 @@ class Monitor_Thread(StoppableThread):
         cond = Condition()
         slipstream_thread = SlipStream_Thread(self.host, self.port, self.sensorList)
         slipstream_thread.setCond(cond)
-        updateList = slipstream_thread.getUpdateList()
+        updateSet = slipstream_thread.getUpdate()
         slipstream_thread.start()
-        
+
+        graph_timer = Timer(Monitor_Thread.graph_frequency, self.update_graph, [filename, cond])
+        graph_timer.start()
+       
         while True:
             if self.stopped():
                 slipstream_thread.stop()
@@ -45,15 +49,27 @@ class Monitor_Thread(StoppableThread):
             with cond:
                 cond.wait()
 
-                if self.sensorList.isReady():
-                    sensor_location = updateList.pop()
+                for sensor_location in updateSet:
                     numSamples = self.sensorList.getNumSamples(sensor_location)
 
-                    if (numSamples % Monitor_Thread.graph_frequency == 0):
-                        self.sensorList.createGraph(filename)
-
-                    if (numSamples % 5 == 0):
-                        avg = Data_Analysis.getAverage(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
-                        stdDeviation = Data_Analysis.getStndDeviation(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
-
+                    if (numSamples % 10) == 0:
+                        # calculate avg and std deviation for every 10 packets
+                        avg = statistics.getAverage(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
+                        stdDeviation = statistics.getStndDeviation(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
                         self.activity.add(sensor_location, avg, stdDeviation)
+
+                updateSet.clear()
+
+            time.sleep(5)
+
+    def update_graph(self, *args):
+        filename = args[0]
+        cond = args[1]
+
+        while True:
+            with cond:
+                cond.wait()
+
+                self.sensorList.createGraph(filename)
+
+            time.sleep(Monitor_Thread.graph_frequency)

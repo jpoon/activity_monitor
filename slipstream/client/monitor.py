@@ -27,11 +27,10 @@ class Monitor_Thread(StoppableThread):
         self.logging.debug("Starting %s" % self.getName())
 
         testCase = raw_input("Name of Test Case: ")
-        filedir = Monitor_Thread.graph_dir + "/" + testCase + "/"
-        os.system("mkdir %s &> /dev/null" % filedir)
+        filename = Monitor_Thread.graph_dir + "/" + testCase
+        os.system("mkdir %s &> /dev/null" % filename)
 
         cond = Condition()
-
         slipstream_thread = SlipStream_Thread(self.host, self.port, self.sensorList)
         slipstream_thread.setCond(cond)
         updateList = slipstream_thread.getUpdateList()
@@ -46,17 +45,15 @@ class Monitor_Thread(StoppableThread):
             with cond:
                 cond.wait()
 
-                sensor_location = updateList.pop()
-                numSamples = self.sensorList.getNumSamples(sensor_location)
+                if self.sensorList.isReady():
+                    sensor_location = updateList.pop()
+                    numSamples = self.sensorList.getNumSamples(sensor_location)
 
-                if (numSamples > 0):
-                    # graph
                     if (numSamples % Monitor_Thread.graph_frequency == 0):
-                        self.sensorList.createGraph(sensor_location, filedir)
+                        self.sensorList.createGraph(filename)
 
                     if (numSamples % 5 == 0):
                         avg = Data_Analysis.getAverage(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
                         stdDeviation = Data_Analysis.getStndDeviation(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
 
                         self.activity.add(sensor_location, avg, stdDeviation)
-

@@ -14,9 +14,9 @@ class Data_Analysis:
                 sum += val
             return sum/len(dataList)
 
-        avg_x = average(dataList.acc_x[startIndex:endIndex])
-        avg_y = average(dataList.acc_y[startIndex:endIndex])
-        avg_z = average(dataList.acc_z[startIndex:endIndex])
+        avg_x = average(dataList.x[startIndex:endIndex])
+        avg_y = average(dataList.y[startIndex:endIndex])
+        avg_z = average(dataList.z[startIndex:endIndex])
 
         return (avg_x, avg_y, avg_z)
 
@@ -30,9 +30,9 @@ class Data_Analysis:
             return sum/(len(dataList) - 1)
 
         (avg_x, avg_y, avg_z) = Data_Analysis.getAverage(dataList, startIndex, endIndex)
-        var_x = variance(dataList.acc_x[startIndex:endIndex], avg_x)
-        var_y = variance(dataList.acc_y[startIndex:endIndex], avg_y)
-        var_z = variance(dataList.acc_z[startIndex:endIndex], avg_z)
+        var_x = variance(dataList.x[startIndex:endIndex], avg_x)
+        var_y = variance(dataList.y[startIndex:endIndex], avg_y)
+        var_z = variance(dataList.z[startIndex:endIndex], avg_z)
 
         return (var_x, var_y, var_z)
 

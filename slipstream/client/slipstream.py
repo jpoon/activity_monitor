@@ -77,17 +77,24 @@ class SlipStream_Thread(StoppableThread):
         client = SlipStream(self.host, self.port)
         while True:
             if self.stopped():
-                with self.cond:
-                    self.cond.notifyAll()
+                if hasattr(self, "cond"):
+                    with self.cond:
+                        self.cond.notifyAll()
                 self.logging.debug("%s has exited properly" % self.name)
                 return
 
             (sensor, msg) = client.receive()
             
             if msg is not None:
-                with self.cond:
-                    self.sensorList.addSample(sensor, msg)
-                    if hasattr(self, "update"):
-                        self.update.append(sensor)
-                    self.cond.notifyAll()
+                if hasattr(self, "cond"):
+                    with self.cond:
+                        self.__run(sensor, msg)
+                else:
+                    self.__run(sensor, msg)
 
+    def __run(self, sensor, msg):
+        self.sensorList.addSample(sensor, msg)
+        if hasattr(self, "update"):
+            self.update.append(sensor)
+        self.cond.notifyAll()
+ 

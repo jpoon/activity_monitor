@@ -6,7 +6,7 @@ import logging
 import pickle
 
 class Calibrate_Thread(StoppableThread):
-    sample_size = 5
+    sample_size = 10
     key_dataStart = "dataStart"
     filename_savedData = "calibration.tmp"
 
@@ -32,22 +32,21 @@ class Calibrate_Thread(StoppableThread):
 
     class Axis_Data():
         def __init__(self, data):
-            self.axis_data = data
+            self.outputResponse, self.datapoints = zip(*data)
+            print self.outputResponse
+            print self.datapoints
 
         def get_zero_g_value(self):
-            for i in range(len(self.axis_data)):
-                if self.axis_data[i][0] == 0:
-                    return self.axis_data[i][1]
+            for i in range(len(self.datapoints)):
+                if self.outputResponse[i] == 0:
+                    return self.datapoints[i]
 
         def get_adcCounts_per_g(self):
-            for i in range(len(self.axis_data)-1):
-                item1 = self.axis_data[i]
-                item2 = self.axis_data[i+1]
+            for i in range(len(self.datapoints)-1):
+                diff = self.outputResponse[i]-self.outputResponse[i+1]
 
-                outputResponse_diff = item1[0]-item2[0]
-                if outputResponse_diff != 0:
-                    count_diff = item1[1] - item2[1]
-                    return abs((item1[1] - item2[1])/outputResponse_diff)
+                if diff != 0:
+                    return abs((self.datapoints[i] - self.datapoints[i+1])/diff)
 
     def __init__(self, sensorList, host, port, loadData):
         # for each sensor location, create a dictionary with keys being
@@ -127,47 +126,35 @@ class Calibrate_Thread(StoppableThread):
         self.logging.debug("%s has exited properly" % self.name)
 
     def __isDone(self, position):
-        missing = []
         for sensor_location in self.sensorList.getSensorKeys():
             if position not in getattr(self, sensor_location):
-                missing.append(sensor_location)
+                return False
 
-        if len(missing) == 3:
-            return True
-        else:
-            #logging.debug("Missing calibration data from %s for %s" % (missing, calibrate_position))
-            return False
+        return True
 
     def __analysis(self):
         calibratedData = {}
         for sensor_location in self.sensorList.getSensorKeys():
-            x_axis = []
-            y_axis = []
-            z_axis = []
+            x = []
+            y = []
+            z = []
             for calibrate_position in self.position.getPositionList():
-                try:
-                    outputResponse = self.position.getOutputResponse(calibrate_position)
-                    data = getattr(self, sensor_location)[calibrate_position]
+                outputResponse = self.position.getOutputResponse(calibrate_position)
+                data = getattr(self, sensor_location)[calibrate_position]
 
-                    x_axis.append((outputResponse[0], data[0]))
-                    y_axis.append((outputResponse[1], data[1]))
-                    z_axis.append((outputResponse[2], data[2]))
-                except:
-                    pass
+                x.append((outputResponse[0], data[0]))
+                y.append((outputResponse[1], data[1]))
+                z.append((outputResponse[2], data[2]))
 
             adcCount = {}
-            adcCount['acc_x'] = self.Axis_Data(x_axis).get_adcCounts_per_g()
-            adcCount['acc_y'] = self.Axis_Data(y_axis).get_adcCounts_per_g()
-            adcCount['acc_z'] = self.Axis_Data(z_axis).get_adcCounts_per_g()
+            adcCount['x'] = self.Axis_Data(x).get_adcCounts_per_g()
+            adcCount['y'] = self.Axis_Data(y).get_adcCounts_per_g()
+            adcCount['z'] = self.Axis_Data(z).get_adcCounts_per_g()
 
             zero_g_value = {}
-            zero_g_value['acc_x'] = self.Axis_Data(x_axis).get_zero_g_value()
-            zero_g_value['acc_y'] = self.Axis_Data(y_axis).get_zero_g_value()
-            zero_g_value['acc_z'] = self.Axis_Data(z_axis).get_zero_g_value()
-
-            self.logging.info('%s' % self.name)
-            self.logging.info('ADC Counts per G = %s' % adcCount)
-            self.logging.info('Zero G Value = %s' % zero_g_value)
+            zero_g_value['x'] = self.Axis_Data(x).get_zero_g_value()
+            zero_g_value['y'] = self.Axis_Data(y).get_zero_g_value()
+            zero_g_value['z'] = self.Axis_Data(z).get_zero_g_value()
 
             calibratedData[sensor_location] = [adcCount, zero_g_value]
 
@@ -182,8 +169,7 @@ class Calibrate_Thread(StoppableThread):
     def __loadSavedCalibration(self):
         f = open(self.filename_savedData, 'r')
         data = pickle.load(f)
-        self.logging.info('%s', data)
-        self.__saveCalibration(data)
+        self.sensorList.calibrate(data)
 
     def __printPrompt(self, position):
        raw_input("Calibration: Move sensors to %s where %s. Once ready, press any to continue.\n" % (position, self.position.getPositionDescription(position)))

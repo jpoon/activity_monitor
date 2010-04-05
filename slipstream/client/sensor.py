@@ -5,16 +5,12 @@ import logging
 import cairoplot
 
 class SensorList:
-    class Sensor:
+    class Adxl:
         def __init__(self, name):
             self.time = []
-            self.bat = []
-            self.temp = []
-            self.light = []
-            self.mic = []
-            self.acc_x = []
-            self.acc_y = []
-            self.acc_z = []
+            self.x = []
+            self.y = []
+            self.z = []
 
             self.logging = logging.getLogger(name)
 
@@ -45,13 +41,9 @@ class SensorList:
 
         def clearData(self):
             del self.time[:]
-            del self.bat[:]
-            del self.temp[:]
-            del self.light[:]
-            del self.mic[:]
-            del self.acc_x[:]
-            del self.acc_y[:]
-            del self.acc_z[:]
+            del self.x[:]
+            del self.y[:]
+            del self.z[:]
            
         def getNumSamples(self):
             return len(self.time)
@@ -59,33 +51,38 @@ class SensorList:
         def createGraph(self, filename):
             if self.calibrated:
                 y_bounds = (-4, 4)
+                y_title = "Acceleration (g)"
             else:
                 y_bounds = None
+                y_title = "ADC Counts"
 
             data = {}
-            data["acc_x"] = self.acc_x
-            data["acc_y"] = self.acc_y
-            data["acc_z"] = self.acc_z
+            data["x"] = self.x
+            data["y"] = self.y
+            data["z"] = self.z
 
-            cairoplot.dot_line_plot(name=filename,
-                                    data=data,
-                                    width=900,
-                                    height=900,
-                                    border=5,
-                                    axis=True,
-                                    grid=True,
-                                    series_legend=True,
-                                    x_labels=self.time,
-                                    x_title = "Time (minutes:seconds)",
-                                    y_bounds = y_bounds,
-                                    y_title = "")
+            try:
+                cairoplot.dot_line_plot(name=filename,
+                                        data=data,
+                                        width=900,
+                                        height=900,
+                                        border=5,
+                                        axis=True,
+                                        grid=True,
+                                        series_legend=True,
+                                        x_labels=self.time,
+                                        x_title = "Time (minutes:seconds)",
+                                        y_bounds = y_bounds,
+                                        y_title = y_title) 
+            except:
+                pass
 
     def __init__(self):
         self._sensorDict = {}
-        self.logging = logging.getLogger("activity")
+        self.logging = logging.getLogger("sensor")
 
     def addSensor(self, name):
-        self._sensorDict[name] = self.Sensor(name)
+        self._sensorDict[name] = self.Adxl(name)
 
     def addSample(self, name, pkt):
         for item in pkt:
@@ -108,16 +105,27 @@ class SensorList:
     def getNumSamples(self, name):
         return self._sensorDict[name].getNumSamples()
 
+    def isReady(self):
+        for k in self.getSensorKeys():
+            if self._sensorDict[k].getNumSamples() <= 0:
+                return False
+        return True
+
+
     def calibrate(self, data):
         for k in self.getSensorKeys():
             (adcCount, zero_g) = data[k]
             self._sensorDict[k].setCalibration(adcCount, zero_g) 
+            self.logging.info('%s', k)
+            self.logging.info('adcCount=%s', adcCount)
+            self.logging.info('zero_g=%s', zero_g)
 
-    def createGraph(self, name, filedir, convertToPng=False):
-        filename = filedir + "/" + name
-        self._sensorDict[name].createGraph(filename)
+    def createGraph(self, filepath, convertToPng=False):
+        for k in self.getSensorKeys():
+            filename = filepath + "/" + k
+            self._sensorDict[k].createGraph(filename)
 
-        if convertToPng:
-            import os
-            os.system("gimp -i -b '(svg-to-raster \"%s.svg\" \"%s.png\" 72 0 0)' -b '(gimp-quit 0)' &> /dev/null &" % (filename, filename))
+            if convertToPng:
+                import os
+                os.system("gimp -i -b '(svg-to-raster \"%s.svg\" \"%s.png\" 72 0 0)' -b '(gimp-quit 0)' &> /dev/null &" % (filename, filename))
 

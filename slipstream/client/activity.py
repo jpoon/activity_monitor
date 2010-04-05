@@ -47,18 +47,42 @@ class Activity:
     def isLyingDown(self):
         if self.__isReady():
             for k in self._sensorDict.keys():
-                x = self._sensorDict[k].avg["x"][-1]
-                y = self._sensorDict[k].avg["y"][-1]
-                z = self._sensorDict[k].avg["z"][-1]
+                avg_x = self._sensorDict[k].avg["x"][-1]
+                avg_y = self._sensorDict[k].avg["y"][-1]
+                avg_z = self._sensorDict[k].avg["z"][-1]
 
-                print self.__isHorizontal(x,y,z)
+                if self.__isHorizontal(avg_x,avg_y,avg_z) is False:
+                    print "%s - %s %s %s" % (k, avg_x, avg_y, avg_z)
+                    return False
+
+                dev_x = self._sensorDict[k].std_deviation["x"][-1]
+                dev_y = self._sensorDict[k].std_deviation["y"][-1]
+                dev_z = self._sensorDict[k].std_deviation["z"][-1]
+
+                if self.__isStable(dev_x, dev_y, dev_z) is False:
+                    print "%s - %s %s %s" % (k, dev_x, dev_y, dev_z)
+                    return False
+
+            return True
+        else:
+            return False
  
     def __isHorizontal(self, x, y, z):
-        errorMargin = 0.1
+        errorMargin = 0.15
 
-        if (0-errorMargin) <= x <= (errorMargin):
-            if (0-errorMargin) <= y <= (errorMargin):
+        if (-errorMargin) <= x <= (errorMargin):
+            if (-errorMargin) <= y <= (errorMargin):
                 if (1-errorMargin) <= z <= (1+errorMargin):
                     return True
+
         return False
-         
+        
+    def __isStable(self, x, y, z):
+        errorMargin = 0.15
+        if (-errorMargin) <= x <= (errorMargin):
+            if (-errorMargin) <= y <= (errorMargin):
+                if (-errorMargin) <= z <= (errorMargin):
+                    return True
+
+        return False
+ 

@@ -11,6 +11,8 @@ class Monitor_Thread(StoppableThread):
     graph_dir = "graphs"
     graph_frequency = 5
 
+    activity_frequency = 5
+
     def __init__(self, sensorList, host, port):
         Thread.__init__(self)
         super(Monitor_Thread, self).__init__()
@@ -34,33 +36,19 @@ class Monitor_Thread(StoppableThread):
         cond = Condition()
         slipstream_thread = SlipStream_Thread(self.host, self.port, self.sensorList)
         slipstream_thread.setCond(cond)
-        updateSet = slipstream_thread.getUpdate()
         slipstream_thread.start()
 
         graph_timer = Timer(Monitor_Thread.graph_frequency, self.update_graph, [filename, cond])
         graph_timer.start()
-       
+
+        activity_timer = Timer(Monitor_Thread.activity_frequency, self.check_activity, [cond])
+        activity_timer.start()
+ 
         while True:
             if self.stopped():
                 slipstream_thread.stop()
                 self.logging.debug("%s has exited properly" % self.getName())
                 return
-
-            with cond:
-                cond.wait()
-
-                for sensor_location in updateSet:
-                    numSamples = self.sensorList.getNumSamples(sensor_location)
-
-                    if (numSamples % 10) == 0:
-                        # calculate avg and std deviation for every 10 packets
-                        avg = statistics.getAverage(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
-                        stdDeviation = statistics.getStndDeviation(self.sensorList.getSensor(sensor_location), numSamples-10, numSamples)
-                        self.activity.add(sensor_location, avg, stdDeviation)
-
-                updateSet.clear()
-
-            time.sleep(5)
 
     def update_graph(self, *args):
         filename = args[0]
@@ -73,3 +61,22 @@ class Monitor_Thread(StoppableThread):
                 self.sensorList.createGraph(filename)
 
             time.sleep(Monitor_Thread.graph_frequency)
+
+    def check_activity(self, *args):
+        cond = args[0]
+
+        while True:
+            with cond:
+                cond.wait()
+
+                for sensor_location in self.sensorList.getSensorKeys():
+                    numSamples = self.sensorList.getNumSamples(sensor_location)
+                    if numSamples > 5:
+                        avg = statistics.getAverage(self.sensorList.getSensor(sensor_location), numSamples-5, numSamples)
+                        stdDeviation = statistics.getStndDeviation(self.sensorList.getSensor(sensor_location), numSamples-5, numSamples)
+                        self.activity.add(sensor_location, avg, stdDeviation)
+
+
+                self.activity.doAllTests()
+
+            time.sleep(Monitor_Thread.activity_frequency)

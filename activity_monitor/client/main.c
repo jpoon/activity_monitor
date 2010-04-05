@@ -9,8 +9,8 @@
 #include "comm.h"
 #include <math.h>
 
-#define MAC_ADDR            0x0013
-#define NUM_SAMPLES         5
+#define MAC_ADDR            0x0010
+#define NUM_SAMPLES         10
 
 static void createTaskset(void);
 static void sensors_task(void);
@@ -69,37 +69,34 @@ int main(void)
 static void sensors_task(void)
 {
     uint8_t num_samples = 0;
-    sensors_packet_t sample[NUM_SAMPLES];
+    sensors_packet_t sample, total;
 
     sensors_register_drivers();
+
+    memset( &total, 0, sizeof(sensors_packet_t));
     while(1) {
         nrk_gpio_toggle(NRK_DEBUG_0);
 
-        sensors_read(&sample[num_samples]);
-//        sensors_print(&sample[num_samples]);
+        sensors_read(&sample);
+//        sensors_print(&sample);
+
+        total.adxl_x += sample.adxl_x;
+        total.adxl_y += sample.adxl_y;
+        total.adxl_z += sample.adxl_z;
 
         num_samples++;
         if ( num_samples == NUM_SAMPLES ) {
-            uint8_t i;
-            uint16_t avg_x=0, avg_y=0, avg_z=0;
-
-            // averages
-            for (i=0; i < NUM_SAMPLES; i++) {
-                avg_x += sample[i].adxl_x; 
-                avg_y += sample[i].adxl_y;
-                avg_z += sample[i].adxl_z; 
-            }
-            avg_x = avg_x/NUM_SAMPLES;
-            avg_y = avg_y/NUM_SAMPLES;
-            avg_z = avg_z/NUM_SAMPLES;
+            total.adxl_x = total.adxl_x/NUM_SAMPLES; 
+            total.adxl_y = total.adxl_y/NUM_SAMPLES;
+            total.adxl_z = total.adxl_z/NUM_SAMPLES;
 
             nrk_sem_pend(txPktSemaphore);
-            sprintf(tx_buf.payload, "x=%u y=%u z=%u", avg_x, avg_y, avg_z);
+            sprintf(tx_buf.payload, "x=%d y=%d z=%d", total.adxl_x, total.adxl_y, total.adxl_z);
             txPktReady = true;
             nrk_sem_post(txPktSemaphore);
 
             num_samples = 0;
-            memset( &sample, 0, sizeof(sensors_packet_t)*NUM_SAMPLES );
+            memset( &total, 0, sizeof(sensors_packet_t));
         }
 
         nrk_wait_until_next_period();
@@ -147,7 +144,7 @@ static void createTaskset(void)
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
     TaskOne.period.secs = 0;
-    TaskOne.period.nano_secs = 100*NANOS_PER_MS;
+    TaskOne.period.nano_secs = 75*NANOS_PER_MS;
     TaskOne.cpu_reserve.nano_secs = 0;
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;
@@ -161,7 +158,7 @@ static void createTaskset(void)
     TaskTwo.Type = BASIC_TASK;
     TaskTwo.SchType = PREEMPTIVE;
     TaskTwo.period.secs = 0;
-    TaskTwo.period.nano_secs = 25*NANOS_PER_MS;
+    TaskTwo.period.nano_secs = 10*NANOS_PER_MS;
     TaskTwo.cpu_reserve.secs = 0;
     TaskTwo.cpu_reserve.nano_secs = 0;
     TaskTwo.offset.secs = 0;

@@ -4,7 +4,7 @@ Usage:
     ./startClient [-h] [-c] [-a Server Address] [-p Server Port]
 Options:
     -h  Prints this message and exits
-    -c  Load calibration data
+    -c  Calibrate Sensors
     -a  Address in which server is located (e.g. 127.0.0.1)
     -p  Port in which server is located (e.g. 4000)
 """
@@ -19,7 +19,7 @@ def ParseArguments():
 
     host = "127.0.0.1"
     port = 4000
-    loadCalibrationData = None
+    calibrate = False
 
     import sys, getopt
     try:
@@ -29,7 +29,7 @@ def ParseArguments():
                 print __doc__ 
                 sys.exit()
             if o in ("-c", "--cal"):
-                loadCalibrationData = True
+                calibrate = True
             if o in ("-p", "--port"):
                 portNum = a
             if o in ("-a", "--addr"):
@@ -42,10 +42,10 @@ def ParseArguments():
         print "Error: Missing argument(s)"
         sys.exit(2)
 
-    return (host, port, loadCalibrationData)
+    return (host, port, calibrate)
 
 if __name__ == '__main__':
-    (host, port, loadCalibrationData) = ParseArguments()
+    (host, port, calibrate) = ParseArguments()
 
     Watcher()
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     sensorList.addSensor("left_leg")
     sensorList.addSensor("right_leg")
 
-    t1 = Calibrate_Thread(sensorList, host, port, loadCalibrationData)
+    t1 = Calibrate_Thread(sensorList, host, port, calibrate)
     t1.start()
     t1.join()
 

@@ -46,7 +46,7 @@ class Calibrate_Thread(StoppableThread):
                 if diff != 0:
                     return abs((self.datapoints[i] - self.datapoints[i+1])/diff)
 
-    def __init__(self, sensorList, host, port, loadData):
+    def __init__(self, sensorList, host, port, recalibrate):
         # for each sensor location, create a dictionary with keys being
         # the states (e.g. POSITION_1, POSITION_2). The values of each
         # corresponding key represent ADC values at each position
@@ -60,7 +60,7 @@ class Calibrate_Thread(StoppableThread):
         self.host = host
         self.port = port
         self.sensorList = sensorList
-        self.loadData = loadData
+        self.recalibrate = recalibrate
 
         self.position = self.Position()
         self.position.add("position_1", (0, 0, 1), "node lying flat horizontally")
@@ -74,7 +74,7 @@ class Calibrate_Thread(StoppableThread):
     def run(self):
         self.logging.debug("Starting %s" % self.getName())
 
-        if self.loadData:
+        if not self.recalibrate:
             self.__loadSavedCalibration()
             return
 

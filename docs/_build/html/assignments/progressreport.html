@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Status Report &mdash; Activity Monitor v0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Activity Monitor v0.1 documentation" href="../index.html" />
+    <link rel="next" title="Real-Time Operating System" href="../os.html" />
+    <link rel="prev" title="Project Proposal" href="proposal.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../os.html" title="Real-Time Operating System"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="proposal.html" title="Project Proposal"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Activity Monitor v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="../index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Status Report</a><ul>
+<li><a class="reference external" href="#memorandum">MEMORANDUM</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="proposal.html"
+                                  title="previous chapter">Project Proposal</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="../os.html"
+                                  title="next chapter">Real-Time Operating System</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="../_sources/assignments/progressreport.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="status-report">
+<h1>Status Report<a class="headerlink" href="#status-report" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><em>Project:</em> Activity Monitor</div>
+<div class="line"><em>Name:</em> Jason Poon</div>
+<div class="line"><em>Student ID:</em> 21736053</div>
+<div class="line"><em>Technical Supervisor:</em> Prof. S. Gopalakrishnan</div>
+</div>
+<div class="section" id="memorandum">
+<h2>MEMORANDUM<a class="headerlink" href="#memorandum" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line">To: Ms. J. Pavelich</div>
+<div class="line">From: Jason Poon</div>
+<div class="line">Date: March 08, 2010</div>
+<div class="line">Re: EECE 496 - Project Status</div>
+</div>
+<hr class="docutils" />
+<p><strong>Introduction</strong></p>
+<p>Under the guidance of Prof. Gopalakrishnan, I have been developing a system capable of monitoring various activities via several sensor nodes attached to the body.
+The goal of the system will be the ability to monitor an individual&#8217;s activities and motions.
+With such a system, it can be used to detect harming motions such as falls where the system can notify the authorities (e.g. caregiver) where they can immediately respond to the situation.</p>
+<p>The overall project progress is outlined below in three sections: work completed, work in progress, and work remaining.</p>
+<p><strong>Work Completed</strong></p>
+<ul>
+<li><dl class="first docutils">
+<dt>Order/Receive Necessary Hardware Components</dt>
+<dd><p class="first">Hardware components required for this project include: wireless nodes, accelerometer sensors, and a USB debugger or flasher circuit.</p>
+<p class="last">Several Firefly nodes, Firefly sensor boards (3-axis accelerometer, temperature sensor, light sensor, and microphone), and a USB debugger.
+While waiting for the parts to arrive, Prof. Gopalakrishnan was able to lend me a micaZ mote and USB flasher.
+The Firefly components took longer than expected to arrive which pushed the schedule back approximately two weeks.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Real-Time Operating System (RTOS)</dt>
+<dd><p class="first">Following an initial investigation of which RTOS to use, two serious contenders remained: Nano-RK and LiteOS.
+In the end, Nano-RK was chosen over LiteOS.</p>
+<p class="last">The LiteOS installation process was considerably buggy and development on LiteOS was unfortunately heavily geared towards Windows.
+Nano-RK, on the otherhand, is very well documented.
+Although Nano-RK does not have a forum or mailing list to post questions, the project owners were very helpful.
+For instance, Anthony Rowe, one of the primary contributors to the Nano-RK project, quickly responded and assisted in solving a flashing issue I was experiencing with the Firefly nodes.
+He also provided me with write access to the Wiki and the SVN repository where I have since committed several patches to the Nano-RK project.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Development Environment Setup</dt>
+<dd><p class="first last">No major difficulties arose while setting up my development environment.
+The combination of developing on a Linux machine and the quick-start guide from Nano-RK made the process very straight forward.
+The project source files are available publicly through Git at <a class="reference external" href="http://github.com/jpoon/eece496">http://github.com/jpoon/eece496</a>.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p><strong>Work in Progress</strong></p>
+<ul>
+<li><dl class="first docutils">
+<dt>Mote Communication</dt>
+<dd><p class="first">Nano-RK implements a multitude of networking protocols including: RT-Link, WiDom, and b-mac.
+After some research, RT-Link seemed most suitable for the activity monitor due to its ability to provide bounded end-to-end delay across multiple hops and collision-free operation.
+RT-Link also has greater battery performance in comparison to WiDom and b-mac.</p>
+<p class="last">After fixing several build issues with the Nano-RK RT-Link example program, I have managed to get several Firefly nodes to communicate with each other.
+However, it will require considerably more time to fully understand the protocol and optimize it for use with the activity monitor.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Accelerometer Drivers</dt>
+<dd><p class="first last">Software drivers are required to process the input received from the sensor boards (e.g. accelerometers).
+Although I currently have written basic software to read information from the sensor boards, I am currently facing an issue where I am unsure of the meaning behind the values returned from the sensors.
+One would assume that if the node was stationary, the (x,y,z) values for the accelerometer would be (0,0,0); however, the accelerometer returns seemingly random values of (133, 82, 200).
+This problem can be solved via a reference document for the Firefly sensor boards or hopefully through individuals who have previously worked with the sensor boards (e.g. the Nano-RK contributors).</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p><strong>Work Remaining</strong></p>
+<ul>
+<li><dl class="first docutils">
+<dt>Base Logic</dt>
+<dd><p class="first last">The base logic will process the information obtained from the various sensors and notify the user interface (UI) of the changes in a person&#8217;s motion.
+The main difficulty I foresee with this stage of development is the profiling of users; different users will have different thresholds for the various activities.
+The activity monitor system should be intelligent enough to work on all individuals.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>User Interface (UI)</dt>
+<dd><p class="first last">The UI will be the last major component of the activity monitor.
+Not much thought has been put invested in designing the user interface.
+The complexity of the UI will depend on the time available once the rest of the software components have been completed.
+The goal is to implement a graphical interface that abstracts the inner-workings of the program.
+However, if time is a factor, the UI could be as simple as prompting the user via minicom (serial communication).</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p><strong>Conclusion</strong></p>
+<p>Although I am roughly two weeks behind schedule, since receiving the hardware components, I have made significant head-way in developing the system and am confident in the punctual completion of the activity monitor system.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+<div class="line"><em>Jason Poon</em></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../os.html" title="Real-Time Operating System"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="proposal.html" title="Project Proposal"
+             >previous</a> |</li>
+        <li><a href="../index.html">Activity Monitor v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Jason Poon.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

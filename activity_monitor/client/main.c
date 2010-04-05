@@ -7,6 +7,7 @@
 #include <nrk_error.h>
 #include "sensors.h"
 #include "comm.h"
+#include <math.h>
 
 #define MAC_ADDR            0x0013
 #define NUM_SAMPLES         10
@@ -68,43 +69,37 @@ int main(void)
 static void sensors_task(void)
 {
     uint8_t num_samples = 0;
-    sensors_packet_t sample, sample_total;
+    sensors_packet_t sample[NUM_SAMPLES];
 
     sensors_register_drivers();
-    memset( &sample_total, 0, sizeof(sensors_packet_t) );
     while(1) {
         nrk_gpio_toggle(NRK_DEBUG_0);
 
-        sensors_read(&sample);
-//        sensors_print(&sample);
-
-        sample_total.bat += sample.bat;
-        sample_total.light += sample.light;
-        sample_total.mic += sample.mic;
-        sample_total.temp += sample.temp;
-        sample_total.adxl_x += sample.adxl_x;
-        sample_total.adxl_y += sample.adxl_y;
-        sample_total.adxl_z += sample.adxl_z;
+        sensors_read(&sample[num_samples]);
+//        sensors_print(&sample[num_samples]);
 
         num_samples++;
         if ( num_samples == NUM_SAMPLES ) {
-            sample_total.bat = sample_total.bat/NUM_SAMPLES;
-            sample_total.light = sample_total.light/NUM_SAMPLES;
-            sample_total.mic = sample_total.mic/NUM_SAMPLES;
-            sample_total.temp = sample_total.temp/NUM_SAMPLES;
-            sample_total.adxl_x = sample_total.adxl_x/NUM_SAMPLES;
-            sample_total.adxl_y = sample_total.adxl_y/NUM_SAMPLES;
-            sample_total.adxl_z = sample_total.adxl_z/NUM_SAMPLES;
+            uint8_t i;
+            uint16_t avg_x, avg_y, avg_z;
+
+            // averages
+            for (i=0; i < NUM_SAMPLES; i++) {
+                avg_x += sample[i].adxl_x; 
+                avg_y += sample[i].adxl_y;
+                avg_z += sample[i].adxl_z; 
+            }
+            avg_x /= NUM_SAMPLES;
+            avg_y /= NUM_SAMPLES;
+            avg_z /= NUM_SAMPLES;
 
             nrk_sem_pend(txPktSemaphore);
-            sprintf(tx_buf.payload, "bat=%d temp=%d light=%d mic=%d acc_x=%d acc_y=%d acc_z=%d", sample_total.bat, sample_total.temp, sample_total.light, sample_total.mic, sample_total.adxl_x, sample_total.adxl_y, sample_total.adxl_z);
-            tx_buf.addr = COMM_BROADCAST;
-
+            sprintf(tx_buf.payload, "x=%d y=%d z=%d", avg_x, avg_y, avg_z);
             txPktReady = true;
             nrk_sem_post(txPktSemaphore);
 
             num_samples = 0;
-            memset( &sample_total, 0, sizeof(sensors_packet_t) );
+            memset( &sample, 0, sizeof(sensors_packet_t)*NUM_SAMPLES );
         }
 
         nrk_wait_until_next_period();
@@ -152,7 +147,7 @@ static void createTaskset(void)
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
     TaskOne.period.secs = 0;
-    TaskOne.period.nano_secs = 80*NANOS_PER_MS;
+    TaskOne.period.nano_secs = 175*NANOS_PER_MS;
     TaskOne.cpu_reserve.nano_secs = 0;
     TaskOne.offset.secs = 0;
     TaskOne.offset.nano_secs= 0;
@@ -166,7 +161,7 @@ static void createTaskset(void)
     TaskTwo.Type = BASIC_TASK;
     TaskTwo.SchType = PREEMPTIVE;
     TaskTwo.period.secs = 0;
-    TaskTwo.period.nano_secs = 10*NANOS_PER_MS;
+    TaskTwo.period.nano_secs = 20*NANOS_PER_MS;
     TaskTwo.cpu_reserve.secs = 0;
     TaskTwo.cpu_reserve.nano_secs = 0;
     TaskTwo.offset.secs = 0;

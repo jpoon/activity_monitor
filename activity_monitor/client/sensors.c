@@ -27,14 +27,6 @@ void sensors_read(sensors_packet_t *pkt)
     if( fd == NRK_ERROR ) {
         nrk_kprintf( PSTR("sensors: failed to open sensor driver\r\n"));
     } else {
-        val = nrk_set_status(fd, SENSOR_SELECT, BAT);
-        val = nrk_read(fd, &(pkt->bat), 2);
-        val = nrk_set_status(fd, SENSOR_SELECT, LIGHT);
-        val = nrk_read(fd, &(pkt->light), 2);
-        val = nrk_set_status(fd, SENSOR_SELECT, TEMP);
-        val = nrk_read(fd, &(pkt->temp), 2);
-        val = nrk_set_status(fd, SENSOR_SELECT, AUDIO);
-        val = nrk_read(fd, &(pkt->mic), 2);
         val = nrk_set_status(fd, SENSOR_SELECT, ACC_X);
         val = nrk_read(fd, &(pkt->adxl_x), 2);
         val = nrk_set_status(fd, SENSOR_SELECT, ACC_Y);
@@ -46,5 +38,5 @@ void sensors_read(sensors_packet_t *pkt)
 }
 
 void sensors_print(const sensors_packet_t *pPkt) {
-    printf("sensors: bat=%d, temp=%d, light=%d, mic=%d, acc_x=%d, acc_y=%d, acc_z=%d\r\n", pPkt->bat, pPkt->temp, pPkt->light, pPkt->mic, pPkt->adxl_x, pPkt->adxl_y, pPkt->adxl_z);
+    printf("sensors: acc_x=%d, acc_y=%d, acc_z=%d\r\n", pPkt->adxl_x, pPkt->adxl_y, pPkt->adxl_z);
 }

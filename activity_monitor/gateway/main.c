@@ -133,7 +133,7 @@ static void createTaskset(void)
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
     TaskOne.period.secs = 0;
-    TaskOne.period.nano_secs = 10*NANOS_PER_MS;
+    TaskOne.period.nano_secs = 50*NANOS_PER_MS;
     TaskOne.cpu_reserve.secs = 0;
     TaskOne.cpu_reserve.nano_secs = 0;
     TaskOne.offset.secs = 0;
@@ -142,12 +142,12 @@ static void createTaskset(void)
 
     TaskTwo.task = slipstream_tx_task;
     nrk_task_set_stk( &TaskTwo, Stack2, NRK_APP_STACKSIZE);
-    TaskTwo.prio = 1;
+    TaskTwo.prio = 3;
     TaskTwo.FirstActivation = TRUE;
     TaskTwo.Type = BASIC_TASK;
     TaskTwo.SchType = PREEMPTIVE;
     TaskTwo.period.secs = 0;
-    TaskTwo.period.nano_secs = 10*NANOS_PER_MS;
+    TaskTwo.period.nano_secs = 50*NANOS_PER_MS;
     TaskTwo.cpu_reserve.secs = 0;
     TaskTwo.cpu_reserve.nano_secs = 0;
     TaskTwo.offset.secs = 0;
@@ -156,7 +156,7 @@ static void createTaskset(void)
 
     TaskThree.task = slipstream_rx_task;
     nrk_task_set_stk( &TaskThree, Stack3, NRK_APP_STACKSIZE);
-    TaskThree.prio = 3;
+    TaskThree.prio = 1;
     TaskThree.FirstActivation = TRUE;
     TaskThree.Type = BASIC_TASK;
     TaskThree.SchType = PREEMPTIVE;

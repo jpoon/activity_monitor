@@ -128,7 +128,7 @@ static void createTaskset(void)
     nrk_kprintf ( PSTR("taskset: creating comm\r\n") );
     TaskOne.task = comm_task;
     nrk_task_set_stk( &TaskOne, Stack1, NRK_APP_STACKSIZE);
-    TaskOne.prio = 3;
+    TaskOne.prio = 2;
     TaskOne.FirstActivation = TRUE;
     TaskOne.Type = BASIC_TASK;
     TaskOne.SchType = PREEMPTIVE;
@@ -142,7 +142,7 @@ static void createTaskset(void)
 
     TaskTwo.task = slipstream_tx_task;
     nrk_task_set_stk( &TaskTwo, Stack2, NRK_APP_STACKSIZE);
-    TaskTwo.prio = 2;
+    TaskTwo.prio = 1;
     TaskTwo.FirstActivation = TRUE;
     TaskTwo.Type = BASIC_TASK;
     TaskTwo.SchType = PREEMPTIVE;
@@ -161,7 +161,7 @@ static void createTaskset(void)
     TaskThree.Type = BASIC_TASK;
     TaskThree.SchType = PREEMPTIVE;
     TaskThree.period.secs = 0;
-    TaskThree.period.nano_secs = 500*NANOS_PER_MS;
+    TaskThree.period.nano_secs = 50*NANOS_PER_MS;
     TaskThree.cpu_reserve.secs = 0;
     TaskThree.cpu_reserve.nano_secs = 0;
     TaskThree.offset.secs = 0;

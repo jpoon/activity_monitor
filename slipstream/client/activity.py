@@ -24,6 +24,20 @@ class Activity:
             self.std_deviation["y"].append(std_deviation[1])
             self.std_deviation["z"].append(std_deviation[2])
 
+        def getAverage(self):
+            x = self.avg["x"][-1]
+            y = self.avg["y"][-1]
+            z = self.avg["z"][-1]
+
+            return (x, y, z)
+
+        def getStdDeviation(self):
+            x = self.std_deviation["x"][-1]
+            y = self.std_deviation["y"][-1]
+            z = self.std_deviation["z"][-1]
+
+            return (x, y, z)
+
         def getNumDataPoints(self):
             return len(self.avg["x"])
 
@@ -44,44 +58,53 @@ class Activity:
 
         self.logging.info("Lying Down:\t%s", self.isLyingDown())
         self.logging.info("Standing:\t\t %s", self.isStanding())
+        self.logging.info("Sitting:\t\t %s", self.isSitting())
 
     def isLyingDown(self):
         for k in self._sensorDict.keys():
-            avg_x = self._sensorDict[k].avg["x"][-1]
-            avg_y = self._sensorDict[k].avg["y"][-1]
-            avg_z = self._sensorDict[k].avg["z"][-1]
+            avg = self._sensorDict[k].getAverage()
+            std_dev = self._sensorDict[k].getStdDeviation()
 
-            dev_x = self._sensorDict[k].std_deviation["x"][-1]
-            dev_y = self._sensorDict[k].std_deviation["y"][-1]
-            dev_z = self._sensorDict[k].std_deviation["z"][-1]
-
-            if not self.__isHorizontal(avg_x, avg_y, avg_z):
+            if not self.__isHorizontal(avg):
                 return False
  
-            if not self.__isStable(dev_x, dev_y, dev_z):
+            if not self.__isStable(std_dev):
                 return False
 
         return True
+
+    def isSitting(self):
+        for k in self._sensorDict.keys():
+            avg = self._sensorDict[k].getAverage()
+            std_dev = self._sensorDict[k].getStdDeviation()
+
+            if k in ["left_arm", "right_arm"]:
+                if not self.__isVertical(avg):
+                    return False
+            else:
+                if not self.__isHorizontal(avg):
+                    return False
+
+            if not self.__isStable(std_dev):
+                return False
+
+        return True
+
 
     def isStanding(self):
         for k in self._sensorDict.keys():
-            avg_x = self._sensorDict[k].avg["x"][-1]
-            avg_y = self._sensorDict[k].avg["y"][-1]
-            avg_z = self._sensorDict[k].avg["z"][-1]
+            avg = self._sensorDict[k].getAverage()
+            std_dev = self._sensorDict[k].getStdDeviation()
 
-            dev_x = self._sensorDict[k].std_deviation["x"][-1]
-            dev_y = self._sensorDict[k].std_deviation["y"][-1]
-            dev_z = self._sensorDict[k].std_deviation["z"][-1]
-
-            if not self.__isVertical(avg_x, avg_y, avg_z):
+            if not self.__isVertical(avg):
                 return False
  
-            if not self.__isStable(dev_x, dev_y, dev_z):
+            if not self.__isStable(std_dev):
                 return False
 
         return True
 
-    def __isVertical(self, x, y, z):
+    def __isVertical(self, (x, y, z)):
         errorMargin = 0.20
 
         if (1-errorMargin) <= x <= (1+errorMargin):
@@ -91,7 +114,7 @@ class Activity:
 
         return False
 
-    def __isHorizontal(self, x, y, z):
+    def __isHorizontal(self, (x, y, z)):
         errorMargin = 0.20
 
         if (-errorMargin) <= x <= (errorMargin):
@@ -101,7 +124,7 @@ class Activity:
 
         return False
         
-    def __isStable(self, x, y, z):
+    def __isStable(self, (x, y, z)):
         errorMargin = 0.15
 
         if (-errorMargin) <= x <= (errorMargin):

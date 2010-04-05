@@ -87,12 +87,14 @@ class Calibrate_Thread(StoppableThread):
             slipstream_thread.setCond(cond)
             slipstream_thread.start()
 
+            progress = Progress_Bar()
+
             while True:
                 if self.stopped():
                     slipstream_thread.stop()
                     self.logging.debug("%s has exited properly" % self.getName())
                     return
- 
+
                 with cond:
                     cond.wait()
 
@@ -105,6 +107,7 @@ class Calibrate_Thread(StoppableThread):
                             if Calibrate_Thread.key_dataStart not in getattr(self, sensor_location):
                                 # Set Start Index
                                 getattr(self, sensor_location)[Calibrate_Thread.key_dataStart] = current_data_id
+                                progress.add(5)
                             else:
                                 data_start = getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
                                 numSamples = current_data_id - data_start
@@ -112,6 +115,7 @@ class Calibrate_Thread(StoppableThread):
                                 if (numSamples == Calibrate_Thread.sample_size):
                                     getattr(self, sensor_location)[calibrate_position] = statistics.getAverage(self.sensorList.getSensor(sensor_location), data_start, current_data_id)
                                     del getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
+                                    progress.add(20)
 
                     # break only when we have enough packets for each sensor location
                     if self.__isDone(calibrate_position):

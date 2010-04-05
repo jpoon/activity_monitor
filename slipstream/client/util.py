@@ -1,5 +1,6 @@
 from threading import *
 import os, signal, sys, operator
+import math
 
 class StoppableThread(Thread):
     """Thread class with a stop() method. The thread itself has to check
@@ -58,4 +59,25 @@ class Watcher:
         try:
             os.kill(self.child, signal.SIGKILL)
         except OSError: pass
+
+class Progress_Bar:
+    def __init__(self):
+        self.width = 50
+        self.current_progress = 0
+        self.__progress(self.current_progress)
+
+    def add(self, percent):
+        self.current_progress += percent
+        self.__progress(self.current_progress)
+
+    def __progress(self, percent):
+        marks = math.floor(self.width * (percent/ 100.0))
+        spaces = math.floor(self.width - marks)
+
+        loader = '[' + ('=' * int(marks)) + (' ' * int(spaces)) + ']'
+        sys.stdout.write("%s %d%%\r" % (loader, percent))
+        if percent >= 100:
+            sys.stdout.write("\r\n")
+        sys.stdout.flush()
+
 

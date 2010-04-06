@@ -56,27 +56,33 @@ class Activity:
             if self._sensorDict[k].getNumDataPoints() <= 0:
                 return
 
-        self.logging.info("Lying Down:\t%s", self.isLyingDown())
-        self.logging.info("Standing:\t\t %s", self.isStanding())
-        self.logging.info("Sitting:\t\t %s", self.isSitting())
+        isStationary = True
+        for k in ["left_leg", "right_leg"]:
+            std_dev = self._sensorDict[k].getStdDeviation()
+
+            if not self.__isStable(std_dev):
+                isStationary = False
+                break
+
+        if isStationary:
+            self.logging.info("Lying Down:\t%s", self.isLyingDown())
+            self.logging.info("Standing:\t\t %s", self.isStanding())
+            self.logging.info("Sitting:\t\t %s", self.isSitting())
+        else:
+            self.logging.info("legs are moving")
 
     def isLyingDown(self):
         for k in self._sensorDict.keys():
             avg = self._sensorDict[k].getAverage()
-            std_dev = self._sensorDict[k].getStdDeviation()
 
             if not self.__isHorizontal(avg):
                 return False
  
-            if not self.__isStable(std_dev):
-                return False
-
         return True
 
     def isSitting(self):
         for k in self._sensorDict.keys():
             avg = self._sensorDict[k].getAverage()
-            std_dev = self._sensorDict[k].getStdDeviation()
 
             if k in ["left_arm", "right_arm"]:
                 if not self.__isVertical(avg):
@@ -85,23 +91,16 @@ class Activity:
                 if not self.__isHorizontal(avg):
                     return False
 
-            if not self.__isStable(std_dev):
-                return False
-
         return True
 
 
     def isStanding(self):
         for k in self._sensorDict.keys():
             avg = self._sensorDict[k].getAverage()
-            std_dev = self._sensorDict[k].getStdDeviation()
 
             if not self.__isVertical(avg):
                 return False
  
-            if not self.__isStable(std_dev):
-                return False
-
         return True
 
     def __isVertical(self, (x, y, z)):

@@ -5,6 +5,7 @@ import logging
 import cairoplot
 
 class SensorList:
+
     class Adxl:
         def __init__(self, name):
             self.time = []
@@ -12,8 +13,7 @@ class SensorList:
             self.y = []
             self.z = []
 
-            self.logging = logging.getLogger(name)
-
+            self.logging = logging.getLogger("sensor." + name)
             self.calibrated = False
 
         def add(self, attr, val):
@@ -32,14 +32,18 @@ class SensorList:
         def addDone(self):
             self.time.append(datetime.time(datetime.now()).strftime("%M:%S"))
 
+        def get(self, begin, end):
+            x = self.x[begin:end]
+            y = self.y[begin:end]
+            z = self.z[begin:end]
+            return (x, y, z) 
+
         def setCalibration(self, adcCounts_per_g, zero_g_value):
             self.calibrated = True
             self.adcCounts_per_g = adcCounts_per_g
             self.zero_g_value = zero_g_value
 
-            self.clearData()
-
-        def clearData(self):
+            # clear data
             del self.time[:]
             del self.x[:]
             del self.y[:]
@@ -71,7 +75,7 @@ class SensorList:
                                     data=data,
                                     width=900,
                                     height=900,
-                                    border=5,
+                                    border=3,
                                     axis=True,
                                     grid=True,
                                     series_legend=True,
@@ -82,7 +86,7 @@ class SensorList:
 
     def __init__(self):
         self._sensorDict = {}
-        self.logging = logging.getLogger("sensor")
+        self.logging = logging.getLogger("sensorlist")
 
     def addSensor(self, name):
         self._sensorDict[name] = self.Adxl(name)
@@ -99,8 +103,8 @@ class SensorList:
 
         self._sensorDict[name].addDone()
 
-    def getSensor(self, name):
-        return self._sensorDict[name]
+    def getSensorData(self, name, begin, end):
+        return self._sensorDict[name].get(begin, end)
 
     def getSensorKeys(self):
         return self._sensorDict.keys()

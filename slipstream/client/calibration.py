@@ -87,7 +87,8 @@ class Calibrate_Thread(StoppableThread):
             slipstream_thread.setCond(cond)
             slipstream_thread.start()
 
-            progress = Progress_Bar()
+            progress_bar = Progress_Bar()
+            current_progress = 0
 
             while True:
                 if self.stopped():
@@ -98,27 +99,29 @@ class Calibrate_Thread(StoppableThread):
                 with cond:
                     cond.wait()
 
-                    for sensor_location in self.sensorList.getSensorKeys():
-                        # Determine whether we have already obtained values at
-                        # the current position for the given sensor location
-                        if calibrate_position not in getattr(self, sensor_location):
-                            current_data_id = self.sensorList.getNumSamples(sensor_location)
+                    for sensor_location in slipstream_thread.getUpdate():
+                        if calibrate_position in getattr(self, sensor_location):
+                            # we've already obtained calibration data for sensor_location
+                            break
 
-                            if Calibrate_Thread.key_dataStart not in getattr(self, sensor_location):
-                                # Set Start Index
-                                getattr(self, sensor_location)[Calibrate_Thread.key_dataStart] = current_data_id
-                                progress.add(5)
-                            else:
-                                data_start = getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
-                                numSamples = current_data_id - data_start
+                        current_sample_id = self.sensorList.getNumSamples(sensor_location)
 
-                                if (numSamples == Calibrate_Thread.sample_size):
-                                    getattr(self, sensor_location)[calibrate_position] = statistics.getAverage(self.sensorList.getSensor(sensor_location), data_start, current_data_id)
-                                    del getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
-                                    progress.add(20)
+                        if Calibrate_Thread.key_dataStart not in getattr(self, sensor_location):
+                            # Set Start Index
+                            getattr(self, sensor_location)[Calibrate_Thread.key_dataStart] = current_sample_id
+                            progress_bar.add(5)
+                        else:
+                            data_start = getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
+                            numSamples = current_sample_id - data_start
 
-                    # break only when we have enough packets for each sensor location
+                            progress_bar.add(20/Calibrate_Thread.sample_size)
+                            if (numSamples == Calibrate_Thread.sample_size):
+                                # Collected enough samples. Now let's analyze it.
+                                getattr(self, sensor_location)[calibrate_position] = statistics.getAverage(self.sensorList.getSensorData(sensor_location, data_start, current_sample_id))
+                                del getattr(self, sensor_location)[Calibrate_Thread.key_dataStart]
+
                     if self.__isDone(calibrate_position):
+                        # done
                         break
 
             slipstream_thread.stop()
@@ -165,13 +168,15 @@ class Calibrate_Thread(StoppableThread):
 
     def __saveCalibration(self, data):
         f = open(self.filename_savedData, 'w')
+        self.logging.debug("calibration data saved to %s" % self.filename_savedData)
         pickle.dump(data, f)
         f.close()
 
     def __loadSavedCalibration(self):
         f = open(self.filename_savedData, 'r')
+        self.logging.debug("calibration data loaded from %s" % self.filename_savedData)
         data = pickle.load(f)
         self.sensorList.calibrate(data)
 
     def __printPrompt(self, position):
-       raw_input("Calibration: Move sensors to %s where %s. Once ready, press any to continue.\n" % (position, self.position.getPositionDescription(position)))
+       raw_input("\nCalibration: Move sensors to %s where %s. Once ready, press any to continue." % (position, self.position.getPositionDescription(position)))

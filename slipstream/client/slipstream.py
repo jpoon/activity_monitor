@@ -65,8 +65,15 @@ class SlipStream_Thread(StoppableThread):
         self.port = port
         self.sensorList = sensorList
 
+        self.update = {}
+
     def setCond(self, cond):
         self.cond = cond
+
+    def getUpdate(self):
+        updateList = self.update.keys()
+        self.update.clear()
+        return updateList
 
     def run(self):
         self.logging.debug("Starting %s" % self.getName())
@@ -90,5 +97,6 @@ class SlipStream_Thread(StoppableThread):
 
     def __run(self, sensor, msg):
         self.sensorList.addSample(sensor, msg)
+        self.update[sensor] = 1
         self.cond.notifyAll()
  

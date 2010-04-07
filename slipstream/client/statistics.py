@@ -1,20 +1,17 @@
 from __future__ import division
 import math
 
-def getAverage(dataList, startIndex, endIndex):
+def getAverage(data):
     def average(dataList):
         sum = 0
         for val in dataList:
             sum += val
         return sum/len(dataList)
 
-    avg_x = average(dataList.x[startIndex:endIndex])
-    avg_y = average(dataList.y[startIndex:endIndex])
-    avg_z = average(dataList.z[startIndex:endIndex])
+    (x, y, z) = data
+    return (average(x), average(y), average(z))
 
-    return (avg_x, avg_y, avg_z)
-
-def getVariance(dataList, startIndex, endIndex):
+def getVariance(data):
     def variance(dataList, avg):
         sum = 0
         for val in dataList:
@@ -22,16 +19,17 @@ def getVariance(dataList, startIndex, endIndex):
 
         return sum/(len(dataList) - 1)
 
-    (avg_x, avg_y, avg_z) = getAverage(dataList, startIndex, endIndex)
-    var_x = variance(dataList.x[startIndex:endIndex], avg_x)
-    var_y = variance(dataList.y[startIndex:endIndex], avg_y)
-    var_z = variance(dataList.z[startIndex:endIndex], avg_z)
+    (avg_x, avg_y, avg_z) = getAverage(data)
+    (x, y, z) = data
+    var_x = variance(x, avg_x)
+    var_y = variance(y, avg_y)
+    var_z = variance(z, avg_z)
 
     return (var_x, var_y, var_z)
 
-def getStndDeviation(dataList, startIndex, endIndex):
+def getStndDeviation(data):
     stndDeviation = []
-    for axis in getVariance(dataList, startIndex, endIndex):
+    for axis in getVariance(data):
         stndDeviation.append(math.sqrt(axis))
     return stndDeviation
     

@@ -9,9 +9,9 @@ import time
  
 class Monitor_Thread(StoppableThread):
     graph_dir = "graphs"
-    graph_frequency = 5
+    graph_frequency = 10
 
-    activity_frequency = 3
+    activity_frequency = 2
     activity_samples = 5
 
     def __init__(self, sensorList, host, port):

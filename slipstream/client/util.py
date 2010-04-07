@@ -71,8 +71,9 @@ class Progress_Bar:
         self.__progress(self.current_progress)
 
     def done(self):
-        self.current_progress = 100
-        self.__progress(self.current_progress)
+        if self.current_progress != 100:
+            self.current_progress = 100
+            self.__progress(self.current_progress)
 
     def __progress(self, percent):
         marks = math.floor(self.width * (percent/ 100.0))

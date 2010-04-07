@@ -122,6 +122,7 @@ class Calibrate_Thread(StoppableThread):
 
                     if self.__isDone(calibrate_position):
                         # done
+                        progress_bar.done()
                         break
 
             slipstream_thread.stop()

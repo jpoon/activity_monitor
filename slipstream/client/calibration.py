@@ -174,10 +174,13 @@ class Calibrate_Thread(StoppableThread):
         f.close()
 
     def __loadSavedCalibration(self):
-        f = open(self.filename_savedData, 'r')
-        self.logging.debug("calibration data loaded from %s" % self.filename_savedData)
-        data = pickle.load(f)
-        self.sensorList.calibrate(data)
+        try:
+            f = open(self.filename_savedData, 'r')
+            self.logging.debug("calibration data loaded from %s" % self.filename_savedData)
+            data = pickle.load(f)
+            self.sensorList.calibrate(data)
+        except IOError:
+            self.logging.error("unable to load saved calibration data")
 
     def __printPrompt(self, position):
        raw_input("\nCalibration: Move sensors to %s where %s. Once ready, press any to continue." % (position, self.position.getPositionDescription(position)))

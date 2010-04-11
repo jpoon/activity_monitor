@@ -5,6 +5,7 @@ import logging
 import cairoplot
 
 class SensorList:
+    max_graph_data = 100
 
     class Adxl:
         def __init__(self, name):
@@ -67,9 +68,9 @@ class SensorList:
                 y_title = "ADC Counts"
 
             data = {}
-            data["x"] = self.x
-            data["y"] = self.y
-            data["z"] = self.z
+            for axis in ["x", "y", "z"]:
+                index = min(len(getattr(self, axis)), SensorList.max_graph_data)
+                data[axis] = getattr(self, axis)[-index:]
 
             cairoplot.dot_line_plot(name=filename,
                                     data=data,

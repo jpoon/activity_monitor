@@ -9,7 +9,7 @@ import time
  
 class Monitor_Thread(StoppableThread):
     graph_dir = "graphs"
-    graph_frequency = 10
+    graph_frequency = 5
 
     activity_frequency = 2
     activity_samples = 5

@@ -94,13 +94,16 @@ class SensorList:
 
     def addSample(self, name, pkt):
         for item in pkt:
-            attr, val = item.split('=')
+            try:
+                attr, val = item.split('=')
 
-            if val.isdigit():
-                val = int(val)
-                self._sensorDict[name].add(attr, val)
-            else:
-                self.logging.error('Received value of %s could not be parsed into integer: %s' % (val, item))
+                if val.isdigit():
+                    val = int(val)
+                    self._sensorDict[name].add(attr, val)
+                else:
+                    self.logging.error('Received value of %s could not be parsed into integer: %s' % (val, item))
+            except:
+                pass
 
         self._sensorDict[name].addDone()
 

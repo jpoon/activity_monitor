@@ -1,7 +1,10 @@
 import logging
+import cairoplot
 
 class Activity:
     class Properties:
+        max_graph_data = 100
+
         def __init__(self):
             self.avg = {}
             self.avg["x"] = []
@@ -41,6 +44,51 @@ class Activity:
         def getNumDataPoints(self):
             return len(self.avg["x"])
 
+        def createGraph(self, filename):
+            if self.getNumDataPoints() < 5:
+                return
+            else:
+                pass
+
+            data = {}
+            for axis in ["x", "y", "z"]:
+                index = min(len(self.avg[axis]), Activity.Properties.max_graph_data)
+                data[axis] = self.avg[axis][-index:]
+            file = filename + "_avg"
+            cairoplot.dot_line_plot(name=file,
+                                    data=data,
+                                    width=900,
+                                    height=900,
+                                    border=3,
+                                    axis=True,
+                                    grid=True,
+                                    y_bounds=(-2,2),
+                                    series_legend=True,
+                                    x_title = "Time (minutes:seconds)",
+                                    y_title = "Average") 
+
+            data = {}
+            for axis in ["x", "y", "z"]:
+                index = min(len(self.std_deviation[axis]), Activity.Properties.max_graph_data)
+                data[axis] = self.std_deviation[axis][-index:]
+
+            file = filename + "_std_dev"
+            cairoplot.dot_line_plot(name=file,
+                                    data=data,
+                                    width=900,
+                                    height=900,
+                                    border=3,
+                                    axis=True,
+                                    grid=True,
+                                    y_bounds=(0,1),
+                                    series_legend=True,
+                                    x_title = "Time (minutes:seconds)",
+                                    y_title = "Standard Deviation") 
+
+
+
+
+
     def __init__(self, keys):
         self.logging = logging.getLogger("activity")
         self.history = None
@@ -51,6 +99,11 @@ class Activity:
 
     def add(self, name, avg, std_deviation):
         self._sensorDict[name].add(avg, std_deviation)
+
+    def createGraph(self, filepath, convertToPng=False):
+        for k in self._sensorDict.keys():
+            filename = filepath + "/" + k
+            self._sensorDict[k].createGraph(filename)
 
     def doAllTests(self):
         legs = ["left_leg", "right_leg"]
@@ -70,33 +123,48 @@ class Activity:
 
         if legs_stationary:
             # stationary: sitting, lying down, standing
-            if self.isHorizontal(legs):
-                if self.isHorizontal(arms):
+            if self.__isHorizontal(legs):
+                if self.__isHorizontal(arms):
                     # lying down
-                    if self.history is not "lying_down":
-                        print "Lying Down"
-                        self.history = "lying_down"
+                    print "Lying Down"
                 else:
                     # sitting
-                    if self.history is not "sitting":
-                        print "Sitting"
-                        self.history = "sitting"
+                    print "Sitting"
             else:
                 # standing
-                if self.history is not "standing":
-                    print "Standing"
-                    self.history = "standing"
+                print "Standing"
         else:
             # moving: running, walking
-            print "moving.."
+            if self.__isRunning(legs):
+                print "Running"
+            else:
+                print "Walking"
 
-    def isHorizontal(self, list):
+    def __isRunning(self, list):
+        def running((x,y,z)):
+            errorMargin = 0.25
+
+            if x > errorMargin or \
+               y > errorMargin or \
+               z > errorMargin:
+                    return True
+            return False
+
+        for k in list:
+            std_dev = self._sensorDict[k].getStdDeviation()
+            if running(std_dev):
+                pass
+            else:
+                print k, std_dev
+                return False
+        return True
+
+    def __isHorizontal(self, list):
         def horizontal((x, y, z)):
             errorMargin = 0.20
 
             if (-errorMargin) <= x <= (errorMargin):
-                if (-errorMargin) <= x <= (errorMargin):
-                        return True
+                return True
             return False
  
         for k in list:
@@ -105,13 +173,12 @@ class Activity:
                 return False
         return True
 
-    def isVertical(self, list):
+    def __isVertical(self, list):
         def vertical((x, y, z)):
             errorMargin = 0.20
 
-            if (-errorMargin) <= y <= (errorMargin):
-                if (-errorMargin) <= z <= (errorMargin):
-                    return True
+            if (-errorMargin) <= z <= (errorMargin):
+                return True
             return False
 
         for k in list:
@@ -121,12 +188,11 @@ class Activity:
         return True
 
     def __isStable(self, (x, y, z)):
-        errorMargin = 0.15
+        errorMargin = 0.05
 
-        if (-errorMargin) <= x <= (errorMargin):
-            if (-errorMargin) <= y <= (errorMargin):
-                if (-errorMargin) <= z <= (errorMargin):
+        if x <= (errorMargin):
+            if y <= (errorMargin):
+                if z <= (errorMargin):
                     return True
-
         return False
  

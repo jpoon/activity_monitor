@@ -42,7 +42,7 @@ class Monitor_Thread(StoppableThread):
         graph_timer = Timer(Monitor_Thread.graph_frequency, self.update_graph, [filename, cond])
         graph_timer.start()
 
-        activity_timer = Timer(Monitor_Thread.activity_frequency, self.check_activity, [cond])
+        activity_timer = Timer(Monitor_Thread.activity_frequency, self.check_activity, [filename, cond])
         activity_timer.start()
  
         while True:
@@ -64,7 +64,8 @@ class Monitor_Thread(StoppableThread):
             time.sleep(Monitor_Thread.graph_frequency)
 
     def check_activity(self, *args):
-        cond = args[0]
+        filename = args[0]
+        cond = args[1]
 
         while True:
             with cond:
@@ -77,7 +78,7 @@ class Monitor_Thread(StoppableThread):
                         stdDeviation = statistics.getStndDeviation(self.sensorList.getSensorData(sensor_location, numSamples-Monitor_Thread.activity_samples, numSamples))
                         self.activity.add(sensor_location, avg, stdDeviation)
 
-
+                self.activity.createGraph(filename)
                 self.activity.doAllTests()
 
             time.sleep(Monitor_Thread.activity_frequency)

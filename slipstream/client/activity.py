@@ -155,7 +155,6 @@ class Activity:
             if running(std_dev):
                 pass
             else:
-                print k, std_dev
                 return False
         return True
 
